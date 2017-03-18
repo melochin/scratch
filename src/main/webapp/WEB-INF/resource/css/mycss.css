@@ -1,0 +1,297 @@
+/*common*/
+body{
+	font-family:Micrsoft Yahei, Arial;
+	font-size: 18px;
+}
+
+.display{
+	display:block;
+}
+
+.hidden{
+	display:none;
+}
+
+li,ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.col-md-* {
+	margin: 0;
+}
+
+input[readonly=readonly] {
+	border-style:none;
+	margin:2px 2px;
+}
+
+/*content container*/
+.content{
+	background:#EDEFF0;
+	margin:0 -15px;		/*抵消col带来的15px*/
+}
+
+/*工具栏*/
+.tool{
+	padding:5px 0;
+}
+
+.tool button{
+	border-radius:1px;
+}
+
+/*head*/
+.navbar-container {
+	box-shadow: 0 0 5px 0 #888888;
+	font-size: 18px;
+	color: #000000;
+}
+
+.tag-new {
+	margin:5px 0;
+	padding:10px;
+	background: #fff;
+}
+
+.tag-new input{
+	margin:10px 10px 0 0;
+}
+
+.tag-new .input-tag-new {
+	border:1px solid #ddd;
+	background:#fffff6;
+	font-size:16px;
+}
+
+.tag-name {
+	font-size: 18px;
+	color: #504e4e;
+}
+
+.tag-words {
+	border-top:1px solid #d2d2d2;
+	font-size: 14px;
+}
+
+.tag-word:hover,
+.tag-word:hover input{
+	background:#c2bebe;	
+}
+.tag-word:hover .edit{
+	visibility: visible;
+}
+
+.tag-word input:focus {
+	background:white;
+}
+
+.tag-word .edit {
+	padding:5px 20px;
+	visibility: hidden;
+}
+
+
+/*login.jsp*/
+.login-input{
+	padding:5px;
+}
+
+.login-form {
+	margin-top: 60px;
+}
+
+form[role=login] {
+	color: #5d5d5d;
+	background: #f2f2f2;
+	padding: 30px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+form[role=login] input.form-control{
+	font-size: 18px;
+	margin: 12px 0;
+}
+
+form[role=login] .btn {
+	font-size: 16px;
+	margin: 0 5% 0 5%;
+}
+
+span.error {
+	color: #d52929;
+}
+
+/*消息提示*/
+.msg {
+	padding: 200px 0;
+	text-align:center;
+	font-size: 18px;
+}
+
+/*nav导入*/
+.navi .glyphicon {
+	color: #337ab7;
+	margin:0 10px 0 0;
+}
+.display-table {
+	display: table;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+.display-table-row {
+}
+.v-align {
+    vertical-align: top;
+}
+
+#navigation {
+    background: #0e1a35;
+    height: 100%;
+}
+
+.navi i {
+    font-size: 20px;
+}
+
+.navi a {
+	border-bottom: 1px solid #0d172e;
+	border-top: 1px solid #0d172e;
+	color: #ffffff;
+	display: block;
+	font-size: 17px;
+	font-weight: 500;
+	padding: 25px 20px;
+	text-decoration: none;
+}
+
+.navi .active a {
+    background: #122143;
+    border-left: 5px solid #5584ff;
+    padding-left: 15px;
+}
+
+.navi a:hover {
+    background: #122143 none repeat scroll 0 0;
+    border-left: 5px solid #5584ff;
+    display: block;
+    padding-left: 15px;
+}
+
+a:focus,a:hover,a{
+    outline:none;
+    text-decoration: none;
+}
+
+.list-group-item {
+	padding:10px 15px 0 15px;
+}
+.list-group-item span {
+	float:right;
+	margin: 0px 3px;
+} 
+
+.list-group-item .glyphicon {
+	color:#777;
+}
+
+/**video**/
+#videos{
+	padding:10px 30px;
+	min-height:750px;
+}
+
+.video-box {
+	border:1px solid #c2bebe;
+	padding:0px 0px;
+	margin:7px 10px;
+	background:#fff;
+}
+
+.video-img {
+	overflow:hidden;
+	height:100px;
+	margin-bottom:15px;
+}
+
+.video-desc {
+	padding:0px 10px;
+	height:40px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+}
+
+.video-desc a{
+	font-family:Micrsoft Yahei,Arial; 
+	font-size:12px;
+	line-height:20px;
+	color:black;
+}
+
+.video-img img{
+	width:100%;
+	min-height:100%;
+}
+
+ul .dropdown-menu{
+	border:1px solid #fff;
+}
+
+#user_logout { 
+	min-width:100px;
+	padding:10px;
+	background:#fff;
+}
+
+#user_logout a {
+	margin:10px 0;
+}
+
+
+/*loading*/
+.spinner {
+  width: 60px;
+  height: 60px;
+ 
+  position: relative;
+  margin: 100px auto;
+}
+ 
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #000;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+   
+  -webkit-animation: bounce 2.0s infinite ease-in-out;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+ 
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+ 
+@-webkit-keyframes bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+ 
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}

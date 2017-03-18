@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC 
+      "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN" 
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd"> 
+
+<tiles-definitions>
+	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp">
+		<put-attribute name="title" value="" />
+		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
+		<put-attribute name="content" value="" />		
+	</definition>
+	
+	<definition name="template-with-nav" template="/WEB-INF/jsp/tiles/template-with-nav.jsp">
+		<put-attribute name="title" value="" />
+		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
+		<put-attribute name="content" value="" />		
+		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="index" extends="template-with-nav">
+		<put-attribute name="title" value="home" />
+		<put-attribute name="content" value="/WEB-INF/jsp/videoList.jsp"/>
+	</definition>
+	
+	<definition name="common_message" extends="template">
+		<put-attribute name="title" value="message" />
+		<put-attribute name="content" value="/WEB-INF/jsp/common/message.jsp"/>
+	</definition>
+	
+	<definition name="user_login" extends="template">
+		<put-attribute name="title" value="login"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/user/login.jsp"/>
+	</definition>
+	
+	<definition name="user_register" extends="template">
+		<put-attribute name="title" value="register"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/user/register.jsp"/>
+	</definition>
+	
+	<!-- 关键字维护 -->
+	<definition name="tag_form" extends="template-with-nav">
+		<put-attribute name="title" value="tag" />
+		<put-attribute name="content" value="/WEB-INF/jsp/tag.jsp"/>
+	</definition>
+	
+</tiles-definitions>
