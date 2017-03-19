@@ -1,4 +1,4 @@
-package scratch.test;
+package scratch.service.test;
 
 import org.junit.Test;
 import org.omg.CORBA.Context;
@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 import scratch.dao.SearchInfoDao;
 import scratch.model.User;
 import scratch.service.UserSerivce;
+import scratch.test.ContextClass;
 
 public class UserServiceTest extends ContextClass{
 

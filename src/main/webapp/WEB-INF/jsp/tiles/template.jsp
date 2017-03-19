@@ -8,7 +8,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<script type="text/javascript" src="<c:url value="/js/jquery.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/js/tools/jquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/bootstrap/js/bootstrap.js"/>"></script>
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>

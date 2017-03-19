@@ -1,4 +1,4 @@
-package scratch.test;
+package scratch.service.test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.service.SearchTagService;
+import scratch.test.ContextClass;
 
 public class TagServiceTest extends ContextClass{
 	

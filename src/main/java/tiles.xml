@@ -19,7 +19,7 @@
 	
 	<definition name="index" extends="template-with-nav">
 		<put-attribute name="title" value="home" />
-		<put-attribute name="content" value="/WEB-INF/jsp/videoList.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/tag-videos.jsp"/>
 	</definition>
 	
 	<definition name="common_message" extends="template">
@@ -41,6 +41,11 @@
 	<definition name="tag_form" extends="template-with-nav">
 		<put-attribute name="title" value="tag" />
 		<put-attribute name="content" value="/WEB-INF/jsp/tag.jsp"/>
+	</definition>
+	
+	<definition name="info" extends="template-with-nav">
+		<put-attribute name="title" value="video" />
+		<put-attribute name="content" value="/WEB-INF/jsp/videos.jsp" />
 	</definition>
 	
 </tiles-definitions>

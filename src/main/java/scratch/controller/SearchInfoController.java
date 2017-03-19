@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import scratch.model.User;
+import scratch.service.PageBean;
 import scratch.service.SearchInfoService;
 import scratch.service.SearchTagService;
 import scratch.support.GlobalSession;
@@ -35,12 +37,21 @@ public class SearchInfoController {
 	}
 	
 	@RequestMapping(value="/json/info", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody List getInfos(@RequestParam Long tagId, @RequestParam(required=false) Integer curPage) {
-		if(curPage == null) {
-			curPage = 0;
+	public @ResponseBody PageBean getInfos(@RequestParam Long tag, @RequestParam(required=false) Integer page) {
+		if(tag == null) {
+			tag = (long) 0;
 		}
-		return infoService.listByTag(tagId, curPage);
+		return infoService.listByTag(tag, page);
 	}
+	
+	
+	@RequestMapping(value="/info", method=RequestMethod.GET)
+	public ModelAndView info() {
+		return new ModelAndView("info");
+	}
+	
+	
+	
 	
 /*	
 	@RequestMapping(value="/json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)

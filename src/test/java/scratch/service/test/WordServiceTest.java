@@ -1,10 +1,11 @@
-package scratch.test;
+package scratch.service.test;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import scratch.model.SearchKeyword;
 import scratch.service.SearchKeywordService;
+import scratch.test.ConfigurationTest;
 
 public class WordServiceTest extends ConfigurationTest{
 

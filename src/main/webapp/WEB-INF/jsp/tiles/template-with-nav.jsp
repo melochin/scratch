@@ -8,17 +8,20 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<script type="text/javascript" src="<c:url value="/js/react.js"/>"></script>
-		<script type="text/javascript" src="<c:url value="/js/react-dom.js"/>"></script>
-		<script src="<c:url value="/js/browser.min.js"/>" ></script>
-		<script type="text/babel" src="<c:url value="/js/myReact.js"/>" ></script>
-		<script type="text/javascript" src="<c:url value="/js/jquery.js"/>"></script>
+		<!-- common js -->
+		<script type="text/javascript" src="<c:url value="/js/tools/jquery.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/bootstrap/js/bootstrap.js"/>"></script>
+		<script src="<c:url value="/js/tools/browser.min.js"/>" ></script>
+		<script type="text/javascript" src="<c:url value="/js/tools/react.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/js/tools/react-dom.js"/>"></script>
+		<!-- 暂不处理 -->
 		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
-		<script type="text/javascript" src="<c:url value="/bootstrap/js/bootstrap.js"/>"></script>
+		<!-- css -->
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
+
 		<title>
 			<t:insertAttribute name="title" ignore="true"/>
 		</title>

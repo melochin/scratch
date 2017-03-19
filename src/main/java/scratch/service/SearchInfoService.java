@@ -25,9 +25,11 @@ public class SearchInfoService {
 	private Page page;
 	
 	//分页查询
-	public List<SearchInfo> listByTag(Long tagId, Integer curPage) {
+	public PageBean<List<SearchInfo>> listByTag(Long tagId, Integer curPage) {
+		//PAGE信息还返回出去
 		page.setCurPage(curPage);
-		return infoDao.listByTag(tagId, page);
+		List list = infoDao.listByTag(tagId, page); 
+		return new PageBean(list, page);
 	}
 	
 	
