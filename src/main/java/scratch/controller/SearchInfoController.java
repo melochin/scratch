@@ -28,7 +28,12 @@ public class SearchInfoController {
 	@Autowired
 	private SearchInfoService infoService;
 	
-	//get searchInfo list by json
+	/**
+	 * 读取SearchTag及其对应的SearchInfo信息，以JSON形式返回
+	 * 但每个SearchTag只读取20个SearchInfo
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody List getInfos(HttpSession session) {
 		//return tagService.list();
@@ -36,12 +41,22 @@ public class SearchInfoController {
 		return infoService.listSome(user.getUserId());
 	}
 	
+	/**
+	 * 读取SearchInfo信息，以JSON形式返回
+	 * 根据userId、tagId、page决定返回的数据
+	 * @param tag	等于0时，读取该用户所有的searchInfo数据
+	 * @param page
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/json/info", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody PageBean getInfos(@RequestParam Long tag, @RequestParam(required=false) Integer page) {
+	public @ResponseBody PageBean getInfos(@RequestParam Long tag, 
+			@RequestParam(required=false) Integer page, HttpSession session) {
 		if(tag == null) {
 			tag = (long) 0;
 		}
-		return infoService.listByTag(tag, page);
+		User user = (User)session.getAttribute(GlobalSession.USER); 
+		return infoService.listByTag(tag, user.getUserId(), page);
 	}
 	
 	
@@ -49,8 +64,6 @@ public class SearchInfoController {
 	public ModelAndView info() {
 		return new ModelAndView("info");
 	}
-	
-	
 	
 	
 /*	

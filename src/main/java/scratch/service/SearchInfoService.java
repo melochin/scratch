@@ -25,10 +25,10 @@ public class SearchInfoService {
 	private Page page;
 	
 	//分页查询
-	public PageBean<List<SearchInfo>> listByTag(Long tagId, Integer curPage) {
+	public PageBean<List<SearchInfo>> listByTag(Long tagId, Long userId, Integer curPage) {
 		//PAGE信息还返回出去
 		page.setCurPage(curPage);
-		List list = infoDao.listByTag(tagId, page); 
+		List list = infoDao.listByTag(tagId, userId, page); 
 		return new PageBean(list, page);
 	}
 	
@@ -41,7 +41,7 @@ public class SearchInfoService {
 		List<SearchTagInfo> tagInfos = new ArrayList<SearchTagInfo>();
 		List<SearchTag> list = tagDao.listByUserId(userId);
 		for(SearchTag tag : list) {
-			List<SearchInfo> infos = infoDao.listByTagId(tag.getTagId(), 0);
+			List<SearchInfo> infos = infoDao.listByTagId(tag.getTagId());
 			System.out.println(infos.size());
 			tagInfos.add(new SearchTagInfo(tag, infos));
 		}

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import scratch.model.SearchInfo;
 import scratch.model.SearchTag;
+import scratch.model.User;
 import scratch.service.Page;
 
 @Repository
@@ -36,25 +37,29 @@ public class SearchInfoDao extends BasicDao{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<SearchInfo> listByTagId(long tagId, Integer[] status, int currentPage){
+	public List<SearchInfo> listByTagId(long tagId, Integer[] status){
 		Session session = getCurrentSession();
 		Query query = session.createQuery(QUERY_WITH_TAG_AND_STSATUS);
 		query.setParameter("tagId", tagId)
 			 .setParameterList("status", status);
-		query.setFirstResult(currentPage*20)
+		query.setFirstResult(0)
 			 .setMaxResults(20);
 		return (List<SearchInfo>)query.list();
 	}
 	
-	public List<SearchInfo> listByTagId(long tagId, int currentPage){
-		return listByTagId(tagId, new Integer[] {0}, currentPage);
+	public List<SearchInfo> listByTagId(long tagId){
+		return listByTagId(tagId, new Integer[] {0});
 	}
 	
-	public List<SearchInfo> listByTag(Long tagId, Page page) {
-		Criteria crt = createCriteria(SearchInfo.class);
-		crt.createCriteria("keyword")
-			.add(Restrictions.eq("searchTag", new SearchTag(tagId)));
-		return listByCriteria(crt, page);
+	public List<SearchInfo> listByTag(Long tagId, Long userId, Page page) {
+		Criteria crtInfo = createCriteria(SearchInfo.class);
+		Criteria crtKeyWord = crtInfo.createCriteria("keyword");
+		if(tagId != null && tagId > 0) {
+			crtKeyWord.add(Restrictions.eq("searchTag", new SearchTag(tagId)));
+		}
+		Criteria crtTag = crtKeyWord.createCriteria("searchTag")
+									.add(Restrictions.eq("user", new User(userId)));
+		return listByCriteria(crtInfo, page);
 	}
 	
 	/**
