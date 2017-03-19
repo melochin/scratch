@@ -37,11 +37,12 @@
 	width: 100%;
     position: relative;
     padding-bottom:20px;
+    padding-top:50px;
 }
 
 .wrapper.toggled {
 	padding-left: 50px;
-	padding-top:50px;
+	/*padding-top:50px;*/
 }
 
 .wrapper.toggled .sidebar {
@@ -57,6 +58,8 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    
+    border-top: 2px solid #2a2e43;
 }
 .sidebar-nav li {
     line-height: 40px;
@@ -65,7 +68,7 @@
     display: block;
     text-decoration: none;
     color: #e8e8e8;
-    padding: 0;
+    padding: 10px;
     text-align:center;
     font-size:16px;
 }
@@ -169,4 +172,19 @@ nav.subbar > ul.nav.nav-tabs > li.active > a {
 
 .sidebar-nav .glyphicon {
 	margin:0 10px 0 0;
+}
+
+.sidebar-caret {
+	padding:10px 0;
+	line-height: 30px;
+	font-family: Microsoft Yahei;
+}
+
+.sidebar-caret a {
+	color: #ccc;
+	font-size:14px;
+}
+
+.sidebar-caret a:hover {
+	color: #fff;
 }

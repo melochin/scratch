@@ -19,8 +19,8 @@
 		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
 		<!-- css -->
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
-		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
+		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 
 		<title>
 			<t:insertAttribute name="title" ignore="true"/>

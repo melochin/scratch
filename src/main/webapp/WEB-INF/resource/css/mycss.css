@@ -295,3 +295,23 @@ ul .dropdown-menu{
     -webkit-transform: scale(1.0);
   }
 }
+
+.navbar-default .navbar-nav > li > a {
+	color:#FFF;
+}
+
+.navbar-default .navbar-nav > li > a:hover {
+	color:#FFF;
+	background:rgba(0,0,0,0.2);
+}
+
+.navbar-default .navbar-nav > .open > a {
+	color:#FFF;
+	background:rgba(0,0,0,0.2);
+}
+
+.navbar-default .navbar-nav > .open > a:focus {
+	color:#FFF;
+	background:rgba(0,0,0,0.2);
+}
+
