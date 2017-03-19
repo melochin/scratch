@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserSerivce;
 import scratch.support.RedirectAttrSupport;
@@ -68,6 +69,9 @@ public class RegisterController {
 		//新增用户
 		try{
 			service.add(user);
+		} catch(MailException e) {
+			ra.addFlashAttribute("error", "账号注册成功:" + e.getMessage());
+			return "redirect:/common/message";
 		} catch(Exception e) {
 			ra.addFlashAttribute("error", e.getMessage());
 			return "redirect:/user/register";

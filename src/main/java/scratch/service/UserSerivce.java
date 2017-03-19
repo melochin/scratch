@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import scratch.controller.RegisterController;
 import scratch.dao.UserDao;
+import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.support.CipherSupport;
 
@@ -16,6 +17,8 @@ import scratch.support.CipherSupport;
 public class UserSerivce {
 
 	private static Logger log = Logger.getLogger(UserSerivce.class);
+	
+	private static long TIME_OUT = 6000000;	//有效期100分钟
 	
 	@Autowired
 	private MailService mailService;
@@ -26,30 +29,49 @@ public class UserSerivce {
 	@Autowired
 	private UserDao dao;
 	
-	private static long TIME_OUT = 6000000;	//有效期100分钟
+	/**
+	 * 用户校验(登录)
+	 * @param user
+	 * @return
+	 */
+	public User verify(User user) {
+		return dao.getByNameAndPass(user);
+	}
 	
+	/**
+	 * 用户注册
+	 * 需要注意事务
+	 * @param user
+	 * @throws MailException 
+	 */
+	public void add(User user) throws MailException {
+		if(isExist(user)) throw new RuntimeException("账号已经存在");
+		dao.save(user);
+		//抛出checked异常，不影响事务
+		try{
+			sendActiviMail(user);	
+		} catch (Exception e) {
+			throw new MailException();
+		}
+		return;
+	}
+	
+	/**
+	 * 判断用户名是否被人使用
+	 * @param user
+	 * @return
+	 */
 	public boolean isExist(User user) {
 		return (dao.getByName(user) != null);
 	}
 	
+	/**
+	 * 通过用户id获取用户
+	 * @param userId
+	 * @return
+	 */
 	public User getById(long userId) {
 		return dao.getById(userId);
-	}
-	
-	public User check(User user) {
-		System.out.println(user.getPassword());
-		return dao.getByNameAndPass(user);
-	}
-	
-	public void add(User user) {
-		if(isExist(user)) throw new RuntimeException("账号已经存在");
-		dao.save(user);
-		try{
-			sendActiviMail(user);	
-		} catch (Exception e) {
-			throw e;
-		}
-		return;
 	}
 	
 	public boolean activi(String actiCode) {

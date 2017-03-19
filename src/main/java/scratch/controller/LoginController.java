@@ -41,7 +41,7 @@ public class LoginController {
 	public String login(@ModelAttribute("user") User user, @RequestParam(required=false) boolean remember, 
 			RedirectAttributes ra, HttpSession session, HttpServletResponse response) {
 		//Ğ£ÑéÕËºÅÃÜÂë
-		User curUser= service.check(user);
+		User curUser= service.verify(user);
 		if(curUser == null) {
 			ra.addFlashAttribute(user)
 			  .addFlashAttribute("error", "ÕËºÅ»òÃÜÂë´íÎó");

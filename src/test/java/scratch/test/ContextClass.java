@@ -10,8 +10,8 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration()
 //为什么两个文件要在一起？
-@ContextConfiguration({"file:WebContent/WEB-INF/applicationContext.xml",
-	"file:WebContent/WEB-INF/spring-servlet.xml"})
+@ContextConfiguration({"file:src/main/webapp/WEB-INF/applicationContext.xml",
+	"file:src/main/webapp/WEB-INF/spring-servlet.xml"})
 public class ContextClass {
 
 	@Autowired
