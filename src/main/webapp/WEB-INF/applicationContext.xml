@@ -81,7 +81,7 @@
     	</property>
 	</bean>
 	
-	<bean id="page" class="scratch.service.Page">
+	<bean id="page" class="scratch.service.Page" scope="request">
 		<property name="perPageItem" value="40" />
 	</bean>
 	
@@ -93,6 +93,5 @@
 	<context:component-scan base-package="scratch.service.user" />	
 	<context:component-scan base-package="scratch.support" />
 	<aop:aspectj-autoproxy/>
-	
 	
 </beans>

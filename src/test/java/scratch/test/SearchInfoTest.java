@@ -16,7 +16,7 @@ public class SearchInfoTest extends ContextClass{
 	@Test
 	public void listByTagTest() {
 		Page p = new Page(1, 10);
-		System.out.println(dao.listByTag(new Long(73) , p));
+		System.out.println(dao.listByTag(new Long(73) , new Long(12),p));
 		System.out.println(p.getTotalPage());
 	}
 }

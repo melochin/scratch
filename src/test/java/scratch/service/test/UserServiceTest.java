@@ -3,6 +3,7 @@ package scratch.service.test;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import scratch.exception.MailException;
@@ -22,10 +23,10 @@ public class UserServiceTest extends ContextClass{
 	 * @throws MailException 
 	 */
 	@Rollback
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Test
 	public void registerTest() throws MailException {
-		User user = new User("hejianok7878", "hejianok");
+		User user = new User("hejianok", "hejianok");
 		user.setEmail("398299262@qq.com");
 		userSerivce.add(user);
 	}

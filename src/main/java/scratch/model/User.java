@@ -21,7 +21,6 @@ public class User {
 	
 	@Column(name="username", length=30)
 	@NotNull(message="用户名不能为空")
-	@Size(min=6, max = 18, message="用户名长度不能少于6位且超过18位")
 	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="用户名只能以数字或字母组合，且长度不能少于6位超过18位")
 	private String username;
 	
