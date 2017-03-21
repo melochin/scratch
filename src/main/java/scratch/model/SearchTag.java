@@ -42,6 +42,12 @@ public class SearchTag implements Comparable<SearchTag>{
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+	
+	@JsonIgnore
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="type_id")
+	private SearchType type;
+	
 
 	public SearchTag() {}
 	
@@ -75,6 +81,14 @@ public class SearchTag implements Comparable<SearchTag>{
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public SearchType getType() {
+		return type;
+	}
+
+	public void setType(SearchType type) {
+		this.type = type;
 	}
 
 	public List<SearchKeyword> getSearchKeyWords() {

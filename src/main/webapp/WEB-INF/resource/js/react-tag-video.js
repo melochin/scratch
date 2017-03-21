@@ -80,11 +80,11 @@ var Tag = React.createClass({
 		$.ajax({
 			url:scratchUrl,
 			success: function() {
-				loadData();
-				$btn.attr("disabled", false);
+				loadData();				//！！！应该更改状态重新刷新REACT组件
+				$btn.attr("disabled", "false");
 			},
 			fail: function() {
-				$btn.attr("disabled", false);
+				$btn.attr("disabled", "false");
 			}
 		});
 	},

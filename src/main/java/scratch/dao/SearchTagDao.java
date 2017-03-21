@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import scratch.model.SearchTag;
 
 @Repository
-public class SearchTagDao extends BasicDao{
+public class SearchTagDao extends BasicDao<SearchTag>{
 
 	private static String QUERY_BY_USERID = "from SearchTag where user.userId = ?";
 	

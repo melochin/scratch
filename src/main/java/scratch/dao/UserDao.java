@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import scratch.model.User;
 
 @Repository
-public class UserDao extends BasicDao {
+public class UserDao extends BasicDao<User> {
 
 	private static final String GET_USER_BY_NAME = "from User where username = ?";
 	private static final String GET_USER_BY_ID = "from User where userId = ?";

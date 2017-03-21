@@ -15,9 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
+import scratch.model.SearchType;
 import scratch.model.User;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
+import scratch.service.SearchTypeService;
 import scratch.support.GlobalSession;
 
 @Controller
@@ -26,6 +28,9 @@ public class SearchWordController {
 
 	@Autowired
 	private SearchTagService tagService;
+	
+	@Autowired
+	private SearchTypeService typeServce;
 	
 	@Autowired
 	private SearchKeywordService wordService;
@@ -38,6 +43,8 @@ public class SearchWordController {
 	public ModelAndView tagForm(Model model, HttpSession session){
 		User user = (User) session.getAttribute(GlobalSession.USER);
 		List<SearchTag> list = tagService.listByUserId(user.getUserId());
+		List<SearchType> types = typeServce.list();
+		model.addAttribute("types", types);
 		return new ModelAndView("tag_form", "searchTags", list);
 	}
 	

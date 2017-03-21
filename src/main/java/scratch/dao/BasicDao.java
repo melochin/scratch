@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import scratch.service.Page;
 
-public class BasicDao {
+public class BasicDao<E> {
 
 	@Autowired
 	protected SessionFactory sessionFactory;
@@ -100,11 +100,18 @@ public class BasicDao {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T get(Class<T> clazz) {
+	public E get(Class<E> clazz) {
 		Session session = getCurrentSession();
 		Criteria criteria = session.createCriteria(clazz);
-		return (T) criteria.uniqueResult();
+		return (E) criteria.uniqueResult();
 	}
+	
+	public E get(Class<E> clzz, Serializable id) {
+		Session session = getCurrentSession();
+		return (E) session.get(clzz ,id);
+	}
+	
+	
 
 	/**
 	 * 获取多个对象

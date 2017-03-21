@@ -41,12 +41,6 @@ public class SearchKeywordService {
 	}
 	
 	public List<SearchKeyword> listByTagId(long tagId) {
-		if(tagId == 0){
-			//检索所有关键字
-			return searchKeywordDao.list(SearchKeyword.class);
-		}else{
-			//检索指定tag的关键字
-			return searchKeywordDao.listByTagId(tagId);
-		}
+		return searchKeywordDao.listByTagId(tagId);
 	}
 }

@@ -4,10 +4,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * 含有参数的URL
- * @author Admin
+ * 设置URL参数
+ * @author melochin
  *
  */
 public class ParameterURL{
@@ -21,40 +22,32 @@ public class ParameterURL{
 		parameters = new HashMap<String,String>();
 	}
 	
+	/**
+	 * 设置参数
+	 * @param parameter
+	 * @param value
+	 */
 	public void setParameter(String parameter, String value){
-		
-		if(templateUrl.indexOf(":"+parameter) == -1){
-			try {
-				throw new Exception(parameter + "参数不存在");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
 		parameters.put(parameter, value);
-		
 	}
 	
 	public URL getURL(){
 		URL u = null;
-		String url = templateUrl;
-		
+		StringBuilder url = new StringBuilder(templateUrl);
 		try{
-			for(String key:parameters.keySet()){
-				url = url.replace(":"+key, URLEncoder.encode(parameters.get(key),"utf-8"));
-			}
-			
-			if(url.indexOf("=:") > 0){
-				try {
-					throw new Exception("仍有参数未绑定");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			int i=0;
+			for(Entry<String, String> entry:parameters.entrySet()){
+				String key = URLEncoder.encode(entry.getKey(),"utf-8");
+				String value = URLEncoder.encode(entry.getValue(),"utf-8");
+				if(i == 0) {
+					url.append("?");
+				} else {
+					url.append("&");
 				}
+				url.append(key + "=" + value);
+				i++;
 			}
-			
-			u = new URL(url);
+			u = new URL(url.toString());
 			
 		}catch (Exception e) {
 			e.printStackTrace();

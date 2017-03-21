@@ -8,11 +8,20 @@
 <div class="row tool">
 	<div class="col-md-3">
 		<button class="btn btn-default btn-tag-show">+ 新增标签</button>
-		<div class="tag-new hidden">
+		<div class="tag-new hidden row">
 			<form class="form-tag-add" action="tag" method="post">
-				<input class="input-tag-new" name="tagName" placeholder="标签名"/>
-				<input class="btn btn-success btn-sm btn-tag-add" type="button" value="提交"/>
-				<input class="btn btn-default btn-sm btn-tag-cancel" type="button" value="取消"/>
+				<div class="row">
+					<input class="input-tag-new col-md-8" name="tagName" placeholder="标签名"/>
+					<select class="input-tag-new col-md-8" placeholder="类型" name="type.id">
+						<c:forEach var="type" items="${types }">
+						 	<option value="${type.id }">${type.name }</option>
+						</c:forEach>
+					</select>				
+				</div>
+				<div class="row">
+					<input class="btn btn-success btn-sm btn-tag-add" type="button" value="提交"/>
+					<input class="btn btn-default btn-sm btn-tag-cancel" type="button" value="取消"/>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -25,14 +34,15 @@
 		</c:if>
 				<li class="list-group-item tag-item">
 					<div class="row">
-						<div class="col-md-8 tag-name">
+						<div class="col-md-6 tag-name">
 							<form class="form-tag" action="tag">
 								<input class="input-tag col-md-12" name="tagName" 
 									value="${tag.tagName }" readonly="readonly"/>
 								<input class="input-tag-id" name="tagId" value="${tag.tagId }" type="hidden"/>
 							</form>
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-4">
+							<span style="font-size:10px">${tag.type.name }</span>
 							<b class="badge">${fn:length(tag.searchKeyWords) }</b>
 						</div>
 						<div class="col-md-1">

@@ -81,7 +81,7 @@
     	</property>
 	</bean>
 	
-	<bean id="page" class="scratch.service.Page" scope="request">
+	<bean id="page" class="scratch.service.Page" scope="prototype">
 		<property name="perPageItem" value="40" />
 	</bean>
 	
