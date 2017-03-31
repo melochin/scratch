@@ -23,7 +23,7 @@ import scratch.dao.SearchTagDao;
 import scratch.model.SearchInfo;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
-import scratch.model.SearchType;
+import scratch.model.dictionary.SearchType;
 import scratch.service.SearchKeywordService;
 
 @Transactional
@@ -67,8 +67,8 @@ public class ScratchBili {
 		//获取类型信息
 		SearchType type = tag.getType();
 		//开始构建url参数信息
-		if(type != null && !type.getId().equals(0)) {
-			param.put("tids_1", type.getId().toString());
+		if(type != null && !type.getCode().equals(0)) {
+			param.put("tids_1", type.getCode().toString());
 		}
 		param.put("order", "totalrank");
 		//拼接链接，搜索每个链接的数据

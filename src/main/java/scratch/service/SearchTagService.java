@@ -33,7 +33,7 @@ public class SearchTagService {
 	}
 	
 	public void delete(SearchTag tag) {
-		searchTagDao.remove(tag, tag.getTagId());
+		searchTagDao.remove(tag.getClass(), tag.getTagId());
 	}
 	
 }

@@ -65,5 +65,15 @@ public class SearchInfoService {
 		infoDao.updateStatus(searchId, status.ordinal());
 		return;
 	}
+
+
+	public Page getPage() {
+		return page;
+	}
+
+
+	public void setPage(Page page) {
+		this.page = page;
+	}
 	
 }

@@ -22,9 +22,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import junit.framework.Assert;
 import scratch.model.User;
-import scratch.service.UserSerivce;
+import scratch.service.UserService;
 
 
 public class ConfigurationTest extends ContextClass{
@@ -32,7 +31,7 @@ public class ConfigurationTest extends ContextClass{
 	private MockMvc mockMvc;
 	
 	@Autowired
-	private UserSerivce userSerivce;
+	private UserService userService;
 	
 	/**
 	 * load  Spring  MVC configuration through the  TestContext framework, 

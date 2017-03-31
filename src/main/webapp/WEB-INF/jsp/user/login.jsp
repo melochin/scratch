@@ -19,8 +19,9 @@
 					</label>
 				</div>
 				<div class="row">
-					<input class="btn btn-primary col-md-4" type="submit" value="登录"/>
-					<a class="btn btn-default col-md-4" href="<c:url value="/user/register"/>" >注册</a>
+					<input class="btn btn-primary col-md-3" type="submit" value="登录"/>
+					<a class="btn btn-default col-md-3" href="<c:url value="/user/register"/>" >注册</a>
+					<a href="<c:url value="/user/reset" />"><h6>忘记密码？</h6></a>
 				</div>
 			</form>
 		</section>

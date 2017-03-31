@@ -17,7 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import scratch.exception.PrivilegeException;
 import scratch.model.User;
-import scratch.service.UserSerivce;
+import scratch.service.UserService;
 import scratch.support.CipherSupport;
 import scratch.support.GlobalSession;
 
@@ -34,7 +34,7 @@ public class UserChecker {
 	private CipherSupport cipher;
 	
 	@Autowired
-	private UserSerivce userService;
+	private UserService userService;
 	
 	@Pointcut("execution(* scratch.controller.HomeController.mainPage(..)) || "
 			+ "execution(* scratch.controller.SearchInfoController.*(..)) || "
@@ -72,7 +72,7 @@ public class UserChecker {
 	//解决方法：在applicationContext中引入
 	//	<context:component-scan base-package="scratch.aspect" />
 	//	<aop:aspectj-autoproxy/>
-	@Around("execution(* scratch.service.UserSerivce.*(..))")
+	@Around("@annotation(scratch.aspect.PasswordEncode)")
 	public Object encodePswd(ProceedingJoinPoint pjp) throws Throwable {
 		System.out.println(pjp);
 		Object[] args = pjp.getArgs();

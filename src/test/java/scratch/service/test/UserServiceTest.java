@@ -1,5 +1,7 @@
 package scratch.service.test;
 
+import javax.mail.MessagingException;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -8,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import scratch.exception.MailException;
 import scratch.model.User;
-import scratch.service.UserSerivce;
+import scratch.service.UserService;
 import scratch.test.ContextClass;
 
 public class UserServiceTest extends ContextClass{
 
 	@Autowired
-	private UserSerivce userSerivce;
+	private UserService userService;
 	
 	/**
 	 * ”√ªß◊¢≤·≤‚ ‘
@@ -26,9 +28,17 @@ public class UserServiceTest extends ContextClass{
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Test
 	public void registerTest() throws MailException {
-		User user = new User("hejianok", "hejianok");
+		User user = new User("hejianok11", "hejianok");
 		user.setEmail("398299262@qq.com");
-		userSerivce.add(user);
+		userService.add(user);
+	}
+	
+	@Test
+	public void sendResetMailTest() throws MailException, MessagingException {
+		User user = new User("consequent", "consequqent");
+		user.setEmail("398299262@qq.com");
+		user.setUserId(new Long(111));
+		userService.sendRestMail(user);
 	}
 	
 }
