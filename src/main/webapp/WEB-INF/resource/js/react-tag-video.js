@@ -21,7 +21,65 @@ $("document").ready(function() {
 	}
 	
 	getScratchSetting($biliTypeSetting.get(0));
+	
+	ReactDOM.render(<Search  />, document.getElementById("search"));
 })
+//----------------------------------------------------------------------------------------------
+
+var Search = React.createClass({
+	
+	componentDidMount: function() {
+		var _this = this;
+		$(window).bind("popstate", function(){
+			console.debug(history.state);
+			_this.redenrVideos(history.state);
+		});
+		window.addEventListener("beforeload", function (event) {
+			 event.preventDefault();
+		});
+	},
+	getData: function(url) {
+		var _this = this;
+		var requestUrl = "ajax/" + url;
+		$.getJSON(requestUrl, function(data){
+			//History中插入URL，同时插入
+			history.pushState(data, document.title, url);
+			console.debug(data);
+			_this.redenrVideos(data);
+		});
+	},
+	redenrVideos: function(data) {
+		var $videos = $("#videos");
+		if($videos.length > 0) {
+			ReactDOM.render(<Videos data={data}/>, $videos.get(0));
+		}		
+	},
+	
+	formClick: function(e) {
+		//AJAX请求数据
+		var url = "search?" + $.param({keyword: encodeURIComponent($(this.refs.input).val(), "UTF-8")});
+		this.getData(url);
+		//阻止submit事件
+		e.preventDefault();
+	},
+	
+	render: function(){
+		return(
+			<div ref="box" onFocus={this.inputFocus} onBlur={this.inputBlur}>
+				<form ref="form" className="form-inline" onSubmit={this.formClick}>
+					<input ref="input" type="text" className="form-control" placeholder="Search" ></input>
+					<button type="submit" className="btn btn-default">
+						<span className="glyphicon glyphicon-search" ></span>
+					</button>
+				</form>
+			</div>
+		)
+	}
+	
+});
+
+
+
 
 //-----------------Scratch运行情况-----------------------------------------------------------------
 function getScratchSetting(element) {
@@ -287,7 +345,7 @@ var Videos = React.createClass({
 	render:function() {
 		var info = this.props.data;
 		var items = info.map(function(item, index) {
-			return <Video key={index} url={item.url} pic={item.pic} shortName={item.shortName} />
+			return <Video key={index} url={item.url} pic={item.picUrl} shortName={item.title} uploader={item.uploader} />
 		}); 
 		return (
 			<div className="row">
@@ -384,6 +442,11 @@ var Video = React.createClass({
 					</div>
 					<div className="video-desc">
 						<a href={this.props.url } >{this.props.shortName }</a>
+					</div>
+					<div className="row" >
+						<div className="col-md-12" >
+							<h6>上传者: {this.props.uploader}</h6>
+						</div>
 					</div>
 				</div>
 			</div>		

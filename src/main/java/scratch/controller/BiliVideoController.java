@@ -1,5 +1,7 @@
 package scratch.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,12 @@ public class BiliVideoController {
 	@Autowired
 	private VideoService videoService;
 	
-	@RequestMapping(name="/search", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path="/ajax/search", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody List<Video> query(@RequestParam("keyword") String keyword, 
 			@RequestParam(name="type", required=false) Long type,
 			@RequestParam(name="order", required=false) String order,
-			@RequestParam(name="page", defaultValue="1") Integer page) {
+			@RequestParam(name="page", defaultValue="1") Integer page) throws UnsupportedEncodingException {
+		keyword = URLDecoder.decode(keyword, "UTF-8");
 		return videoService.list(keyword, type, order, page);
 	}
 	

@@ -17,10 +17,15 @@
 		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav.jsp"></put-attribute>
 	</definition>
 	
-	<definition name="index" extends="template-with-nav">
+	<definition name="index" extends="template">
+		<put-attribute name="title" value="home" />
+		<put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
+	</definition>
+	
+<!-- 	<definition name="index" extends="template-with-nav">
 		<put-attribute name="title" value="home" />
 		<put-attribute name="content" value="/WEB-INF/jsp/tag-videos.jsp"/>
-	</definition>
+	</definition> -->
 	
 	<definition name="common_message" extends="template">
 		<put-attribute name="title" value="message" />
