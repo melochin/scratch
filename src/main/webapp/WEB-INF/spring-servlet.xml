@@ -10,6 +10,7 @@
 			http://www.springframework.org/schema/aop 
 			http://www.springframework.org/schema/aop/spring-aop.xsd 
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
 	<mvc:annotation-driven>
 		<!-- 消息转换器 -->
 		<mvc:message-converters register-defaults="true">
@@ -18,7 +19,8 @@
 			</bean>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
-	<mvc:resources location="WEB-INF/resource/" mapping="/**" />
+	
+	<mvc:resources location="/resource/" mapping="/resource/**" /> 
 	
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" />
 	

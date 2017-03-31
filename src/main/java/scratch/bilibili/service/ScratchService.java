@@ -47,7 +47,7 @@ public class ScratchService  {
 	
 	private boolean start = false;
 	
-	@Scheduled(cron="0/50 * *  * * ? ")
+//	@Scheduled(cron="50/60 * *  * * ? ")
 	public void scratchVideo() {
 		if(isRun()) return;
 		exec = Executors.newFixedThreadPool(1000);

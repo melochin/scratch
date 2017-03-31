@@ -118,5 +118,12 @@ public class Video {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
+
+	@Override
+	public String toString() {
+		return "Video [avid=" + avid + ", type=" + type + ", title=" + title + ", url=" + url + ", picUrl=" + picUrl
+				+ ", uploader=" + uploader + ", uploaderId=" + uploaderId + ", createDate=" + createDate
+				+ ", updateDate=" + updateDate + "]";
+	}
 	
 }

@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import scratch.bilibili.dao.VideoDao;
-import scratch.bilibili.model.Video;
+import scratch.service.Page;
 import scratch.test.ContextClass;
 
 public class VideoDaoTest extends ContextClass{
@@ -22,6 +22,11 @@ public class VideoDaoTest extends ContextClass{
 	@Test
 	public void listCountByTypeTest() {
 		System.out.println(videoDao.listCountByType());
+	}
+	
+	@Test
+	public void queryTest() {
+		System.out.println(videoDao.list("บน", new Long(146), VideoDao.ORDER_DATE, new Page(1)));;
 	}
 	
 }

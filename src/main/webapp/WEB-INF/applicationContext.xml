@@ -138,9 +138,7 @@
    		</property>
    </bean>
    
-   <task:scheduler id="myScheduler" pool-size="5"/>
-   <task:scheduled-tasks scheduler="myScheduler">
-   		<task:scheduled ref="scratchBilibiliService" method="scratchVideo" trigger=""/>
-   </task:scheduled-tasks>
+<!--    <task:scheduler id="myScheduler" pool-size="5"/>
+   <task:annotation-driven scheduler="myScheduler"/> -->
    
 </beans>
