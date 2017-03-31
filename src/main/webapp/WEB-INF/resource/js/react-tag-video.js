@@ -1,7 +1,10 @@
 $("document").ready(function() {
 	
+	var tag = getUrlParameter("tag");
+	console.debug("tag" + tag);
 	var $videoList = $("#video_list");
 	var $tagWithVideoList = $("#tag_video_list");
+	var $biliTypeSetting = $("#bili_type_setting");
 	
 	console.debug("video_list:" + $videoList.length);
 	console.debug("tag_video_list:" + $tagWithVideoList.length);
@@ -9,7 +12,7 @@ $("document").ready(function() {
 	//判断DOM是否存在，存在即渲染对应组件
 	if($videoList.length > 0 ) {
 		console.debug("video_list:存在，开始渲染组件");
-		getVideoList($videoList.get(0), 0);
+		getVideoList($videoList.get(0), tag);
 	}
 	
 	if($tagWithVideoList.length > 0 ) {
@@ -17,8 +20,174 @@ $("document").ready(function() {
 		getTagWithVideoList($tagWithVideoList.get(0));
 	}
 	
+	getScratchSetting($biliTypeSetting.get(0));
 })
 
+//-----------------Scratch运行情况-----------------------------------------------------------------
+function getScratchSetting(element) {
+	var url = "../bili/ajax/getVideoTypesCount";
+		$.getJSON(url, function(data) {
+			console.log(data);
+			ReactDOM.render(<ScratchProgressList types={data.types} currentCounts={data.currentCount} />, element);
+		});			
+}
+
+var ScratchProgressList = React.createClass({
+	
+	//初始化状态
+	getInitialState: function() {
+		
+		this.timer = null;
+		this.info = "1";
+		return {isRun:false, types:this.props.types,
+				currentCounts:this.props.currentCounts, result:"" }
+	},
+	componentDidMount: function() {
+		this.ajaxRunStatus(true);
+	},
+	
+	ajaxRunStatus:function(init) {
+		//发送AJAX请求，判断是否处于运行状态
+		var url = "../bili/ajax/isRun";
+		var _this = this;
+		$.getJSON(url, function(data) {
+			console.log(data);
+			if(data.run == false && init != true) {
+				//设置运行结果
+				var record = data.record;
+				var message = (record.error != null ?
+						"异常：" + record.error : 
+						"共抓取数据:" + record.scratchCount + "项" + 
+						";耗时" + (record.endTime - record.startTime)/1000 + "秒");
+				_this.setState({result : message});
+			}
+			_this.setRunStatus(data.run);
+		});	
+	},
+	refreshRun:function() {
+		this.ajaxRunStatus(false);
+		var url = "../bili/ajax/getVideoTypesCount";
+		var _this = this;
+		$.getJSON(url, function(data) {
+			console.log(data);
+			_this.setState({types: data.types, currentCounts: data.currentCount})
+		});
+	},
+	setRunStatus: function(status) {
+		if(this.state.isRun == status) return;
+		//如果设置成运行中
+		//则要定时刷新运行状态和数量
+		if(status == true) {
+			this.timer = setInterval(this.refreshRun, 5000);
+		} else {
+			clearInterval(this.timer);
+		}
+		this.setState({isRun:status});
+	},
+	btnClick: function(event) {
+		if(this.state.isRun == false) {
+			//启动爬虫服务
+			var url = "../bili/ajax/startService";
+			$.getJSON(url);
+			console.log("执行");
+			this.setRunStatus(true);
+		} else {
+			//停止运行
+			this.setRunStatus(false);
+		}
+	},
+	render:function() {
+		var types = this.state.types;
+		var currentCounts = this.state.currentCounts;
+		var items = types.map(function(type, index){
+			return(
+				<div className="row">
+					<div className="row">
+						<div className="col-md-2">
+							<h3>{type.name}</h3>
+						</div>
+					</div>
+					<ScratchProgressChildList types={type.childTypes} 
+						currentCounts={currentCounts} />
+				</div>
+			)
+		});
+		var btn;
+		if(this.state.isRun) {
+			btn = <button className="btn btn-primary">正在运行</button>
+		} else {
+			btn = <button className="btn btn-default" onClick={this.btnClick} >开始运行</button>
+		}
+		return (
+			<div style={{margin: "10px"}}>
+				<div className="row">
+					<div className="col-md-2">
+						{btn}
+					</div>
+					<div className="col-md-8">
+						<span>{this.state.result}</span>
+					</div>
+				</div>
+				{items}
+			</div>
+		)
+	}
+})
+
+var ScratchProgressChildList = React.createClass({
+	render:function() {
+		var currentCounts = this.props.currentCounts;
+		var types = this.props.types;
+		var items = types.map(function(type, index) {
+			var cc = currentCounts[type.code];	//获取已经抓取的数据
+			var count = type.videoCount;
+			var percent = cc / count * 100;
+			return <ScratchProgress type={type.name} percent={percent}/>
+		});
+		return (
+			<div>
+				{items}
+			</div>
+		)
+	}
+})
+
+var ScratchProgress = React.createClass({
+	render:function() {
+		var style = {width: this.props.percent + "%"};
+		return(
+			<div className="row">
+				<div className="col-md-2">
+					<span>{this.props.type}</span>
+				</div>
+				<div className="col-md-8">
+					<div className="progress" >
+					  <div className="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style={style}>
+					    <span className="sr-only">{this.props.percent + "%"} Complete</span>
+					  </div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+})
+
+
+//----------------------------------------------------------------------------------------------
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
 //含有video和page信息
 //数据请求封装在组件中
 function getVideoList(element, tag) {
@@ -89,14 +258,19 @@ var Tag = React.createClass({
 		});
 	},
 	
+	jumpEvent: function() {
+		window.location.href = "info?tag=" + this.props.tag.tagId;
+	},
+	
 	render:function() {
 		return (
 			<div className="row">
-				<div className="col-md-10">
+				<div className="col-md-9">
 					<h1>{this.props.tag.tagName}</h1>
 				</div>
-				<div className="col-md-2"> 
+				<div className="col-md-3"> 
 					<button className="btn btn-default" onClick={this.clickEvent}>更新</button>
+					<button className="btn btn-default" onClick={this.jumpEvent}>更多</button>
 				</div>
 			</div>	
 		)

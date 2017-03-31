@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:aop="http://www.springframework.org/schema/aop"
-		xmlns:context="http://www.springframework.org/schema/context"
-		xmlns:mvc="http://www.springframework.org/schema/mvc"
-		xmlns:tx="http://www.springframework.org/schema/tx"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans 
-			http://www.springframework.org/schema/beans/spring-beans.xsd 
-			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd  
-			http://www.springframework.org/schema/aop 
-			http://www.springframework.org/schema/aop/spring-aop.xsd 
-			http://www.springframework.org/schema/tx 
-			http://www.springframework.org/schema/tx/spring-tx.xsd 
-			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-	
-	<!-- 读取配置文件 -->
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+<!-- 	<import resource="classpath:mail.properties;classpath:jdbc.properties"/>
+ -->	
+ 	<!-- 读取配置文件 -->
 	<context:property-placeholder location="classpath:mail.properties,classpath:jdbc.properties"/>
 	
+ 	<util:properties id="propertiesReader" location="classpath:jdbc.properties" />
 	<!-- 数据源 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
 		<property name="driverClassName">
@@ -40,6 +44,7 @@
 		<property name="packagesToScan">
 			<list>
 				<value>scratch.model</value>
+				<value>scratch.bilibili.model</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -81,7 +86,8 @@
     	</property>
 	</bean>
 	
-	<bean id="page" class="scratch.service.Page" scope="prototype">
+	<bean id="page" class="scratch.service.Page" scope="request">
+		<aop:scoped-proxy/>
 		<property name="perPageItem" value="40" />
 	</bean>
 	
@@ -92,6 +98,49 @@
 	<context:component-scan base-package="scratch.service.specific"/>
 	<context:component-scan base-package="scratch.service.user" />	
 	<context:component-scan base-package="scratch.support" />
-	<aop:aspectj-autoproxy/>
 	
+	<!-- 自动注册bilibili相关Bean -->
+	<context:component-scan base-package="scratch.bilibili.dao" />
+	<context:component-scan base-package="scratch.bilibili.service" />
+	
+	
+	<aop:aspectj-autoproxy/>
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">  
+        <property name="velocityProperties">     
+            <props>     
+                <prop key="resource.loader">class</prop>     
+                <prop key="class.resource.loader.class">     
+                    org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader     
+                </prop>     
+                <prop key="velocimacro.library"></prop>     
+            </props>     
+        </property>     
+   </bean>  
+   
+   <bean class="scratch.service.MailService">
+   		<property name="templates">
+   			<list>
+   				<value>register</value>
+   				<value>resetpwd</value>
+   			</list>
+   		</property>
+   		<property name="templatePaths">
+   			<list>
+   				<value>mail_registert.html</value>
+   				<value>mail_resetpwd.html</value>
+   			</list>
+   		</property>
+   		<property name="subjects">
+   			<list>
+   				<value>用户注册</value>
+   				<value>密码重置</value>
+   			</list>
+   		</property>
+   </bean>
+   
+   <task:scheduler id="myScheduler" pool-size="5"/>
+   <task:scheduled-tasks scheduler="myScheduler">
+   		<task:scheduled ref="scratchBilibiliService" method="scratchVideo" trigger=""/>
+   </task:scheduled-tasks>
+   
 </beans>

@@ -1,6 +1,7 @@
 package scratch.controller;
 
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.exception.MailException;
 import scratch.model.User;
-import scratch.service.UserSerivce;
+import scratch.service.UserService;
 import scratch.support.RedirectAttrSupport;
 
 @Controller
@@ -28,7 +29,7 @@ import scratch.support.RedirectAttrSupport;
 public class RegisterController {
 	
 	@Autowired
-	private UserSerivce service;
+	private UserService service;
 	
 	@ModelAttribute
 	public void addUser(Model model) {
@@ -81,7 +82,7 @@ public class RegisterController {
 	}
 	
 	@RequestMapping(path="/register/sendMail")
-	public String sendMail(HttpSession session, Model model) {
+	public String sendMail(HttpSession session, Model model) throws MailException, MessagingException {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
 			model.addAttribute("error", "ÎÞÐ§Á´½Ó");

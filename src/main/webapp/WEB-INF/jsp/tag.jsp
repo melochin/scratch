@@ -12,9 +12,9 @@
 			<form class="form-tag-add" action="tag" method="post">
 				<div class="row">
 					<input class="input-tag-new col-md-8" name="tagName" placeholder="标签名"/>
-					<select class="input-tag-new col-md-8" placeholder="类型" name="type.id">
+					<select class="input-tag-new col-md-8" placeholder="类型" name="type.code">
 						<c:forEach var="type" items="${types }">
-						 	<option value="${type.id }">${type.name }</option>
+						 	<option value="${type.code }">${type.name }</option>
 						</c:forEach>
 					</select>				
 				</div>

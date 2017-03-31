@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.model.User;
-import scratch.service.UserSerivce;
+import scratch.service.UserService;
 import scratch.support.CookieSupport;
 import scratch.support.GlobalSession;
+import scratch.support.SessionSupport;
 
 @Controller
 @RequestMapping("/user")
 public class LoginController {
 
 	@Autowired
-	private UserSerivce service;
+	private UserService service;
 	
 	
 	/**
@@ -65,14 +66,10 @@ public class LoginController {
 	public String logout(HttpSession session, Model model) {
 		//session中存在用户，则移除信息顺利登出
 		//如果不存在，则无需移除信息
-		if(session.getAttribute(GlobalSession.USER) == null) {
-			model.addAttribute("error", "请先登录");
-		} else {
-			session.removeAttribute(GlobalSession.USER);
-			model.addAttribute("success", "登出成功");	
-		}
-		
+		SessionSupport.removeUser();
+		model.addAttribute("success", "登出成功");	
 		return "common_message";
 	}
+	
 	
 }

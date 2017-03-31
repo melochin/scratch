@@ -37,6 +37,16 @@
 		<put-attribute name="content" value="/WEB-INF/jsp/user/register.jsp"/>
 	</definition>
 	
+	<definition name="user_reset" extends="template">
+		<put-attribute name="title" value="reset-password"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/user/reset.jsp"/>
+	</definition>
+	
+	<definition name="user_reset_pwd" extends="template">
+		<put-attribute name="title" value="reset-password"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/user/reset-pwd.jsp"/>
+	</definition>
+	
 	<!-- 关键字维护 -->
 	<definition name="tag_form" extends="template-with-nav">
 		<put-attribute name="title" value="tag" />
@@ -47,5 +57,11 @@
 		<put-attribute name="title" value="video" />
 		<put-attribute name="content" value="/WEB-INF/jsp/videos.jsp" />
 	</definition>
+	
+	<definition name="bili_setting" extends="template-with-nav">
+		<put-attribute name="title" value="setting" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bili/scratch_setting.jsp" />
+	</definition>
+	
 	
 </tiles-definitions>

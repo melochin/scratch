@@ -44,9 +44,9 @@ $(document).ready(function(){
 
 //------------------------表单校验--------------------------------------
 //form needs class "form-valid"
-//input needs attr "jerror" setting error message
+//input needs attr "jerror"   setting error message
 //		 	  attr "jpattern" setting Regex
-
+//			  attr "jsameas"  setting input name that value is equal
 //校验事件
 function validEvent(input) {
 	//获取正则表达式

@@ -8,14 +8,16 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import scratch.model.SearchInfo;
 import scratch.model.SearchTag;
 import scratch.model.User;
 import scratch.service.Page;
 
+@Transactional
 @Repository
-public class SearchInfoDao extends BasicDao{
+public class SearchInfoDao extends BasicDao<SearchInfo>{
 	
 	public static String QUERY_WITH_URL = "from SearchInfo where url = ? ";
 	public static String QUERY_WITH_STATUS = "from SearchInfo where status in :status order by pubDate desc";

@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
-import scratch.model.SearchType;
 import scratch.model.User;
+import scratch.model.dictionary.SearchType;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
 import scratch.service.SearchTypeService;

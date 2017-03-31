@@ -8,12 +8,13 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import scratch.service.Page;
 
+@Transactional
 public class BasicDao<E> {
 
 	@Autowired
@@ -31,7 +32,7 @@ public class BasicDao<E> {
 	 * 新增对象
 	 * @param o
 	 */
-	public void save(Object o) {
+	public void save(E o) {
 		Session session = getCurrentSession();
 		session.save(o);
 	}
@@ -40,16 +41,52 @@ public class BasicDao<E> {
 	 * 更新对象
 	 * @param o
 	 */
-	public void update(Object o){
+	public void update(E o){
 		Session session = getCurrentSession();
 		session.update(o);
 	}
 	
-	public void saveOrUpdate(Object o) {
+	/**
+	 * 更新对象：根据主键
+	 * @param o
+	 * @param id
+	 */
+	public void update(E o, Serializable id) {
+		if(id == null) {
+			update(o);
+			return;
+		}
+		try {
+			E dbObject = getNewDBObject(o, id, o.getClass());
+			update(dbObject);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * 新增/更新对象
+	 * @param o
+	 */
+	public void saveOrUpdate(E o) {
 		getCurrentSession().saveOrUpdate(o);
 	}
 	
-	public void saveOrUpdate(Object o, Serializable id) {
+	public void saveOrUpdate(List<E> list) {
+		Session session = getCurrentSession();
+		for(E o : list) {
+			session.saveOrUpdate(o);
+		}
+	}
+	
+	/**
+	 * 新增/更新对象
+	 * @param o
+	 * @param id
+	 */
+	public void saveOrUpdate(E o, Serializable id) {
 		Session session = getCurrentSession();
 		//Id如果不存在，则认为是新的对象
 		if(id == null) {
@@ -57,17 +94,22 @@ public class BasicDao<E> {
 			return;
 		}
 		//Id存在，读取数据库中的对象
-		Object dbObject = session.get(o.getClass(), id);
-		if(dbObject != null) {
-			try {
-				updateObject(o, dbObject, o.getClass());
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		} else {
-			dbObject = o;
+		Object dbObject = null;
+		try {
+			dbObject = getNewDBObject(o, id, o.getClass());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 		session.saveOrUpdate(dbObject);
+	}
+	
+	private E getNewDBObject(E newObject, Serializable id, Class<?> clazz) throws IllegalArgumentException, IllegalAccessException {
+		//获得数据库中的对象
+		@SuppressWarnings("unchecked")
+		E dbObject = (E) getCurrentSession().get(newObject.getClass(), id);
+		if(dbObject == null) return newObject;
+		updateObject(newObject, dbObject, clazz);
+		return dbObject;
 	}
 	
 	private void updateObject(Object newObject, Object oldObject, Class<?> clazz) throws IllegalArgumentException, IllegalAccessException {
@@ -82,13 +124,24 @@ public class BasicDao<E> {
 		}
 	}
 	
-	public void remove(Object o) {
+	/**
+	 * 删除对象
+	 * @param o
+	 */
+	public void remove(E o) {
 		getCurrentSession().delete(o);
 		return;
 	}
 	
-	public void remove(Object o, Long id) {
-		o = getCurrentSession().get(o.getClass(), id);
+	/**
+	 * 删除对象：根据ID
+	 * @param o
+	 * @param id
+	 */
+	@SuppressWarnings("unchecked")
+	public void remove(Class<?> clzz, Serializable id) {
+		E o = (E) getCurrentSession().get(clzz, id);
+		if(o == null) return;
 		remove(o);
 		return;
 	}
@@ -106,11 +159,11 @@ public class BasicDao<E> {
 		return (E) criteria.uniqueResult();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public E get(Class<E> clzz, Serializable id) {
 		Session session = getCurrentSession();
 		return (E) session.get(clzz ,id);
 	}
-	
 	
 
 	/**
