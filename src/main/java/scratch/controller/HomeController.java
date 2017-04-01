@@ -13,7 +13,7 @@ public class HomeController {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
+	@RequestMapping(value={"/", "/search"}, method=RequestMethod.GET)
 	public ModelAndView mainPage(){
 		return new ModelAndView("index");
 	}

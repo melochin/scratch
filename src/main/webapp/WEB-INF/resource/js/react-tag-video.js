@@ -25,22 +25,45 @@ $("document").ready(function() {
 	ReactDOM.render(<Search  />, document.getElementById("search"));
 })
 //----------------------------------------------------------------------------------------------
+var Filter = React.createClass({
+	click: function(e) {
+		this.props.filter(e, {order: "createDate"});
+	},
+	render: function() {
+		return(
+			<div className="row">
+				<h5>
+					<label>排序：</label>
+					<a onClick={this.click}>上传时间排序</a>
+				</h5>
+			</div>
+		)
+	}
+});
 
+/**
+ * Search组件
+ * 1.提供视频搜索功能
+ */
 var Search = React.createClass({
-	
+	getInitialState: function() {
+		this.params = {keyword:"", order:""};
+		return null;
+	},
 	componentDidMount: function() {
 		var _this = this;
 		$(window).bind("popstate", function(){
 			console.debug(history.state);
 			_this.redenrVideos(history.state);
 		});
-		window.addEventListener("beforeload", function (event) {
-			 event.preventDefault();
-		});
+		if(history.state != null) {
+			_this.redenrVideos(history.state);	
+		}
 	},
-	getData: function(url) {
+	getData: function() {
 		var _this = this;
-		var requestUrl = "ajax/" + url;
+		var url = "search?" + $.param(this.params);	//显示的URL
+		var requestUrl = "ajax/" + url;				//真正请求的URL
 		$.getJSON(requestUrl, function(data){
 			//History中插入URL，同时插入
 			history.pushState(data, document.title, url);
@@ -51,16 +74,30 @@ var Search = React.createClass({
 	redenrVideos: function(data) {
 		var $videos = $("#videos");
 		if($videos.length > 0) {
-			ReactDOM.render(<Videos data={data}/>, $videos.get(0));
+			ReactDOM.render(
+				<div>
+					<Filter filter={this.formClick}/> 
+					<Videos data={data}/>
+				</div>, 
+			$videos.get(0));
 		}		
 	},
-	
-	formClick: function(e) {
-		//AJAX请求数据
-		var url = "search?" + $.param({keyword: encodeURIComponent($(this.refs.input).val(), "UTF-8")});
-		this.getData(url);
+	formClick: function(e, map) {
+		console.log(map);
 		//阻止submit事件
 		e.preventDefault();
+		console.log(this.params);
+		//设置关键字
+		var keyword = encodeURIComponent($(this.refs.input).val(), "UTF-8");
+		this.params["keyword"] = keyword;
+		var _this = this;
+		if(map != null) {
+			if(map["order"] != null) {
+				_this.params["order"] = map["order"];
+			}
+		}
+		//AJAX请求数据
+		this.getData();
 	},
 	
 	render: function(){
@@ -344,9 +381,12 @@ var Tag = React.createClass({
 var Videos = React.createClass({
 	render:function() {
 		var info = this.props.data;
-		var items = info.map(function(item, index) {
-			return <Video key={index} url={item.url} pic={item.picUrl} shortName={item.title} uploader={item.uploader} />
-		}); 
+		var items = null;
+		if(info != null) {
+			items = info.map(function(item, index) {
+				return <Video key={index} url={item.url} pic={item.picUrl} shortName={item.title} uploader={item.uploader} />
+			}); 
+		}
 		return (
 			<div className="row">
 				{items}
