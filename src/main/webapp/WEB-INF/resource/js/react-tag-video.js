@@ -23,7 +23,48 @@ $("document").ready(function() {
 	getScratchSetting($biliTypeSetting.get(0));
 	
 	ReactDOM.render(<Search  />, document.getElementById("search"));
+
+	
+	//可能被绑定过了
+	$(".tag").find("a").unbind('click').click(function() {
+		var url = "ajax/follow/videos?tag=" + $(this).attr("id");  
+		$.getJSON(url, function(data){
+			console.log(data);
+			ReactDOM.render(<Videos  data={data}/>, document.getElementById("videos"));
+		});
+	})
+	
+	/*首页主动获取数据*/
+	var $items = $(".video-section .videos-type");
+	if($items.length > 0) {
+		$items.each(function(){
+			var videoType = $(this).attr("id");
+			var params = {keyword:"", type : videoType  , order : "play"};
+			var url = "ajax/search?" + $.param(params);	//显示的URL
+			console.debug(url);
+			var _this = this;
+			$.getJSON(url, function(data){
+				console.debug(data);
+				ReactDOM.render(<Videos  data={data} max={"8"} cols={"4"}/>, _this);
+			});
+		});
+	}
+
+	AJAX.getVideos({keyword:"aaa"}, function(data){
+		
+	});
 })
+
+var AJAX = class {
+	static getVideos(params, callback){
+		var url = "ajax/search?" + $.param(params);	//显示的URL	
+		console.debug(url);
+		$.getJSON(url, function(data){
+			callback(data);
+		});
+	}
+};
+
 //----------------------------------------------------------------------------------------------
 var Filter = React.createClass({
 	click: function(e) {
@@ -376,20 +417,44 @@ var Tag = React.createClass({
 
 /**
  * 渲染复数的Video组件
- * 1.不具有动态读取数据的功能
+ * 不具有动态读取数据的功能
+ * data:传入的JSON数据
+ * cols:指定列个数，不传入默认为6
+ * max:最大显示数，不指定以传入的数据个数为准
  */
 var Videos = React.createClass({
 	render:function() {
 		var info = this.props.data;
-		var items = null;
+		
+		var colNum = 6;
+		if(this.props.cols != null) {
+			colNum = this.props.cols;
+		}
+		var colWidth = 12 / colNum;
+		
+		//决定显示个数
+		var length = info.length;
+		if(this.props.max != null) {
+			if(this.props.max < info.length) {
+				length = this.props.max;
+			}
+		}
+		
+		var itemRows = [];
 		if(info != null) {
-			items = info.map(function(item, index) {
-				return <Video key={index} url={item.url} pic={item.picUrl} shortName={item.title} uploader={item.uploader} />
-			}); 
+			for(var i=0; i<length;) {
+				var items = [];
+				for(var k=0; k<colNum && i<length; k++, i++) {
+					var item = info[i];
+					items[k] = <Video key={i} url={item.url} pic={item.picUrl} 
+							shortName={item.title} uploader={item.uploader} width={colWidth} play={item.play}/>
+				}
+				itemRows.push(<div className="row">{items}</div>);
+			}
 		}
 		return (
-			<div className="row">
-				{items}
+			<div>
+				{itemRows}
 			</div>	
 		)
 	}
@@ -472,20 +537,35 @@ var VideoList = React.createClass({
  */
 var Video = React.createClass({
 	render:function() {
+		var width = this.props.width;
+		if(width == null) {
+			width = "col-md-2";
+		} else {
+			width = "col-md-" + width;
+		}
+		var play = this.props.play;
+		if(play > 10000) {
+			play = parseFloat(play /10000).toFixed(1) + "万";
+		}
 		return(
-			<div className="col-sm-6 col-md-2">
+			<div className={width}>
 				<div className="thumbnail">
 					<div className="video-img" >
 						<a href={this.props.url }>
-							<img src={this.props.pic } />
+							<img src={this.props.pic } className="img-rounded"/>
 						</a>
 					</div>
 					<div className="video-desc">
 						<a href={this.props.url } >{this.props.shortName }</a>
 					</div>
 					<div className="row" >
-						<div className="col-md-12" >
+						<div className="col-md-6" >
 							<h6>上传者: {this.props.uploader}</h6>
+						</div>
+						<div className="col-md-4 col-md-offset-2">
+							<h6>
+								<span className="glyphicon glyphicon-play-circle">{play}</span>
+							</h6>
 						</div>
 					</div>
 				</div>
