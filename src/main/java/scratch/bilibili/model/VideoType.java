@@ -18,7 +18,7 @@ import scratch.model.dictionary.Dictionary;
 @Table(name="bili_video_type")		//指定表名，用于映射
 public class VideoType extends Dictionary {
 
-	@OneToMany(mappedBy="parentType", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="parentType", fetch=FetchType.LAZY)
 	private List<VideoType> childTypes;
 
 	@JsonIgnore

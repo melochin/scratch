@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import scratch.bilibili.model.VideoType;
 import scratch.model.dictionary.SearchType;
 
 
@@ -48,7 +49,7 @@ public class SearchTag implements Comparable<SearchTag>{
 	@JsonIgnore
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="type_id")
-	private SearchType type;
+	private VideoType type;
 	
 
 	public SearchTag() {}
@@ -85,11 +86,11 @@ public class SearchTag implements Comparable<SearchTag>{
 		this.user = user;
 	}
 
-	public SearchType getType() {
+	public VideoType getType() {
 		return type;
 	}
 
-	public void setType(SearchType type) {
+	public void setType(VideoType type) {
 		this.type = type;
 	}
 

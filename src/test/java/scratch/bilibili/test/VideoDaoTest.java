@@ -26,7 +26,7 @@ public class VideoDaoTest extends ContextClass{
 	
 	@Test
 	public void queryTest() {
-		System.out.println(videoDao.list("บน", new Long(146), VideoDao.ORDER_DATE, new Page(1)));;
+		System.out.println(videoDao.list("11 22", null, VideoDao.ORDER_DATE, new Page(1)));;
 	}
 	
 }

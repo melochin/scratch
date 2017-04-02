@@ -31,7 +31,7 @@ public class ScratchService  {
 	private static String VIDEO_API = "http://api.bilibili.com/archive_rank/getarchiverankbypartion?"
 			+ "callback=callback&type=jsonp"; //&tid=82&pn=7000
 	
-	private static int VIDEO_PAGE_SIZE = 1;
+	private static int VIDEO_PAGE_SIZE = 1000;
 	
 	@Autowired
 	private VideoTypeDao typeDao;
@@ -47,7 +47,7 @@ public class ScratchService  {
 	
 	private boolean start = false;
 	
-//	@Scheduled(cron="50/60 * *  * * ? ")
+	//@Scheduled(cron="50/60 * *  * * ? ")
 	public void scratchVideo() {
 		if(isRun()) return;
 		exec = Executors.newFixedThreadPool(1000);

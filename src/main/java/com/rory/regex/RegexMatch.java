@@ -28,6 +28,10 @@ public class RegexMatch extends RegexBase{
 		this(c.toHtml(url, cookie));
 	}
 	
+	public RegexMatch(URL url, String method, Map<String, String> param) {
+		this(c.toHtml(url, method, param, null));
+	}
+	
 	private RegexMatch(List<String> resultList){
 		this(resultList.toString(), resultList);
 	}

@@ -3,10 +3,14 @@ package com.rory.regex;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -15,6 +19,10 @@ import java.util.Map;
  *
  */
 public class Connection {
+
+	public static final String POST = "post";
+	
+	public static final String GET = "get";
 
 	public String toHtml(String url){
 		String html = null;
@@ -32,14 +40,17 @@ public class Connection {
 		return toHtml(url, null);
 	}
 	
-	public String toHtml(URL url, Map<String,String> cookie){
+	public String toHtml(URL url, String method, Map<String, String> params, Map<String, String> cookie) {
 		URLConnection uc = null;
 		InputStreamReader input = null;
 		String temp = null;
 		StringBuffer html = null;
-		
 		try {
-			uc = connect(url, cookie);
+			if(method != null && method.equals(POST)) {
+				uc = connectPost(url, params, cookie);
+			} else {
+				uc = connect(url, cookie);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Delay Internet connection, get html text failed");
@@ -62,6 +73,10 @@ public class Connection {
 		return html.toString();
 	}
 	
+	public String toHtml(URL url, Map<String,String> cookie){
+		return toHtml(url, GET, null, cookie);
+	}
+	
 	public URLConnection connect(String url) throws IOException{
 		return connect(url,null);
 	}
@@ -77,7 +92,6 @@ public class Connection {
 	
 	public URLConnection connect(URL url, Map<String,String> cookie) throws IOException{
 		URLConnection uc = url.openConnection();
-		
 		if(cookie == null){
 			return uc;
 		}
@@ -87,6 +101,23 @@ public class Connection {
 		}
 		return uc;	
 	}
+	
+	public URLConnection connectPost(URL url, Map<String,String> params, Map<String,String> cookie) throws IOException {
+		URLConnection uc = connect(url, cookie);
+		uc.setDoOutput(true);  
+		uc.setDoInput(true); 
+		PrintWriter  out = new PrintWriter(uc.getOutputStream());  
+		String param = "";
+		for(Entry<String, String> entry : params.entrySet()) {
+			param += (param.isEmpty() ? "" : "&") + entry.getKey() + "=" + entry.getValue();
+		}
+		param = URLEncoder.encode(param, "UTF-8");
+		System.out.println(param);
+        out.print(param);  
+        out.flush();  
+		return uc;
+	}
+
 	
 }
 

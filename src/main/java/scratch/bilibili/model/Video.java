@@ -44,6 +44,18 @@ public class Video {
 	@Column(name="update_date")
 	private Date updateDate;
 	
+	//时长：单位秒
+	@Column
+	private Integer duration;
+	
+	//播放次数
+	@Column
+	private Integer play;
+	
+	//视频描述
+	@Column
+	private String description;
+	
 	public Video() {}
 	
 	public Video(Long avid) {
@@ -120,6 +132,30 @@ public class Video {
 
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public Integer getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Integer duration) {
+		this.duration = duration;
+	}
+
+	public Integer getPlay() {
+		return play;
+	}
+
+	public void setPlay(Integer play) {
+		this.play = play;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override

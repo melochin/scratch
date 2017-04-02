@@ -28,6 +28,9 @@ public class VideoReader extends ScratchReader<Video>{
 	private final static String TYPE ="tid"; 
 	private final static String UPLOADER = "author";
 	private final static String CREATE_TIME = "create";
+	private final static String PLAY = "play";
+	private final static String DURATION = "duration";
+	private final static String DESC = "description";
 	
 	private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
@@ -52,6 +55,9 @@ public class VideoReader extends ScratchReader<Video>{
 				String title = v.findValue(TITLE).asText();
 				String pic = v.findValue(PIC).asText();
 				String create = v.findValue(CREATE_TIME).asText();
+				Integer play = v.findValue(PLAY).asInt();
+				Integer duration = v.findValue(DURATION).asInt();
+				String description = v.findValue(DESC).asText();
 				Date createTime = null;
 				try{
 					createTime = format.parse(create);
@@ -69,6 +75,9 @@ public class VideoReader extends ScratchReader<Video>{
 				video.setUploader(uploader);
 				video.setCreateDate(createTime);
 				video.setUpdateDate(new Date());
+				video.setPlay(play);
+				video.setDuration(duration);
+				video.setDescription(description);
 				//放入列表
 				returnList.add(video);
 			}

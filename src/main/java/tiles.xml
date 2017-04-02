@@ -7,6 +7,7 @@
 	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp">
 		<put-attribute name="title" value="" />
 		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
+		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav-user.jsp" />
 		<put-attribute name="content" value="" />		
 	</definition>
 	
@@ -53,7 +54,7 @@
 	</definition>
 	
 	<!-- 关键字维护 -->
-	<definition name="tag_form" extends="template-with-nav">
+	<definition name="tag_form" extends="template">
 		<put-attribute name="title" value="tag" />
 		<put-attribute name="content" value="/WEB-INF/jsp/tag.jsp"/>
 	</definition>
@@ -68,5 +69,10 @@
 		<put-attribute name="content" value="/WEB-INF/jsp/bili/scratch_setting.jsp" />
 	</definition>
 	
+	
+	<definition name="follow_video" extends="template">
+		<put-attribute name="title" value="video" />
+		<put-attribute name="content" value="/WEB-INF/jsp/follow-video.jsp" />
+	</definition>
 	
 </tiles-definitions>

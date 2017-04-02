@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +23,7 @@ public class VideoDao extends BasicDao<Video>{
 	
 	public static final String ORDER_DATE = "createDate";
 	
+	public static final String ORDER_PLAY = "play";
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map<Long, Long> listCountByType() {
@@ -51,16 +53,35 @@ public class VideoDao extends BasicDao<Video>{
 	public List<Video> list(String keyword, Long type, String order, Page page) {
 		Criteria c = createCriteria(Video.class);
 		if(keyword != null && !keyword.isEmpty()) {
-			c.add(Restrictions.like("title", keyword, MatchMode.ANYWHERE));
+			String[] words = keyword.split(" ");
+			Criterion lhs = null;
+			for(int i=0; i<words.length; i++) {
+				if(words[i].trim().isEmpty()) continue;
+				Criterion criterion = Restrictions.like("title", words[i], MatchMode.ANYWHERE);
+				if(i == 0) {
+					lhs = criterion;
+				} else {
+					lhs = Restrictions.or(lhs, criterion);
+				}
+			}
+			if(lhs != null) {
+				c.add(lhs);
+			}
 		}
+		
 		if(type != null) {
-			c.add(Restrictions.eq("type.code", type));
+			Criteria crt = c.createCriteria("type");
+			crt.add(Restrictions.or(
+					Restrictions.eq("code", type), 
+					Restrictions.eq("parentType.code", type)));
 		}
 		if(order != null) {
 			switch (order) {
 				case ORDER_DATE:
 					c.addOrder(Order.desc(ORDER_DATE));
 					break;
+				case ORDER_PLAY:
+					c.addOrder(Order.desc(ORDER_PLAY));
 				default:
 					break;
 			}	

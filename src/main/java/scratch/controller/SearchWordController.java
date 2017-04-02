@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import scratch.bilibili.model.VideoType;
+import scratch.bilibili.service.VideoTypeService;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.model.User;
-import scratch.model.dictionary.SearchType;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
-import scratch.service.SearchTypeService;
 import scratch.support.GlobalSession;
 
 @Controller
@@ -30,7 +30,7 @@ public class SearchWordController {
 	private SearchTagService tagService;
 	
 	@Autowired
-	private SearchTypeService typeServce;
+	private VideoTypeService typeServce;
 	
 	@Autowired
 	private SearchKeywordService wordService;
@@ -43,7 +43,7 @@ public class SearchWordController {
 	public ModelAndView tagForm(Model model, HttpSession session){
 		User user = (User) session.getAttribute(GlobalSession.USER);
 		List<SearchTag> list = tagService.listByUserId(user.getUserId());
-		List<SearchType> types = typeServce.list();
+		List<VideoType> types = typeServce.list(1);
 		model.addAttribute("types", types);
 		return new ModelAndView("tag_form", "searchTags", list);
 	}
