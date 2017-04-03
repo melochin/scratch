@@ -1,69 +1,121 @@
 $("document").ready(function() {
 	
-	var tag = getUrlParameter("tag");
-	console.debug("tag" + tag);
-	var $videoList = $("#video_list");
-	var $tagWithVideoList = $("#tag_video_list");
 	var $biliTypeSetting = $("#bili_type_setting");
 	
-	console.debug("video_list:" + $videoList.length);
-	console.debug("tag_video_list:" + $tagWithVideoList.length);
+	if($(".video-type").length > 0) {
+		var videos = $(".video-type").get(0);
+		var id = $(videos).attr("id");
+		var params = {type : id, page : 1};
+		console.debug(params);
+		ReactDOM.render(<VideoList  params={params} ajax={AJAX.getVideos}/>, videos);
+	} 
 	
-	//判断DOM是否存在，存在即渲染对应组件
-	if($videoList.length > 0 ) {
-		console.debug("video_list:存在，开始渲染组件");
-		getVideoList($videoList.get(0), tag);
+	if($biliTypeSetting.length > 0) {
+		getScratchSetting($biliTypeSetting.get(0));
 	}
-	
-	if($tagWithVideoList.length > 0 ) {
-		console.debug("tag_video_list:存在，开始渲染组件");
-		getTagWithVideoList($tagWithVideoList.get(0));
-	}
-	
-	getScratchSetting($biliTypeSetting.get(0));
 	
 	ReactDOM.render(<Search  />, document.getElementById("search"));
-
 	
+	loadFollowViodes();
+	
+	loadHotVideos();
+
+})
+
+
+function loadFollowViodes() {
+	var $videos = $("#videos-follow");
+	if($videos.length > 0) {
+		var params = {};
+		AJAX.getFollowVideos(params, function(data){
+			ReactDOM.render(<VideoList  params={params} ajax={AJAX.getFollowVideos} />, $videos.get(0));
+		});
+	}
+		
 	//可能被绑定过了
 	$(".tag").find("a").unbind('click').click(function() {
-		var url = "ajax/follow/videos?tag=" + $(this).attr("id");  
-		$.getJSON(url, function(data){
-			console.log(data);
-			ReactDOM.render(<Videos  data={data}/>, document.getElementById("videos"));
+		var params = {tag : $(this).attr("id")};
+		ReactDOM.render(<Loading />, $videos.get(0));	
+		AJAX.getFollowVideos(params, function(data){
+			ReactDOM.render(<VideoList  params={params} ajax={AJAX.getFollowVideos} />, $videos.get(0));
 		});
-	})
-	
-	/*首页主动获取数据*/
-	var $items = $(".video-section .videos-type");
-	if($items.length > 0) {
-		$items.each(function(){
+	})		
+}
+
+function loadHotVideos($element) {
+	var $followHot = $(".video-section #follow");
+	var $typeHot = $(".video-section .videos-type");
+		
+	if($followHot.length > 0) {
+		var params = {}
+		AJAX.getFollowVideos(params, function(data){
+			ReactDOM.render(<Videos  data={data.data} max={"12"} cols={"6"}/>, $followHot.get(0));
+		});
+	}
+		
+	if($typeHot.length > 0) {
+		$typeHot.each(function(){
 			var videoType = $(this).attr("id");
 			var params = {keyword:"", type : videoType  , order : "play"};
-			var url = "ajax/search?" + $.param(params);	//显示的URL
-			console.debug(url);
 			var _this = this;
-			$.getJSON(url, function(data){
-				console.debug(data);
-				ReactDOM.render(<Videos  data={data} max={"8"} cols={"4"}/>, _this);
+			AJAX.getVideos(params, function(data){
+				ReactDOM.render(<Videos  data={data.data} max={"12"} cols={"6"}/>, _this);
 			});
 		});
 	}
-
-	AJAX.getVideos({keyword:"aaa"}, function(data){
-		
-	});
-})
+}
 
 var AJAX = class {
-	static getVideos(params, callback){
-		var url = "ajax/search?" + $.param(params);	//显示的URL	
-		console.debug(url);
+			
+	static getVideos(params, callback) {
+		var url = "/scratch/ajax/search";
+		AJAX.getJSON(url, params, callback);
+	}
+
+
+	static getFollowVideos(params, callback) {
+		var url = "/scratch/ajax/follow/videos";
+		AJAX.getJSON(url, params, callback);
+	}
+			
+	static getRunStatus(params, callback) {
+		var url = "/scratch/bili/ajax/isRun";
+		AJAX.getJSON(url, params, callback);
+	}
+
+	static getVideoTypesCount(callback) {
+		var url = "/scratch/bili/ajax/getVideoTypesCount";
+		AJAX.getJSON(url, null, callback);	
+	}
+
+	static startService(callback) {
+		var url = "/scratch/bili/ajax/startService";
+		AJAX.getJSON(url, null, callback);
+	}
+	
+	static getJSON(url, params, callback) {
+		if(params != null) {
+			var url = url + "?" + $.param(params);	
+		}
 		$.getJSON(url, function(data){
+			console.debug("request url:" + url);
+			console.debug("response data:");
+			console.debug(data);
 			callback(data);
-		});
+		});	
 	}
 };
+
+var Loading = React.createClass({
+	render: function() {
+		return (
+			<div class="spinner">
+				<div class="double-bounce1"></div>
+				<div class="double-bounce2"></div>
+	 		</div>
+		)
+	}
+});
 
 //----------------------------------------------------------------------------------------------
 var Filter = React.createClass({
@@ -104,8 +156,7 @@ var Search = React.createClass({
 	getData: function() {
 		var _this = this;
 		var url = "search?" + $.param(this.params);	//显示的URL
-		var requestUrl = "ajax/" + url;				//真正请求的URL
-		$.getJSON(requestUrl, function(data){
+		AJAX.getVideos(this.params, function(data){
 			//History中插入URL，同时插入
 			history.pushState(data, document.title, url);
 			console.debug(data);
@@ -157,15 +208,11 @@ var Search = React.createClass({
 });
 
 
-
-
 //-----------------Scratch运行情况-----------------------------------------------------------------
 function getScratchSetting(element) {
-	var url = "../bili/ajax/getVideoTypesCount";
-		$.getJSON(url, function(data) {
-			console.log(data);
-			ReactDOM.render(<ScratchProgressList types={data.types} currentCounts={data.currentCount} />, element);
-		});			
+	AJAX.getVideoTypesCount(function(data) {
+		ReactDOM.render(<ScratchProgressList types={data.types} currentCounts={data.currentCount} />, element);
+	})
 }
 
 var ScratchProgressList = React.createClass({
@@ -202,10 +249,8 @@ var ScratchProgressList = React.createClass({
 	},
 	refreshRun:function() {
 		this.ajaxRunStatus(false);
-		var url = "../bili/ajax/getVideoTypesCount";
 		var _this = this;
-		$.getJSON(url, function(data) {
-			console.log(data);
+		AJAX.getVideoTypesCount(function(data){
 			_this.setState({types: data.types, currentCounts: data.currentCount})
 		});
 	},
@@ -223,9 +268,9 @@ var ScratchProgressList = React.createClass({
 	btnClick: function(event) {
 		if(this.state.isRun == false) {
 			//启动爬虫服务
-			var url = "../bili/ajax/startService";
-			$.getJSON(url);
-			console.log("执行");
+			AJAX.startService(function(data){
+				console.log("执行");
+			});
 			this.setRunStatus(true);
 		} else {
 			//停止运行
@@ -324,96 +369,6 @@ var getUrlParameter = function getUrlParameter(sParam) {
         }
     }
 };
-//含有video和page信息
-//数据请求封装在组件中
-function getVideoList(element, tag) {
-	ReactDOM.render(<VideoList tag={tag}/> , element);
-}
-
-//含有tag和对应video信息
-//需要主动数据请求调用AJAX，再渲染组件
-function getTagWithVideoList(element) {
-	var url = "json"
-	$.getJSON(url, function(data) {
-		ReactDOM.render(<TagWithVideoList data={data}/>, element);
-	});			
-}
-
-/**
- * TAG与Videos的组合组件复数
- */
-var TagWithVideoList = React.createClass({
-	render:function() {
-		var tags = this.props.data;
-		var items = tags.map(function(item, index){
-			return <TagWithVideo key={index} item={item} />
-		});
-		return(
-			<div>
-				{items}
-			</div>
-		)
-	}
-})
-
-/**
- * TAG与Videos的组合组件
- */
-var TagWithVideo = React.createClass({
-	render:function() {
-		var item = this.props.item;
-		var tag = item.searchTag;
-		var videos = item.searchInfos;
-		return(
-			<div>
-				<Tag tag={tag} />
-				<Videos data={videos} />
-			</div>
-		)
-	}
-});
-
-/**
- * 渲染Tag组件
- * 1.点击按钮，具有抓取数据的功能
- */
-var Tag = React.createClass({
-	clickEvent:function(e) {
-		var $btn = $(e.currentTarget);
-		$btn.attr("disabled", "true");
-		var scratchUrl = "scratch/" + this.props.tag.tagId;
-		$.ajax({
-			url:scratchUrl,
-			success: function() {
-				loadData();				//！！！应该更改状态重新刷新REACT组件
-				$btn.attr("disabled", "false");
-			},
-			fail: function() {
-				$btn.attr("disabled", "false");
-			}
-		});
-	},
-	
-	jumpEvent: function() {
-		window.location.href = "info?tag=" + this.props.tag.tagId;
-	},
-	
-	render:function() {
-		return (
-			<div className="row">
-				<div className="col-md-9">
-					<h1>{this.props.tag.tagName}</h1>
-				</div>
-				<div className="col-md-3"> 
-					<button className="btn btn-default" onClick={this.clickEvent}>更新</button>
-					<button className="btn btn-default" onClick={this.jumpEvent}>更多</button>
-				</div>
-			</div>	
-		)
-	}
-});
-
-
 
 /**
  * 渲染复数的Video组件
@@ -460,23 +415,21 @@ var Videos = React.createClass({
 	}
 });
 
-
-
 /**
  * VideoList组件
  * 1.document滚动触发AJAX，请求数据，重新渲染组件
- * 2.属性tag决定要读取的数据
+ * 2.属性params，决定了请求链接的参数
  * 3.渲染复数Video
  */
-var curPage = 0;
-var totalPage =  1;
-var load =  false;
-
 var VideoList = React.createClass({
 
 	//初始化状态
 	getInitialState: function() {
-		return {videoList:[]}
+		this.params = this.props.params;
+		this.curPage = 0;
+		this.totalPage = 1;
+		this.load = false;
+		return {videoList:[]} 
 	},
 	
 	componentDidMount: function() {
@@ -493,47 +446,49 @@ var VideoList = React.createClass({
 	addVideos: function(videos) {
 		this.setState({videoList : this.state.videoList.concat(videos)});
 	},
-	
-	handleScroll: function() {
+	//判断能否触发滚动加载
+	canScrollLoad: function() {
 		//判断滚动条是否到指定位置
 		var scrollHight = $(window).scrollTop() + $(window).height();
 		var height = $(document).height();
-		if(scrollHight < (height * 0.9) && this.state.videoList.length > 0) return;
+		if(scrollHight < (height * 0.9) && this.state.videoList.length > 0) return false;
 		//判断是否正在进行AJAX请求
-		if(load) return;
-		load = true;
+		if(this.load) return false;
+		return true;
+	},
+	//处理滚动事件
+	handleScroll: function() {
+		if(!this.canScrollLoad()) return;
+		this.load = true;
 		//判断页数是否超过总数
-		curPage++;
-		console.debug("curPage:" + curPage + "; totalPage:" + totalPage);
-		if(curPage > totalPage) return ;
-		//AJAX请求，获取数据
-		var url = "json/info?" + $.param({
-			tag: this.props.tag,
-			page: curPage
-		});
+		this.curPage++;
+		console.debug("curPage:" + this.curPage + "; totalPage:" + this.totalPage);
+		if(this.curPage > this.totalPage) return ;
+		//更新页数数据
+		this.params["page"] = this.curPage;
 		var _this = this;
-		$.getJSON(url, function(pageData) {
-			load = false;
-			totalPage = pageData.page.totalPage;
-			//更新状态
-			_this.addVideos(pageData.data);
+		this.props.ajax(this.params, function(data) {
+			_this.load = false;
+			_this.totalPage = data.page.totalPage;
+			_this.addVideos(data.data);
 		});
 	},
 	
 	render:function() {
-		var items = this.state.videoList.map(function(item, index) {
-			return <Video key={index} url={item.url} pic={item.pic} shortName={item.shortName} />
-		}); 
+		var videos = this.state.videoList;
 		return (
 			<div className="row">
-				{items}
+				<Videos  data={videos} cols={"6"}/>
 			</div>	
 		)
 	}
 });
 
 /**
- * Video组件，对应model为searchInfo
+ * 组件:视频
+ * model:Video
+ * props:
+ * width 	容器宽度，1-12，指定col-md的宽度
  */
 var Video = React.createClass({
 	render:function() {
@@ -547,6 +502,7 @@ var Video = React.createClass({
 		if(play > 10000) {
 			play = parseFloat(play /10000).toFixed(1) + "万";
 		}
+
 		return(
 			<div className={width}>
 				<div className="thumbnail">
