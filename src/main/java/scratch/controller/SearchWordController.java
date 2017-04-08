@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import scratch.aspect.UserRole;
 import scratch.bilibili.model.VideoType;
 import scratch.bilibili.service.VideoTypeService;
 import scratch.model.SearchKeyword;
@@ -21,6 +22,7 @@ import scratch.model.User;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
 import scratch.support.GlobalSession;
+import scratch.support.SessionSupport;
 
 @Controller
 @RequestMapping("/search")
@@ -35,43 +37,40 @@ public class SearchWordController {
 	@Autowired
 	private SearchKeywordService wordService;
 	
-	/**
-	 * 标签维护表单界面
-	 * @return
-	 */
+	@UserRole
 	@RequestMapping("/tag")
 	public ModelAndView tagForm(Model model, HttpSession session){
-		User user = (User) session.getAttribute(GlobalSession.USER);
+		User user = SessionSupport.getUser();
 		List<SearchTag> list = tagService.listByUserId(user.getUserId());
 		List<VideoType> types = typeServce.list(1);
 		model.addAttribute("types", types);
 		return new ModelAndView("tag_form", "searchTags", list);
 	}
 	
-	//标签：更新
+	@UserRole
 	@RequestMapping(value="/tag", method=RequestMethod.POST)
 	public @ResponseBody String updateTag(@ModelAttribute SearchTag tag, HttpSession session) {
-		User user = (User) session.getAttribute(GlobalSession.USER);
+		User user = SessionSupport.getUser();
 		tag.setUser(user);		
 		tagService.update(tag);
 		return "redirect:/search/tag";
 	}
 	
-	//标签：删除
+	@UserRole
 	@RequestMapping(value="/tag/delete", method=RequestMethod.POST)
 	public @ResponseBody String deleteTag(@ModelAttribute SearchTag tag) {
 		tagService.delete(tag);
 		return null;
 	}
 	
-	//关键字：更新
+	@UserRole
 	@RequestMapping(value="/tag/word", method=RequestMethod.POST)
 	public @ResponseBody String updateWord(@ModelAttribute SearchKeyword word) {
 		wordService.update(word);
 		return null;
 	}
 	
-	//关键字：删除
+	@UserRole
 	@RequestMapping(value="/tag/word/delete", method=RequestMethod.POST)
 	public @ResponseBody String deleteWord(@ModelAttribute SearchKeyword word) {
 		wordService.delete(word);

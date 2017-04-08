@@ -65,6 +65,7 @@
 	
 	<!-- 出错显示 -->
 	<definition name="common_message" extends="template">
+		<put-attribute name="nav" value=""></put-attribute>
 		<put-attribute name="title" value="message" />
 		<put-attribute name="content" value="/WEB-INF/jsp/common/message.jsp"/>
 	</definition>

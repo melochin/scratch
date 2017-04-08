@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import scratch.aspect.Role;
+import scratch.aspect.UserRole;
 import scratch.bilibili.model.Video;
 import scratch.bilibili.service.VideoService;
 import scratch.model.User;

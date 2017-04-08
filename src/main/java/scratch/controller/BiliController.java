@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scratch.aspect.Role;
+import scratch.aspect.UserRole;
 import scratch.bilibili.dao.VideoTypeDao;
 import scratch.bilibili.model.VideoType;
 import scratch.bilibili.service.ScratchService;
 import scratch.bilibili.service.VideoTypeService;
 
 /**
- * 后台抓取服务
+ * 锟斤拷台抓取锟斤拷锟斤拷
  * @author melochin
  *
  */
@@ -33,6 +35,7 @@ public class BiliController {
 	@Autowired
 	private ScratchService scratchService;
 	
+	@UserRole(Role.Admin)
 	@RequestMapping(value="bili/setting")
 	public String setting() {
 		return "bili_setting";
