@@ -25,7 +25,6 @@ public class LoginController {
 	@Autowired
 	private UserService service;
 	
-	
 	/**
 	 * 用户登录界面
 	 * @return

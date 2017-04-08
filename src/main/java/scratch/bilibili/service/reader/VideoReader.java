@@ -1,10 +1,11 @@
-package scratch.bilibili.service;
+package scratch.bilibili.service.reader;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +17,7 @@ import scratch.bilibili.model.VideoType;
 /**http://api.bilibili.com/archive_rank/getarchiverankbypartion
  * ?callback=callback&type=jsonp&_=1490537389048&tid=82&pn=1
  */
-
+@Service
 public class VideoReader extends ScratchReader<Video>{
 
 	private final static String VEDIO_URL = "http://www.bilibili.com/video/av";
@@ -38,16 +39,16 @@ public class VideoReader extends ScratchReader<Video>{
 	protected void read(String html, RegexMatch match, List<Video> returnList) {
 		try{
 			format.setLenient(false);
-			//È¥³ýÎÞÓÃ²¿·ÖµÄÊý¾Ý
+			//È¥ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½
 			html = html.substring(9, html.length()-2);
-			//½«ÎÄ±¾×ª»»³ÉJsonNode
+			//ï¿½ï¿½ï¿½Ä±ï¿½×ªï¿½ï¿½ï¿½ï¿½JsonNode
 			ObjectMapper m = new ObjectMapper();
 			JsonNode tree = m.readTree(html);
 			JsonNode videos = tree.findValue(PARENT_NODE)
 					.findValue(VEDIOS);
 			if(videos == null) return;
 			for(JsonNode v : videos) {
-				//¶ÁÈ¡»ù±¾ÐÅÏ¢
+				//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 				Long avid = v.findValue(AV).asLong();
 				if(avid == 0) continue;
 				String avUrl = VEDIO_URL + avid;
@@ -65,7 +66,7 @@ public class VideoReader extends ScratchReader<Video>{
 					createTime = null;
 				}
 				String uploader = v.findValue(UPLOADER).asText();
-				//¹¹Ôì¶ÔÏó
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				Video video = new Video();
 				video.setAvid(avid);
 				video.setUrl(avUrl);
@@ -78,7 +79,7 @@ public class VideoReader extends ScratchReader<Video>{
 				video.setPlay(play);
 				video.setDuration(duration);
 				video.setDescription(description);
-				//·ÅÈëÁÐ±í
+				//ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
 				returnList.add(video);
 			}
 		} catch (Exception e) {

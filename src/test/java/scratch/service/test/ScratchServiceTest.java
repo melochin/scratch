@@ -25,7 +25,7 @@ public class ScratchServiceTest extends ContextClass{
 	@Autowired
 	private ScratchService service;
 	
-	//@Test
+	@Test
 	@Rollback(false)
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void scratchTest() throws InterruptedException {
@@ -47,7 +47,7 @@ public class ScratchServiceTest extends ContextClass{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void SchedulerTest() throws IllegalStateException, InterruptedException, ExecutionException {
         Calendar c = new GregorianCalendar();
         c.set(Calendar.HOUR_OF_DAY, 10);

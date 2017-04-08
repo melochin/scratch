@@ -36,13 +36,11 @@ public class UserChecker {
 	@Autowired
 	private UserService userService;
 	
-/*	@Pointcut("execution(* scratch.controller.HomeController.mainPage(..)) || "
-			+ "execution(* scratch.controller.SearchWordController.*(..)) || "
-			+ "execution(* scratch.controller.ScratchController.*(..))")*/
+	@Pointcut("execution(* scratch.controller.SearchWordController.*(..)) ")
 	public void checker(){}
 	
 	//代理中不能使用checked异常
-//	@Before("checker()")
+	@Before("checker()")
 	public void checkUser(){
 		HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder
 					.getRequestAttributes())

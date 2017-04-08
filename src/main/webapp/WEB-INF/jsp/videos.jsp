@@ -5,7 +5,7 @@
  <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <script type="text/babel" src="<c:url value="/js/react-tag-video.js"/>" ></script>
 
- <div id="video_list">
+ <div class="video-type" id="${type }">
 	 <div class="spinner">
 	  <div class="double-bounce1"></div>
 	  <div class="double-bounce2"></div>

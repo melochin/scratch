@@ -1,4 +1,4 @@
-package scratch.bilibili.service;
+package scratch.bilibili.service.reader;
 
 import java.io.IOException;
 import java.text.DateFormat;

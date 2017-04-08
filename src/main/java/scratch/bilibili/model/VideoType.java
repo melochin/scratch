@@ -12,17 +12,17 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import scratch.model.dictionary.Dictionary;
+import scratch.model.Dictionary;
 
-@Entity								//Ö¸¶¨ÊµÌå£¬ÓÃÓÚÉ¨Ãè
-@Table(name="bili_video_type")		//Ö¸¶¨±íÃû£¬ÓÃÓÚÓ³Éä
+@Entity								//Ö¸ï¿½ï¿½Êµï¿½å£¬ï¿½ï¿½ï¿½ï¿½É¨ï¿½ï¿½
+@Table(name="bili_video_type")		//Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
 public class VideoType extends Dictionary {
 
 	@OneToMany(mappedBy="parentType", fetch=FetchType.LAZY)
 	private List<VideoType> childTypes;
 
 	@JsonIgnore
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parent_code")
 	private VideoType parentType;
 	

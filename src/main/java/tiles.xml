@@ -4,6 +4,7 @@
        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd"> 
 
 <tiles-definitions>
+	<!-- 模板 -->
 	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp">
 		<put-attribute name="title" value="" />
 		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
@@ -18,40 +19,56 @@
 		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav.jsp"></put-attribute>
 	</definition>
 	
+	<!-- 前台 -->
 	<definition name="index" extends="template">
 		<put-attribute name="title" value="home" />
+		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav-user.jsp" />
 		<put-attribute name="content" value="/WEB-INF/jsp/index.jsp"/>
 	</definition>
 	
-<!-- 	<definition name="index" extends="template-with-nav">
-		<put-attribute name="title" value="home" />
-		<put-attribute name="content" value="/WEB-INF/jsp/tag-videos.jsp"/>
-	</definition> -->
+	<!-- 分类视频 -->
+	<definition name="videos" extends="template">
+		<put-attribute name="title" value="video" />
+		<put-attribute name="content" value="/WEB-INF/jsp/videos.jsp" />
+	</definition>
 	
-	<definition name="common_message" extends="template">
-		<put-attribute name="title" value="message" />
-		<put-attribute name="content" value="/WEB-INF/jsp/common/message.jsp"/>
+	<!-- 关注视频 -->
+	<definition name="follow_video" extends="template">
+		<put-attribute name="title" value="video" />
+		<put-attribute name="content" value="/WEB-INF/jsp/follow-video.jsp" />
+	</definition>
+	
+	<!-- 用户界面 -->
+	<definition name="user_register" extends="template">
+		<put-attribute name="title" value="register"/>
+		<put-attribute name="nav" value=""/>
+		<put-attribute name="content" value="/WEB-INF/jsp/user/register.jsp"/>
 	</definition>
 	
 	<definition name="user_login" extends="template">
 		<put-attribute name="title" value="login"/>
+		<put-attribute name="nav" value=""/>
 		<put-attribute name="content" value="/WEB-INF/jsp/user/login.jsp"/>
-	</definition>
-	
-	<definition name="user_register" extends="template">
-		<put-attribute name="title" value="register"/>
-		<put-attribute name="content" value="/WEB-INF/jsp/user/register.jsp"/>
 	</definition>
 	
 	<definition name="user_reset" extends="template">
 		<put-attribute name="title" value="reset-password"/>
+		<put-attribute name="nav" value=""/>
 		<put-attribute name="content" value="/WEB-INF/jsp/user/reset.jsp"/>
 	</definition>
 	
 	<definition name="user_reset_pwd" extends="template">
 		<put-attribute name="title" value="reset-password"/>
+		<put-attribute name="nav" value=""/>
 		<put-attribute name="content" value="/WEB-INF/jsp/user/reset-pwd.jsp"/>
 	</definition>
+	
+	<!-- 出错显示 -->
+	<definition name="common_message" extends="template">
+		<put-attribute name="title" value="message" />
+		<put-attribute name="content" value="/WEB-INF/jsp/common/message.jsp"/>
+	</definition>
+	
 	
 	<!-- 关键字维护 -->
 	<definition name="tag_form" extends="template">
@@ -68,11 +85,6 @@
 		<put-attribute name="title" value="setting" />
 		<put-attribute name="content" value="/WEB-INF/jsp/bili/scratch_setting.jsp" />
 	</definition>
-	
-	
-	<definition name="follow_video" extends="template">
-		<put-attribute name="title" value="video" />
-		<put-attribute name="content" value="/WEB-INF/jsp/follow-video.jsp" />
-	</definition>
+
 	
 </tiles-definitions>

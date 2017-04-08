@@ -1,4 +1,4 @@
-package scratch.aspect;
+package scratch.controller;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,7 +11,7 @@ import scratch.exception.PrivilegeException;
 public class ExceptionController {
 	
 	/**
-	 * ´¦ÀíÓÃ»§È¨ÏÞÒì³£
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½È¨ï¿½ï¿½ï¿½ì³£
 	 * @param e
 	 * @param model
 	 * @return
@@ -19,13 +19,13 @@ public class ExceptionController {
 	@ExceptionHandler
 	public ModelAndView hanlderPrivilege(PrivilegeException e, Model model) {
 		model.addAttribute("error", e.getMessage());
-		//ÉÙ/£¬¾ø¶Ô¶¨Î»£¿£¿£¿
+		//ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		model.addAttribute("jump", "user/login");
 		return new ModelAndView("common_message");
 	}
 	
 	/**
-	 * ´¦ÀíËùÓÐÒì³£
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì³£
 	 * @param e
 	 * @param model
 	 * @return
@@ -35,7 +35,7 @@ public class ExceptionController {
 		String error = "";
 		error = e.getMessage();
 		e.printStackTrace();
-		model.addAttribute("error", error.isEmpty() ? "Ò³Ãæ·¢Éú´íÎó" : "Ò³Ãæ·¢Éú´íÎó:" + error);
+		model.addAttribute("error", error.isEmpty() ? "Ò³ï¿½æ·¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : "Ò³ï¿½æ·¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" + error);
 		return new ModelAndView("common_message");
 	}
 	

@@ -15,8 +15,6 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
 
-<!-- 	<import resource="classpath:mail.properties;classpath:jdbc.properties"/>
- -->	
  	<!-- 读取配置文件 -->
 	<context:property-placeholder location="classpath:mail.properties,classpath:jdbc.properties"/>
 	
@@ -86,8 +84,8 @@
     	</property>
 	</bean>
 	
-	<bean id="page" class="scratch.service.Page" scope="request">
-		<aop:scoped-proxy/>
+	<bean id="page" class="scratch.service.Page">
+		<!-- <aop:scoped-proxy/> -->
 		<property name="perPageItem" value="20" />
 	</bean>
 	
@@ -95,7 +93,6 @@
 	<context:component-scan base-package="scratch.dao" />			
 	<context:component-scan base-package="scratch.aspect" />
 	<context:component-scan base-package="scratch.service" />
-	<context:component-scan base-package="scratch.service.specific"/>
 	<context:component-scan base-package="scratch.service.user" />	
 	<context:component-scan base-package="scratch.support" />
 	

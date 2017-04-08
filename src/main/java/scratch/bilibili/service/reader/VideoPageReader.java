@@ -1,4 +1,4 @@
-package scratch.bilibili.service;
+package scratch.bilibili.service.reader;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,9 +15,9 @@ public class VideoPageReader extends ScratchReader<Long>{
 	@Override
 	protected void read(String html, RegexMatch match, List<Long> returnList) {
 		try {
-			//È¥³ýÎÞÓÃ²¿·ÖµÄÊý¾Ý
+			//È¥ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½
 			html = html.substring(9, html.length()-2);
-			//½«ÎÄ±¾×ª»»³ÉJsonNode
+			//ï¿½ï¿½ï¿½Ä±ï¿½×ªï¿½ï¿½ï¿½ï¿½JsonNode
 			ObjectMapper m = new ObjectMapper();
 			JsonNode tree = m.readTree(html);
 			JsonNode page = tree.findValue("page");

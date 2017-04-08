@@ -1,4 +1,4 @@
-package scratch.bilibili.service;
+package scratch.bilibili.service.reader;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,6 +7,12 @@ import java.util.List;
 
 import com.rory.regex.RegexMatch;
 
+/**
+ * 将HTML文本结构化的类
+ * @author melochin
+ *
+ * @param <T>
+ */
 public abstract class ScratchReader<T> {
 
 	protected abstract void read(String html, RegexMatch match, List<T> returnList);

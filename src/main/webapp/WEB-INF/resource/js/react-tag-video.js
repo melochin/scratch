@@ -14,7 +14,7 @@ $("document").ready(function() {
 		getScratchSetting($biliTypeSetting.get(0));
 	}
 	
-	ReactDOM.render(<Search  />, document.getElementById("search"));
+	/*ReactDOM.render(<Search  />, document.getElementById("search"));*/
 	
 	loadFollowViodes();
 	

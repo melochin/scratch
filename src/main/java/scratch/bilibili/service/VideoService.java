@@ -1,5 +1,6 @@
 package scratch.bilibili.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import scratch.dao.SearchTagDao;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.service.Page;
+import scratch.service.PageBean;
+import scratch.support.SessionSupport;
 
 @Service
 public class VideoService {
@@ -24,26 +27,43 @@ public class VideoService {
 	@Autowired
 	private Page page;
 	
-	public List<Video> list(Long type, String order, Integer pageNo) {
+	public PageBean<List<Video>> list(Long type, String order, Integer pageNo) {
 		return list(null, type, order, pageNo);
 	}
 	
-	public List<Video> list(String keyword, Long type, String order, Integer pageNo) {
+	public PageBean<List<Video>> list(String keyword, Long type, String order, Integer pageNo) {
 		page.setCurPage(pageNo);
-		return videoDao.list(keyword, type, order, page);
+		return new PageBean<List<Video>>(videoDao.list(keyword, type, order, page), page);
 	}
 	
-	public List<Video> list(Long tagId, Integer pageNo) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public PageBean<List<Video>> list(Long tagId, Integer pageNo) {
 		page.setCurPage(pageNo);
-		SearchTag tag = tagDao.get(SearchTag.class, tagId);
-		Long type = tag.getType().getCode();						//¼ìË÷ÀàÐÍ
-		List<SearchKeyword> searchWords = tag.getSearchKeyWords();	//¼ìË÷Óë±êÇ©¶ÔÓ¦µÄËùÓÐ¹Ø¼ü×Ö
-		String keyword = "";
-		for(SearchKeyword w : searchWords) {
-			keyword += keyword.isEmpty() ? w.getKeyword() : " " + w.getKeyword(); 
+		
+		List<SearchKeyword> searchWords = new ArrayList<SearchKeyword>();
+		StringBuilder keyword = new StringBuilder();
+		
+		Long type = null;
+		if(tagId != null && tagId != 0) {
+			SearchTag tag = tagDao.get(SearchTag.class, tagId);
+			type = tag.getType().getCode();						//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	
+			searchWords = tag.getSearchKeyWords();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹Ø¼ï¿½ï¿½ï¿½
+		} else {
+			if(SessionSupport.getUser() != null) {
+				Long userId = SessionSupport.getUser().getUserId();
+				List<SearchTag> tags = tagDao.listByUserId(userId);
+				for(SearchTag tag : tags) {
+					searchWords.addAll(tag.getSearchKeyWords());
+				}
+			}
 		}
-		//¸ù¾Ý¹Ø¼ü×Ö¡¢ÊÓÆµÀàÐÍ¡¢´´½¨ÈÕÆÚ¼ìË÷
-		return videoDao.list(keyword, type, VideoDao.ORDER_DATE, page);
+		
+		for(SearchKeyword w : searchWords) {
+			keyword.append(keyword.toString().isEmpty() ? w.getKeyword() : " " + w.getKeyword());
+		}
+		
+		//ï¿½ï¿½ï¿½Ý¹Ø¼ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½
+		return new PageBean(videoDao.list(keyword.toString(), type, VideoDao.ORDER_DATE, page), page);
 	}
 	
 }

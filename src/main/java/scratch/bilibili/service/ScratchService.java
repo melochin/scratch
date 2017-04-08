@@ -1,17 +1,9 @@
 package scratch.bilibili.service;
 
-import java.net.MalformedURLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,15 +11,13 @@ import org.springframework.stereotype.Service;
 
 import scratch.bilibili.dao.VideoScratchRecordDao;
 import scratch.bilibili.dao.VideoTypeDao;
-import scratch.bilibili.model.Video;
 import scratch.bilibili.model.VideoScratchRecord;
 import scratch.bilibili.model.VideoType;
+import scratch.bilibili.service.reader.VideoPageReader;
 
 @Service("scratchBilibiliService")
 public class ScratchService  {
 
-	private ExecutorService exec;
-	
 	private static String VIDEO_API = "http://api.bilibili.com/archive_rank/getarchiverankbypartion?"
 			+ "callback=callback&type=jsonp"; //&tid=82&pn=7000
 	
@@ -40,133 +30,54 @@ public class ScratchService  {
 	private VideoScratchRecordDao recordDao;
 	
 	@Autowired
-	private SaveRunnable saveRunnable;
-	
-	@Autowired
 	private VideoPageReader pageReader;
 	
-	private boolean start = false;
+	@Autowired
+	private VideoScratch videoScratch;
 	
 	//@Scheduled(cron="50/60 * *  * * ? ")
 	public void scratchVideo() {
 		if(isRun()) return;
-		exec = Executors.newFixedThreadPool(1000);
-		start = true;
-		//»ñÈ¡ÊÓÆµ·ÖÀà
+		//è¯»å–æ‰€æœ‰ç±»åˆ«
 		List<VideoType> types = typeDao.list(2);
-		if(types == null || types.size() == 0) {
-			return;
-		}
-		try{
-			//Éú³ÉÃ¿ÖÖÀà±ğĞèÒª×¥È¡µÄÁ´½Ó
-			Map<VideoType, BlockingQueue<String>> typeMap = new HashMap<>();
-			for(VideoType t:types) {
-				//ÏÈ¶ÁÈ¡µÚÒ»Ò³µÄURL£¬»ñÈ¡¸ÃÀà±ğÊÓÆµµÄÒ³ÊıºÍ×Ü¸öÊı
-				List<Long> list = pageReader.read(VIDEO_API + "&tid=" + t.getCode() + "&pn=1");
-				if(list.size() == 0) continue;
-				long count = list.get(0);
-				long pages = list.get(1);
-				//¸üĞÂType
-				t.setVideoCount(count);
-				typeDao.update(t);
-				//¾ö¶¨×îÖÕ×¥È¡µÄÒ³Êı
-				pages = pages > VIDEO_PAGE_SIZE ? VIDEO_PAGE_SIZE : pages;
-				BlockingQueue<String> urls = new LinkedBlockingQueue<String>();
-				for(int p=1; p<=pages; p++) {
-					urls.add(VIDEO_API + "&tid=" + t.getCode() + "&pn=" + p);
-				}
-				typeMap.put(t, urls);
+		if(types == null || types.size() == 0) return;
+		//ç”ŸæˆURL
+		Map<VideoType, List<String>> typeMap = new HashMap<>();
+		for(VideoType t:types) {
+			List<Long> list = pageReader.read(VIDEO_API + "&tid=" + t.getCode() + "&pn=1");
+			if(list.size() == 0) continue;
+			long count = list.get(0);
+			long pages = list.get(1);
+			//æ›´æ–°è§†é¢‘æ€»æ•°
+			t.setVideoCount(count);
+			typeDao.update(t);
+			//è·å–æ€»é¡µæ•°
+			pages = pages > VIDEO_PAGE_SIZE ? VIDEO_PAGE_SIZE : pages;
+			List<String> urls = new ArrayList<String>();
+			for(int p=1; p<=pages; p++) {
+				urls.add(VIDEO_API + "&tid=" + t.getCode() + "&pn=" + p);
 			}
-			//×¼±¸RecordÊı¾İ
-			VideoScratchRecord record = new VideoScratchRecord();
-			record.setStartTime(new Date());
-			//---------------------------¿ªÆôÏß³Ì£¬Ö´ĞĞÅÀ³æÈÎÎñ------------------------------------
-			//¸ù¾İÊÓÆµ·ÖÀàÊıÁ¿£¬À´¾ö¶¨Í¬Ê±ÔËĞĞµÄÏß³ÌÊı
-			//barrier£¬¶àÓàµÄ1ÊÇÓÃÀ´×èÈûÊı¾İ±£´æÏß³ÌµÄ£¬µÈ´ıÊı¾İ×¥È¡Íê±Ïºó£¬ÔÙ½øĞĞÊı¾İ±£´æ
-			BlockingQueue<Video> videos =  new LinkedBlockingQueue<Video>();
-			CyclicBarrier barrier = new CyclicBarrier(typeMap.size() + 1);
-			for(BlockingQueue<String> urls:typeMap.values()) {
-				exec.execute(new ScratchVideo(urls, videos, barrier));
-			}
-			exec.execute(saveRunnable.setVideos(videos, record, barrier));
-		} catch (Exception e) {
-			System.out.println(e.toString());
-		} finally {
-			exec.shutdown();
-			start = false;
+			typeMap.put(t, urls);
 		}
-
+		//æŠ“å–æ•°æ®
+		videoScratch.run(typeMap);
 	}
 	
 	/**
-	 * ¶¨Ê±ÈÎÎñÊÇÔÚÏß³ÌÖĞ¿ªÆôµÄ£¬µ«ÊÇ²»ÔÊĞí¸Ã·şÎñÍ¬Ê±¿ªÆô¶à¸ö¶¨Ê±·şÎñ£¬±ØĞëÉèÖÃÍ¬²½Ëø
+	 * ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½ï¿½Ğ¿ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ñ£¬±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½
 	 * @return
 	 */
-	public synchronized boolean isRun() {
-		if(exec == null) return false;
-		if(exec.isShutdown()) {
-			if(exec.isTerminated()) {
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return start;
-		}
+	public boolean isRun() {
+		return videoScratch.isRun();
 	}
 	
 	public VideoScratchRecord getRecentRecord() {
 		return recordDao.getRecent();
 	}
 
-	public static void main(String[] args) throws MalformedURLException {
-		ScratchService s = new ScratchService();
-		s.scratchVideo();
-	}
-
 }
 
-class ScratchVideo extends ScratchRunnable{
-
-	private BlockingQueue<String> urls;
-	
-	private BlockingQueue<Video> videos;
-	
-	private VideoReader reader;
-	
-	private CyclicBarrier barrier;
-	
-	public ScratchVideo(BlockingQueue<String> urls, BlockingQueue<Video> videos,
-			CyclicBarrier barrier) {
-		this.urls = urls;
-		this.videos = videos;
-		this.barrier = barrier;
-		this.reader = new VideoReader();
-	}
-
-	@Override
-	public void scratch() {
-		try{
-			while(urls.size() > 0) {
-				String url = urls.take();
-				List<Video> list = reader.read(url);
-				videos.addAll(list);
-				log.debug(this + " »¹Ê£ÓàÁ´½Ó:" + urls.size());
-			}
-			log.debug(this + " ¹²×¥È¡:" + videos.size());
-		} catch (Exception e) {
-			log.error(e.toString());
-		} finally {
-			try {
-				//»¹ºÃÔÚfinallyÀï- -
-				barrier.await();
-			} catch (InterruptedException | BrokenBarrierException e) {
-				log.error("Barrier×ÊÔ´ÎŞ·¨ÊÍ·Å£¬²¿·ÖÏß³Ì½«»á¹ÒÆğ");
-			}
-		}
-	}
-
-}
+/*
 
 class ScratchVideoSpecifi extends ScratchRunnable {
 
@@ -204,16 +115,16 @@ class ScratchVideoSpecifi extends ScratchRunnable {
 				String url = VIDEO_URL + "id=" + source.getAvid() + "&appkey=" + APPKEY;
 				List<Video> vs = reader.read(url);
 				if(vs == null) {
-					log.warn(this + " ·¢ÏÖÒì³££¬×¥È¡Êı¾İÊ§°Ü");
+					log.warn(this + " ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½ï¿½×¥È¡ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
 					Thread.interrupted();
 				}
 				videos.addAll(vs);	
-				log.debug(this + " »¹Ê£ÓàÁ´½Ó:" + sources.size());
+				log.debug(this + " ï¿½ï¿½Ê£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" + sources.size());
 			}
 			if(size != videos.size()) {
-				log.warn(this + "×¥È¡video³ö´í£¡Ä¿±êÊıÁ¿:" + size + "£¬Êµ¼ÊÊıÁ¿:" + videos.size());
+				log.warn(this + "×¥È¡videoï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" + size + "ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" + videos.size());
 			} else {
-				log.debug(this + " ¹²×¥È¡:" + videos.size());
+				log.debug(this + " ï¿½ï¿½×¥È¡:" + videos.size());
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -222,3 +133,4 @@ class ScratchVideoSpecifi extends ScratchRunnable {
 	}
 	
 }
+*/

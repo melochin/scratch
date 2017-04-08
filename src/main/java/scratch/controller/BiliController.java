@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.digester.annotations.CreationRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -17,6 +16,11 @@ import scratch.bilibili.model.VideoType;
 import scratch.bilibili.service.ScratchService;
 import scratch.bilibili.service.VideoTypeService;
 
+/**
+ * 后台抓取服务
+ * @author melochin
+ *
+ */
 @Controller
 public class BiliController {
 
@@ -39,6 +43,7 @@ public class BiliController {
 		return typeDao.list(1);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="bili/ajax/getVideoTypesCount", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Map getVideoTypesCount() {
 		return typeService.listVideoCount();
@@ -50,7 +55,7 @@ public class BiliController {
 	}
 	
 	@RequestMapping(value="bili/ajax/isRun", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map isServiceRun() {
+	public @ResponseBody Map<String, Object> isServiceRun() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		boolean run = scratchService.isRun();
 		map.put("run", run);	
