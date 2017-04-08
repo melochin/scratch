@@ -5,10 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import scratch.model.User;
@@ -26,8 +28,16 @@ public class CookieSupport {
 		return ((ServletWebRequest)RequestContextHolder.getRequestAttributes()).getResponse();
 	}
 	
+	private static HttpServletRequest getRequest() {
+		return ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+	}
+	
+	public static Cookie[] getCookie() {
+		return getRequest().getCookies();
+	}
+	
 	/**
-	 * ´æ·Åmapµ½CookieÖÐ
+	 * ï¿½ï¿½ï¿½mapï¿½ï¿½Cookieï¿½ï¿½
 	 * @param map
 	 */
 	private static void addCookies(Map<String, String> map) {
@@ -41,8 +51,8 @@ public class CookieSupport {
 	}
 	
 	/**
-	 * ½«ÓÃ»§ÐÅÏ¢´æ·ÅÔÚCookieÖÐ£º´æ·ÅuserIdºÍ¼ÓÃÜºóµÄuserId
-	 * ÎÊÌâ£ºcookie Ö¸¶¨µÄpathÂ·¾¶²»ÕýÈ·£¬Ö¸¶¨ÁËÕû¸ölocalhost
+	 * ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½Cookieï¿½Ð£ï¿½ï¿½ï¿½ï¿½userIdï¿½Í¼ï¿½ï¿½Üºï¿½ï¿½userId
+	 * ï¿½ï¿½ï¿½â£ºcookie Ö¸ï¿½ï¿½ï¿½ï¿½pathÂ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½localhost
 	 * @param user
 	 */
 	public static void addUser(User user) {
@@ -51,6 +61,30 @@ public class CookieSupport {
 		map.put("userId", userId);
 		map.put("user", cipher.encode(userId.toString()));
 		addCookies(map);
+	}
+	
+	public static User getUser() {
+		Cookie[] cookies = getCookie();
+		if(cookies == null) return null;
+		
+		String userId = null;
+		String userEncode = null;
+		
+        for(Cookie c : cookies){
+        	if("user".equals(c.getName())) {
+        		userId = c.getValue();
+        	}
+        	if("userEncode".equals(c.getName())) {
+        		userEncode = c.getValue();
+        	}
+        }
+        if(userId == null || userEncode == null) return null;
+        
+        if(!cipher.decode(userEncode).equals(userId)) return null;
+        
+        User user = new User();
+        user.setUserId(Long.valueOf(userId));
+        return user; 
 	}
 	
 }
