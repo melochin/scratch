@@ -38,16 +38,16 @@ public class VideoDao extends BasicDao<Video>{
 	}
 	
 	/**
-	 * ¹¦ÄÜ£º¼ìË÷ÊÓÆµ
+	 * ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ
 	 * 
-	 * ËµÃ÷£ºÈç¹ûtypeÊÇnull£¬Ôò²éÑ¯ËùÓÐÀàÐÍ£»
-	 * Èç¹ûorderÊÇempty»òÕßnull£¬°´ÕÕÊý¾Ý¿âÄ¬ÈÏÅÅÐò
-	 * Èç¹ûpageÊÇnull£¬½«²»·ÖÒ³²éÑ¯
+	 * Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½typeï¿½ï¿½nullï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½
+	 * ï¿½ï¿½ï¿½orderï¿½ï¿½emptyï¿½ï¿½ï¿½ï¿½nullï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * ï¿½ï¿½ï¿½pageï¿½ï¿½nullï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½Ñ¯
 	 * 
-	 * @param keyword	ËÑË÷µÄ¹Ø¼ü×Ö
-	 * @param type		ÊÓÆµÀàÐÍ 
-	 * @param order		ÅÅÐò
-	 * @param page		Ò³Êý
+	 * @param keyword	ï¿½ï¿½ï¿½ï¿½ï¿½Ä¹Ø¼ï¿½ï¿½ï¿½
+	 * @param type		ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ 
+	 * @param order		ï¿½ï¿½ï¿½ï¿½
+	 * @param page		Ò³ï¿½ï¿½
 	 * @return
 	 */
 	public List<Video> list(String keyword, Long type, String order, Page page) {
@@ -87,6 +87,12 @@ public class VideoDao extends BasicDao<Video>{
 			}	
 		}
 		return listByCriteria(c, page);
+	}
+	
+	public void saveOrUpdateList(List<Video> videos) {
+		for(Video v : videos) {
+			saveOrUpdate(v, v.getAvid());	
+		}
 	}
 	
 }

@@ -1,5 +1,6 @@
 package scratch.bilibili.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -7,10 +8,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -44,29 +49,37 @@ public class VideoScratch {
 	@Autowired
 	private VideoScratchRecordDao recordDao;
 	
-	@Autowired
-	private PlatformTransactionManager tm;
+	private Logger log = Logger.getLogger(VideoScratch.class);
 	
 	private ExecutorService exec;
+	
+	private VideoScratchRecord record;
 	
 	private boolean start = false;
 	
 	public void run(Map<VideoType, List<String>> typeMap) {
 		if(typeMap == null || typeMap.size() == 0) return;
 		start = true;
-		//初始化视频队列
-		BlockingQueue<Video> videoQueue = new LinkedBlockingQueue<>();
-		VideoScratchRecord record = new VideoScratchRecord();
+		record = new VideoScratchRecord();
 		//初始化线程池
-		CyclicBarrier barrier = new CyclicBarrier(typeMap.size() + 1);
 		exec = Executors.newCachedThreadPool();
+		CyclicBarrier barrier = new CyclicBarrier(typeMap.size() * 2, new Runnable() {
+			
+			@Override
+			public void run() {
+				record.setEndTime(new Date());
+				recordDao.save(record);
+			}
+			
+		});
 		//分配URL，开始执行抓取任务
 		record.setStartTime(new Date());
 		for(Entry<VideoType, List<String>> e : typeMap.entrySet()){
 			BlockingQueue<String> urlQueue = new LinkedBlockingQueue<>(e.getValue());
-			exec.execute(new VideoScratchTask(urlQueue, videoQueue, barrier));
+			Exchanger<List<Video>> exchanger = new Exchanger<List<Video>>();
+			exec.execute(new VideoScratchTask(urlQueue, exchanger, barrier));
+			exec.execute(new VideoSaveTask(record, exchanger, barrier));
 		}
-		exec.execute(new VideoSaveTask(videoQueue, record, barrier));
 		exec.shutdown();
 		start = false;
 	}
@@ -88,14 +101,17 @@ public class VideoScratch {
 		
 		private BlockingQueue<String> urls;
 
-		private BlockingQueue<Video> videos;
+		private List<Video> videos;
+		
+		private Exchanger<List<Video>> exchanger;
 		
 		private CyclicBarrier barrier;
 		
-		public VideoScratchTask(BlockingQueue<String> urls, BlockingQueue<Video> videos,
-				CyclicBarrier barrier) {
+		public VideoScratchTask(BlockingQueue<String> urls, 
+				Exchanger<List<Video>> exchanger, CyclicBarrier barrier) {
 			this.urls = urls;
-			this.videos = videos;
+			this.videos = new ArrayList<Video>();
+			this.exchanger = exchanger;
 			this.barrier = barrier;
 		}
 
@@ -104,19 +120,19 @@ public class VideoScratch {
 			try{
 				while(urls.size() > 0) {
 					String url = urls.take();
-					List<Video> list = reader.read(url);
-					videos.addAll(list);
-					log.debug(this + " ��ʣ������:" + urls.size());
+					videos = reader.read(url);
+					log.debug(this + " 本次抓取数据：" + videos.size() + " 剩余URL：" + urls.size());
+					videos = exchanger.exchange(videos);
+					log.debug(this + " 发起数据交，交换后数据：" + videos.size());
 				}
-				log.debug(this + " ��ץȡ:" + videos.size());
+				log.debug(this + " 完成任务，共抓取数据：" + videos.size());
 			} catch (Exception e) {
 				log.error(e.toString());
 			} finally {
 				try {
-					//������finally��- -
+					log.debug(this + " barrier累计：" + barrier.getNumberWaiting());
 					barrier.await();
 				} catch (InterruptedException | BrokenBarrierException e) {
-					log.error("Barrier��Դ�޷��ͷţ������߳̽������");
 				}
 			}
 		}
@@ -125,75 +141,60 @@ public class VideoScratch {
 	
 	public class VideoSaveTask implements Runnable{
 		
-		private static final int COMMIT_SIZE = 200;
+		private List<Video> videos;
 		
-		private BlockingQueue<Video> videos;
-		
-		private CyclicBarrier barrier;
-
 		private VideoScratchRecord record;
 		
-		public VideoSaveTask(BlockingQueue<Video> videos, VideoScratchRecord record,
-				CyclicBarrier barrier) {
-			this.videos = videos;
+		private Exchanger<List<Video>> exchanger;
+		
+		private CyclicBarrier barrier;
+		
+		public VideoSaveTask(VideoScratchRecord record,
+				Exchanger<List<Video>> exchanger, CyclicBarrier barrier) {
+			this.videos = new ArrayList<Video>();
 			this.barrier = barrier;
+			this.exchanger = exchanger;
 			this.record = record;
 		}
 		
 		@Override
 		public void run() {
 			long saveCount = 0;
-			boolean await = false;
-			try {	
-				while(barrier.getNumberWaiting() < barrier.getParties() - 1) {
-					System.out.println("number:" + barrier.getNumberWaiting());
-					System.out.println("parties:" + barrier.getParties());
-					if(videos.size() > 0) {
-						saveCount = saveCount + saveVideos();
-						System.out.println("count " + saveCount);
-					}
-				}
-				barrier.await();
-				await = true;
-				while(videos.size() > 0) {
-					saveCount = saveCount + saveVideos();
-					System.out.println("count " + saveCount);
-				}
-			} catch (Exception e) {
-				record.setError(record.getError() + e.toString());	//���������Ϣ
-				if(!await) {
+			try {
+				while(!Thread.interrupted()) {
+					System.out.println(Thread.currentThread().getName() + " 交换前数据：" + videos.size());
+					videos = exchanger.exchange(videos, 15, TimeUnit.SECONDS);
+					System.out.println(this + " 发起数据交交换，交换后数据：" + videos.size());
 					try {
-						barrier.await();
-					} catch (InterruptedException | BrokenBarrierException e1) {
-						e1.printStackTrace();
+						videoDao.saveOrUpdateList(videos);
+						saveCount += videos.size();
+						System.out.println(this + " 当前保存数据量" + saveCount);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						videos.removeAll(videos);
 					}
 				}
+			} catch (InterruptedException e) {
+				log.error(e);
+			} catch (TimeoutException e1) {
+				log.error(e1);
+				System.out.println("长时间未获取数据任务终止");
 			} finally {
-				record.setEndTime(new Date());	//�������ʱ��
-				record.setScratchCount(saveCount);
-				recordDao.save(record);
+				synchronized (record) {
+					Long scratchCount = record.getScratchCount();
+					if(scratchCount == null) {
+						scratchCount = new Long(0);
+					}
+					record.setScratchCount(scratchCount + saveCount);	
+				}
+				try {
+					System.out.println(this + " barrier累计：" + barrier.getNumberWaiting());
+					barrier.await();
+				} catch (InterruptedException | BrokenBarrierException e) {
+					log.error(e);
+				}
 			}
-		}
-		
-		public int saveVideos() throws Exception {
-			DefaultTransactionDefinition td = new DefaultTransactionDefinition();
-			td.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			TransactionStatus ts = tm.getTransaction(td);
-			int i = 0;
-			try{
-				while(i < COMMIT_SIZE && videos.size() > 0) {
-					Video v = videos.take();
-					videoDao.saveOrUpdate(v, v.getAvid());
-					i++;
-				}
-				tm.commit(ts);
-			} catch (Exception e) {
-				if(!ts.isCompleted()) {
-					tm.rollback(ts);
-				}
-				e.printStackTrace();
-			} 
-			return i;
 		}
 
 	}
