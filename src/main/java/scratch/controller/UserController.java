@@ -3,6 +3,7 @@ package scratch.controller;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,105 +17,120 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
+import scratch.support.ModelSupport;
 
+
+@SessionAttributes({"reset_key", "reset_userId"})	//å¤šä¸ªrequestè¯·æ±‚ä¸­éœ€è¦ä½¿ç”¨
 @Controller
-@SessionAttributes({"key", "userId"})
 public class UserController {
 	
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	
 	@RequestMapping(value="/user/update/pwd", method=RequestMethod.POST)
-	public void updatePassword() {
-		
-	}
+	public void updatePassword() { }
 	
 	/**
-	 * ÃÜÂëÖØÖÃ£ºÌîĞ´ÓÊÏäĞÅÏ¢±íµ¥
+	 * æ˜¾ç¤ºå¯†ç é‡ç½®é¡µé¢
 	 * @return
 	 */
 	@RequestMapping(value="/user/reset", method=RequestMethod.GET)
 	public String resetPasswordForm() {
-		//ÏÔÊ¾ÌîĞ´±íµ¥
 		return "user_reset";
 	}
 	
 	/**
-	 * ÃÜÂëÖØÖÃ£ºÓÊ¼ş·¢ËÍÖØÖÃÁ´½ÓÇëÇó
+	 * å‘é€å¯†ç é‡ç½®é‚®ç®±
+	 * PRGæ¨¡å¼
 	 * @param username
 	 * @param email
 	 * @param ra
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value="/user/resetmail", method=RequestMethod.POST)
 	public String resetPasswordEmail(@RequestParam("username") String username, 
-			@RequestParam("email") String email, RedirectAttributes ra, Model model) {
-		//ÅĞ¶ÏÓÊ¼şÊÇ·ñÊôÓÚ¸ÃÕËºÅ
+			@RequestParam("email") String email, RedirectAttributes ra) {
+		//æ ¸å¯¹ç”¨æˆ·çš„é‚®ç®±ä¿¡æ¯
 		User user = userService.get(username, email);
 		if(user == null){
-			//ÏÔÊ¾´íÎó
-			ra.addAttribute("error", "ÊäÈëµÄÓÊÏä´íÎó");
+			ModelSupport.setError(ra, "ç”¨æˆ·çš„é‚®ç®±ä¿¡æ¯é”™è¯¯");
 			return "redirect:/user/reset";
 		}
-		//³ÉÁ¢Ôò·¢ËÍÓÊ¼ş
+		//å‘é€é‚®ä»¶
 		try {
 			userService.sendRestMail(user);
+			ModelSupport.setSuccess(ra, "é‡ç½®é“¾æ¥å·²ç»å‘é€åˆ°é‚®ç®±ï¼Œé“¾æ¥æœ‰æ•ˆæœŸä¸º10åˆ†é’Ÿã€‚");
 		} catch (MailException | MessagingException e) {
-			//ÏÔÊ¾´íÎó
 			e.printStackTrace();
-			model.addAttribute("error", "ÓÊ¼ş·¢ËÍÊ§°Ü");
-			return "common_message";
+			ModelSupport.setError(ra, "å‘é€é‚®ä»¶å¤±è´¥");
+			return "redirect:/common/message";
 		}
-		model.addAttribute("error", "ÓÊ¼ş·¢ËÍ³É¹¦");
-		return "common_message";
+		return "redirect:/common/message";
 	}
 	
 	/**
-	 * ÃÜÂëÖØÖÃ£ººË¶ÔÖØÖÃURLÓĞĞ§ĞÔ£¬·µ»ØÃÜÂëÌîĞ´±íµ¥
+	 * æ ¹æ®KEYæä¾›é‡è®¾å¯†ç é¡µé¢
 	 * @param key
+	 * @param userId
+	 * @param model
+	 * @return
 	 */
 	@RequestMapping(value="/user/resetpwd", method=RequestMethod.GET)
 	public String resetPasswordForm(@RequestParam("key") String key, 
 			@RequestParam("user") Long userId, Model model) {
-		//Ğ£ÑéKEY
+		
+		//åˆ¤æ–­ç¼“å­˜ä¸­æ˜¯å¦å­˜åœ¨å€¼ï¼Œè‹¥ä¸å­˜åœ¨ç›´æ¥è¿”å›é”™è¯¯é¡µé¢
+		if(!redisTemplate.hasKey(key)) {
+			model.addAttribute("error", "æ— æ•ˆé¡µé¢");
+			return "common_message";
+		} else {
+			String value = redisTemplate.opsForValue().get(key);
+			if(value == null || value.isEmpty() || !value.equals(userId.toString())) {
+				model.addAttribute("error", "æ— æ•ˆé¡µé¢");
+				return "common_message";	
+			}
+		}
+		
 		if(!userService.decodeReset(key, userId)) {
-			model.addAttribute("error", "ÎŞĞ§Á´½Ó");
+			model.addAttribute("error", "æ— æ•ˆé¡µé¢");
 			return "common_message";
 		}
-		//·µ»ØÃÜÂëÖØÖÃÒ³Ãæ
-		model.addAttribute("userId", userId);
+		
+		//æ·»åŠ åˆ°Sessionä¸­
+		model.addAttribute("reset_userId", userId);	
+		model.addAttribute("reset_key", key);
+		
 		return "user_reset_pwd";
 	}
 	
 	/**
-	 * ÃÜÂëÖØÖÃ£ºÃÜÂë¸üĞÂÇëÇó
+	 * å¯†ç é‡ç½®
 	 * @param password
-	 * @param rePassword
-	 * @param key			KEYÓ¦¸ÃÓÃ»º´æ¹ÜÀí£¬KEYÊ¹ÓÃÍê±ÏÖ®ºó£¬¾ÍÓ¦¸ÃÅ×Æú»º´æ
 	 * @param userId
-	 * @param model
 	 * @param ra
+	 * @param status
 	 * @return
 	 */
 	@RequestMapping(value="/user/resetpwd", method=RequestMethod.POST)
 	public String resetPassword(@RequestParam("password") String password,
-			@RequestParam("repassword") String rePassword,
-			@ModelAttribute("userId") Long userId, 
-			Model model, RedirectAttributes ra, SessionStatus status) {
-		
-		if(!password.equals(rePassword)) {
-			ra.addAttribute("error", "Á½´ÎÃÜÂë²»Ò»ÖÂ");
-			return "redirect:/user/resetpwd";
-		}
+			@ModelAttribute("reset_userId") Long userId, 
+			@ModelAttribute("reset_key") String key,
+			RedirectAttributes ra, SessionStatus status) {
 		
 		User u = new User();
 		u.setPassword(password);
-		userService.update(u, userId);
 		
+		userService.update(u, userId);
 		status.setComplete();
-		model.addAttribute("success", "ÃÜÂë¸üĞÂ³É¹¦");
-		return "common_message";
+		
+		//å¯†ç ä¿®æ”¹æˆåŠŸï¼Œç§»é™¤ç¼“å­˜ä¸­çš„keyï¼Œè¯¥keyä½œåºŸ
+		redisTemplate.delete(key);
+
+		ModelSupport.setSuccess(ra, "å¯†ç é‡ç½®æˆåŠŸ");
+		return "redirect:/common/message";
 	}
 	
 }

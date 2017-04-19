@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page isELIgnored="false" %>
+    
 <meta http-equiv="Content-Type" content="text/html; UTF-8">
 
 <div class="col-md-offset-4 col-md-4 form">
@@ -17,6 +19,9 @@
 						jerror="邮箱格式不正确" 
 						jpattern="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$"
 					 />
+				</div>
+				<div>
+					<label>${error }</label>
 				</div>
 				<div class="form-group">
 					<input class="btn btn-primary"type="submit" />

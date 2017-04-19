@@ -49,4 +49,6 @@
 	<!-- 开启方法校验 -->
 	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
 	<bean class="scratch.support.SessionSupport" />
+	
+	<import resource="redis-context.xml"/>
 </beans>
