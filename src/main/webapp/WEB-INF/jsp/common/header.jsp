@@ -31,6 +31,11 @@
 	        					<div class="text-center">
 	        						<span>:)</span>
 	        					</div>
+	        					<c:if test="${user_g.role == 1 }">
+	        					<div class="text-center">
+	        						<b><a href="<c:url value="/bili/setting"/>">admin</a></b>
+	        					</div>
+	        					</c:if>
 	        					<div class="text-center">
 	        						<b><a href="<c:url value="/user/logout"/>">log out</a></b>
 	        					</div>

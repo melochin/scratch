@@ -11,4 +11,6 @@ public @interface UserRole {
 
 	Role value() default Role.User;
 	
+	boolean activi() default true;
+	
 }

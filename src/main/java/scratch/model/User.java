@@ -20,21 +20,24 @@ public class User {
 	private Long userId;
 	
 	@Column(name="username", length=30)
-	@NotNull(message="ÓÃ»§Ãû²»ÄÜÎª¿Õ")
-	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="ÓÃ»§ÃûÖ»ÄÜÒÔÊı×Ö»ò×ÖÄ¸×éºÏ£¬ÇÒ³¤¶È²»ÄÜÉÙÓÚ6Î»³¬¹ı18Î»")
+	@NotNull(message="ç”¨æˆ·åä¸èƒ½ä¸ºç©º")
+	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="ç”¨æˆ·ååªèƒ½ä»¥æ•°å­—æˆ–å­—æ¯ç»„åˆï¼Œä¸”é•¿åº¦ä¸èƒ½å°‘äº6ä½è¶…è¿‡18ä½")
 	private String username;
 	
 	@Column(name="email", length=100)
-	@Pattern(regexp="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message="ÇëÊäÈëÕıÈ·µÄÓÊÏä")
+	@Pattern(regexp="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message="è¯·è¾“å…¥æ­£ç¡®çš„é‚®ç®±")
 	private String email;
 	
 	@Column(name="password", length=30)
-	@NotNull(message="ÃÜÂë²»ÄÜÎª¿Õ")
-	@Size(min=6, message="ÃÜÂë³¤¶È²»ÄÜÉÙÓÚ6Î»")
+	@NotNull(message="å¯†ç ä¸èƒ½ä¸ºç©º")
+	@Size(min=6, message="å¯†ç é•¿åº¦ä¸èƒ½å°‘äº6ä½")
 	private String password;
 	
 	@Column(name="status", length=1)
-	private String status = "0";
+	private String status;
+	
+	@Column(name="role")
+	private Integer role;
 	
 	public User() {}
 
@@ -86,6 +89,14 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public Integer getRole() {
+		return role;
+	}
+
+	public void setRole(Integer role) {
+		this.role = role;
 	}
 
 	@Override

@@ -3,9 +3,11 @@ package scratch.aspect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,17 +35,17 @@ public class UserChecker {
 	@Autowired
 	private UserService userService;
 	
-	@Around("@annotation(scratch.aspect.UserRole)")
-	public void checkUser(ProceedingJoinPoint pjp){
+	@Before("@annotation(scratch.aspect.UserRole)")
+	public void checkUser(JoinPoint pjp) throws Throwable{
 		//读取注解，通过注解判断相应的用户权限
 		Annotation[] annotations = getAnnotations(pjp);
 		Role role = Role.User;
+		boolean activi = true;
 		for(Annotation a : annotations) {
 			if (a instanceof UserRole) {
-				if(((UserRole) a).value() == Role.Admin) {
-					role = Role.Admin;
-					break;
-				}
+				role = ((UserRole) a).value();
+				activi = ((UserRole) a).activi(); 
+				break;
 			}
 		}
 		//从Session中读取用户信息
@@ -62,17 +64,19 @@ public class UserChecker {
         	throw new PrivilegeException("请先登录");
         }
         //核对用户状态
-        if(!"1".equals(user.getStatus())) {
-        	throw new PrivilegeException("该账号尚未激活");
+        if(activi) {
+        	if(!"1".equals(user.getStatus())) {
+        		throw new PrivilegeException("该账号尚未激活");
+        	}
         }
         //管理员才能使用的页面，核对用户账号
-        if(role == Role.Admin && !user.getUsername().equals("admin")) {
+        if(role == Role.Admin && !user.getRole().equals(Role.Admin.ordinal())) {
         	throw new PrivilegeException("无效页面"); 
         } 
         return;
 	}
 
-	private Annotation[] getAnnotations(ProceedingJoinPoint pjp) {
+	private Annotation[] getAnnotations(JoinPoint pjp) {
 		MethodSignature sign = (MethodSignature) pjp.getSignature();
 		Method method = sign.getMethod();
 		return method.getAnnotations();

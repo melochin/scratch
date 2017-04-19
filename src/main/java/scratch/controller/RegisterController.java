@@ -39,7 +39,7 @@ public class RegisterController {
 	}
 	
 	/**
-	 * ÓÃ»§×¢²á±íµ¥
+	 * æ˜¾ç¤ºç”¨æˆ·æ³¨å†Œè¡¨å•
 	 * @return
 	 */
 	@RequestMapping(path="/register", method=RequestMethod.GET)
@@ -48,58 +48,60 @@ public class RegisterController {
 	}
 	
 	/**
-	 * ÓÃ»§×¢²á´¦Àí
+	 * å¤„ç†ç”¨æˆ·æ³¨å†Œè¡¨å•
 	 * @param user
 	 * @param result
-	 * @param rePassword
 	 * @param ra
 	 * @return
 	 */
 	@RequestMapping(path="/register", method=RequestMethod.POST)
 	public String register(@Valid @ModelAttribute("user") User user, BindingResult result, 
-			@RequestParam String rePassword, RedirectAttributes ra) {
-		//Ğ£ÑéĞÅÏ¢
+			RedirectAttributes ra) {
+		//æ ¡éªŒç”¨æˆ·ä¿¡æ¯
 		if(result.hasErrors()) {
 			RedirectAttrSupport.setError(ra, result);
 			return "redirect:/user/register";
 		}
-		if(!user.getPassword().equals(rePassword)) {
-			ra.addFlashAttribute("error", "Á½´ÎÊäÈëÃÜÂë²»Ò»ÖÂ");
-			return "redirect:/user/register";
-		}
-		//ĞÂÔöÓÃ»§
 		try{
 			service.add(user);
 		} catch(MailException e) {
-			ra.addFlashAttribute("error", "ÕËºÅ×¢²á³É¹¦:" + e.getMessage());
+			ra.addFlashAttribute("error", "è´¦å·æ³¨å†ŒæˆåŠŸ:" + e.getMessage());
 			return "redirect:/common/message";
 		} catch(Exception e) {
 			ra.addFlashAttribute("error", e.getMessage());
 			return "redirect:/user/register";
 		}
-		ra.addFlashAttribute("success", "×¢²á³É¹¦£¬½«»á·¢ËÍÒ»·İÓÊ¼ş¸øÄú£¬µã»÷ÓÊ¼şÀïµÄÁ´½ÓÍê³ÉÕËºÅÑéÖ¤£¬·ñÔòÕËºÅÎŞ·¨Ê¹ÓÃ");
+		ra.addFlashAttribute("success", "æ³¨å†ŒæˆåŠŸï¼Œå°†ä¼šå‘é€ä¸€ä»½é‚®ä»¶ç»™æ‚¨ï¼Œç‚¹å‡»é‚®ä»¶é‡Œçš„é“¾æ¥å®Œæˆè´¦å·éªŒè¯ï¼Œå¦åˆ™è´¦å·æ— æ³•ä½¿ç”¨");
 		return "redirect:/common/message";
 	}
 	
+	/**
+	 * å‘é€é‚®ç®±æ ¡éªŒ
+	 * @param session
+	 * @param model
+	 * @return
+	 * @throws MailException
+	 * @throws MessagingException
+	 */
 	@RequestMapping(path="/register/sendMail")
 	public String sendMail(HttpSession session, Model model) throws MailException, MessagingException {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
-			model.addAttribute("error", "ÎŞĞ§Á´½Ó");
+			model.addAttribute("error", "æ— æ•ˆé“¾æ¥");
 			return "common_message";
 		}
 		if(!"1".equals(user.getStatus())) {
 			service.sendActiviMail(user);
-			model.addAttribute("success", "ÓÊ¼şÒÑ¾­·¢ËÍ");
+			model.addAttribute("success", "é‚®ä»¶å·²ç»å‘é€");
 			return "common_message";
 		} 
-		model.addAttribute("error", "¸ÃÓÃ»§ÕËºÅÒÑ¾­¼¤»î£¬ÎŞĞè·¢ËÍÓÊ¼ş");
+		model.addAttribute("error", "è¯¥ç”¨æˆ·è´¦å·å·²ç»æ¿€æ´»ï¼Œæ— éœ€å‘é€é‚®ä»¶");
 		return "common_message";
 	}
 	
 	
 	/**
-	 * ÓÃ»§×¢²á¼¤»î
+	 * ï¿½Ã»ï¿½×¢ï¿½á¼¤ï¿½ï¿½
 	 * @param actiCode
 	 * @param request
 	 * @return
@@ -107,10 +109,10 @@ public class RegisterController {
 	@RequestMapping(path="/register/activiti/{actiCode}", method=RequestMethod.GET)
 	public String activiti(@PathVariable("actiCode") String actiCode, Model model) {
 		if(!service.activi(actiCode)) {
-			model.addAttribute("error", "ÄúËù·ÃÎÊµÄÒ³Ãæ²»´æÔÚ");
+			model.addAttribute("error", "æ‚¨æ‰€è®¿é—®çš„é¡µé¢ä¸å­˜åœ¨");
 			return "common_message";
 		} else {
-			model.addAttribute("success", "ÕËºÅ¼¤»î³É¹¦");
+			model.addAttribute("success", "è´¦å·æ¿€æ´»æˆåŠŸ");
 			return "common_message";
 		}
 	}
@@ -119,7 +121,7 @@ public class RegisterController {
 	public @ResponseBody String existUser(@RequestParam("username") String username) {
 		User user = new User();
 		user.setUsername(username);
-		return service.isExist(user) ? "ÕËºÅ´æÔÚ" : null;
+		return service.isExist(user) ? "è´¦å·å­˜åœ¨" : null;
 	}
 
 }
