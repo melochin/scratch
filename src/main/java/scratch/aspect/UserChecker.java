@@ -1,28 +1,27 @@
 package scratch.aspect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import scratch.exception.PrivilegeException;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.CipherSupport;
-import scratch.support.GlobalSession;
+import scratch.support.cipher.CipherSupport;
+import scratch.support.web.CookieSupport;
+import scratch.support.web.SessionSupport;
 
 /**
- * ÎÊÌâ1£ºÅäÖÃÕı³££¬AOPÎŞ·¨ÔËĞĞ£¬Ã»ÓĞÉú³Ébean
+ * 1.æ ¸å¯¹ç”¨æˆ·èº«ä»½
+ * 2.ç”¨æˆ·å¯†ç åŠ å¯†
  * @author Admin
  *
  */
@@ -36,42 +35,63 @@ public class UserChecker {
 	@Autowired
 	private UserService userService;
 	
-	@Pointcut("execution(* scratch.controller.HomeController.mainPage(..)) || "
-			+ "execution(* scratch.controller.SearchInfoController.*(..)) || "
-			+ "execution(* scratch.controller.SearchWordController.*(..)) || "
-			+ "execution(* scratch.controller.ScratchController.*(..))")
-	public void checker(){}
-	
-	//´úÀíÖĞ²»ÄÜÊ¹ÓÃcheckedÒì³£
-	@Before("checker()")
-	public void checkUser(){
-		HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder
-					.getRequestAttributes())
-					.getRequest(); 
-        HttpSession session = request.getSession();
-        
-		//¼ì²ésessionÖĞÊÇ·ñ´æÔÚÓÃ»§ĞÅÏ¢
-        User user = getUserBySession(session);
+	@Before("@annotation(scratch.aspect.UserRole)")
+	public void checkUser(JoinPoint pjp) throws Throwable{
+		//è¯»å–æ³¨è§£ï¼Œé€šè¿‡æ³¨è§£åˆ¤æ–­ç›¸åº”çš„ç”¨æˆ·æƒé™
+		Annotation[] annotations = getAnnotations(pjp);
+		Role role = Role.User;
+		boolean activi = true;
+		for(Annotation a : annotations) {
+			if (a instanceof UserRole) {
+				role = ((UserRole) a).value();
+				activi = ((UserRole) a).activi(); 
+				break;
+			}
+		}
+		//ä»Sessionä¸­è¯»å–ç”¨æˆ·ä¿¡æ¯
+		//è¯»ä¸å–ä¸åˆ°ï¼Œåˆ™ä»Cookieä¸­è¯»å–ç”¨æˆ·ä¿¡æ¯
+        User user = SessionSupport.getUser();
         if(user == null) {
-            //¼ì²écookieÊÇ·ñ´æÔÚÓÃ»§ĞÅÏ¢
-        	user = getUserByCookie(request.getCookies());	
-        	session.setAttribute(GlobalSession.USER, user);
+        	user = CookieSupport.getUser();
+        	if(user != null) {
+        		user = userService.getById(Long.valueOf(user.getUserId()));
+        		//Cookieä¸­è·å–ä¿¡æ¯åï¼Œä¿å­˜åˆ°Sessionä¸­
+        		SessionSupport.setUser(user);
+        	}
         }
-        
+        //æ ¸å¯¹ç”¨æˆ·æ˜¯å¦å­˜åœ¨
         if(user == null) {
-        	throw new PrivilegeException("Çë³¢ÊÔµÇÂ¼ºó£¬ÔÙ´Î·ÃÎÊÒ³Ãæ");
+        	throw new PrivilegeException("è¯·å…ˆç™»å½•");
         }
-        if(!"1".equals(user.getStatus())) {
-        	throw new PrivilegeException("ÕËºÅÉĞÎ´ÑéÖ¤£¬ÎŞ·¨·ÃÎÊÒ³Ãæ");
+        //æ ¸å¯¹ç”¨æˆ·çŠ¶æ€
+        if(activi) {
+        	if(!"1".equals(user.getStatus())) {
+        		throw new PrivilegeException("è¯¥è´¦å·å°šæœªæ¿€æ´»");
+        	}
         }
-        
+        //ç®¡ç†å‘˜æ‰èƒ½ä½¿ç”¨çš„é¡µé¢ï¼Œæ ¸å¯¹ç”¨æˆ·è´¦å·
+        if(role == Role.Admin && !user.getRole().equals(Role.Admin.ordinal())) {
+        	throw new PrivilegeException("æ— æ•ˆé¡µé¢"); 
+        } 
         return;
 	}
+
+	private Annotation[] getAnnotations(JoinPoint pjp) {
+		MethodSignature sign = (MethodSignature) pjp.getSignature();
+		Method method = sign.getMethod();
+		return method.getAnnotations();
+	}
 	
-	//ÎªÊ²Ã´À¹½Ø²»µ½£¿ÒòÎªService´¦ÓÚapplicationContextÉÏÏÂÎÄÖĞ£¬²»´¦ÓÚ´úÀíµÄ·¶Î§
-	//½â¾ö·½·¨£ºÔÚapplicationContextÖĞÒıÈë
-	//	<context:component-scan base-package="scratch.aspect" />
-	//	<aop:aspectj-autoproxy/>
+	/**
+	 * è¯¥é€šçŸ¥ä¸»è¦ç”¨äºServiceå±‚çš„å¯†ç åŠ å¯†
+	 * Serviceçš„Beanå¿…é¡»ä¸Aopä»£ç†å¤„äºåŒBeanå®¹å™¨ä¸­ï¼Œå¦åˆ™Aopæ— æ³•ä»£ç†
+	 * è§£å†³ï¼šåœ¨ç›¸åº”ä¸Šä¸‹æ–‡ä¸­åŠ å…¥Aopä»£ç†
+	 * <context:component-scan base-package="scratch.aspect" />
+	 * <aop:aspectj-autoproxy/>
+	 * @param pjp
+	 * @return
+	 * @throws Throwable
+	 */
 	@Around("@annotation(scratch.aspect.PasswordEncode)")
 	public Object encodePswd(ProceedingJoinPoint pjp) throws Throwable {
 		System.out.println(pjp);
@@ -86,39 +106,6 @@ public class UserChecker {
 			}
 		}
 		return pjp.proceed(args);
-	}
-	
-	
-	private User getUserBySession(HttpSession session) {
-		User user = (User) session.getAttribute(GlobalSession.USER);
-		if(user == null) return null;
-		String username = user.getUsername();
-		if(username == null || username.trim().equals("")) return null;
-		return user;
-	}
-	
-	/**
-	 * ´ÓCookieÖĞ»ñÈ¡user¡¢userEncodeĞÅÏ¢
-	 * @param cookies
-	 * @return
-	 */
-	private User getUserByCookie(Cookie[] cookies) {
-		if(cookies == null) return null;
-		String userId = null;
-		String userEncode = null;
-        for(Cookie c : cookies){
-        	if("user".equals(c.getName())) {
-        		userId = c.getValue();
-        	}
-        	if("userEncode".equals(c.getName())) {
-        		userEncode = c.getValue();
-        	}
-        }
-        if(userId == null || userEncode == null) return null;
-        
-        if(!cipher.decode(userEncode).equals(userId)) return null;
-        
-        return userService.getById(Long.valueOf(userId));
 	}
 	
 }

@@ -1,14 +1,18 @@
 package scratch.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import scratch.aspect.PasswordEncode;
@@ -17,15 +21,20 @@ import scratch.controller.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.MailException;
 import scratch.model.User;
-import scratch.support.CipherSupport;
+import scratch.support.cipher.CipherSupport;
+import scratch.support.service.MailService;
+import scratch.support.service.PageBean;
 
 @Transactional
 @Service
 public class UserService {
 
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	
 	private static Logger log = Logger.getLogger(UserService.class);
 	
-	private static long TIME_OUT = 6000000;	//ÓĞĞ§ÆÚ100·ÖÖÓ
+	private static long TIME_OUT = 10;	//æœ‰æ•ˆæœŸ10åˆ†é’Ÿ
 	
 	private static String[][] KEY = new String[][] {{"51748915", "87741296"}, 
 		{"12744597", "26741096"}};
@@ -40,7 +49,7 @@ public class UserService {
 	private UserDao dao;
 	
 	/**
-	 * ÓÃ»§Ğ£Ñé(µÇÂ¼)
+	 * ç”¨æˆ·æ ¡éªŒ(ç™»å½•)
 	 * @param user
 	 * @return
 	 */
@@ -50,16 +59,19 @@ public class UserService {
 	}
 	
 	/**
-	 * ÓÃ»§×¢²á
-	 * ĞèÒª×¢ÒâÊÂÎñ
+	 * ç”¨æˆ·æ³¨å†Œ
+	 * éœ€è¦æ³¨æ„äº‹åŠ¡
 	 * @param user
 	 * @throws MailException 
 	 */
 	@PasswordEncode
 	public void add(User user) throws MailException {
-		if(isExist(user)) throw new RuntimeException("ÕËºÅÒÑ¾­´æÔÚ");
+		if(isExist(user)) throw new RuntimeException("è´¦å·å·²ç»å­˜åœ¨");
 		dao.save(user);
-		//Å×³öcheckedÒì³££¬²»Ó°ÏìÊÂÎñ
+		//å¦‚æœç”¨æˆ·çš„çŠ¶æ€å¤„äºæ¿€æ´»ï¼Œé‚£å°±ä¸å‘ç”Ÿé‚®ä»¶
+		//åå°ç›´æ¥æ·»åŠ çš„ç”¨æˆ·å¯èƒ½å¤„äºè¯¥çŠ¶æ€
+		if(!StringUtils.isEmpty(user.getStatus()) && user.getStatus().equals("1")) return;
+		//æŠ›å‡ºcheckedå¼‚å¸¸ï¼Œä¸å½±å“äº‹åŠ¡
 		try{
 			sendActiviMail(user);	
 		} catch (Exception e) {
@@ -73,13 +85,13 @@ public class UserService {
 	}
 
 	@PasswordEncode
-	public void update(User u, Long id) {
-		dao.update(u, id);
+	public void update(User u) {
+		dao.update(u, u.getUserId());
 	}
 	
 	
 	/**
-	 * ÅĞ¶ÏÓÃ»§ÃûÊÇ·ñ±»ÈËÊ¹ÓÃ
+	 * åˆ¤æ–­ç”¨æˆ·åæ˜¯å¦è¢«äººä½¿ç”¨
 	 * @param user
 	 * @return
 	 */
@@ -88,7 +100,7 @@ public class UserService {
 	}
 	
 	/**
-	 * Í¨¹ıÓÃ»§id»ñÈ¡ÓÃ»§
+	 * é€šè¿‡ç”¨æˆ·idè·å–ç”¨æˆ·
 	 * @param userId
 	 * @return
 	 */
@@ -97,7 +109,7 @@ public class UserService {
 	}
 	
 	public boolean activi(String actiCode) {
-		//¸ù¾İ½âÃÜ¼¤»îÂë£¬»ñÈ¡ĞÅÏ¢
+		//æ ¹æ®è§£å¯†æ¿€æ´»ç ï¼Œè·å–ä¿¡æ¯
 		String[] infos = decodeActi(actiCode);
 		if(infos == null) {
 			return false;
@@ -105,11 +117,11 @@ public class UserService {
 		String username = infos[0];
 		long registerTime = Long.valueOf(infos[1]);
 		long curTime = System.currentTimeMillis();
-		//ÅĞ¶Ï¼¤»îÂëÊÇ·ñ¹ıÆÚ
+		//åˆ¤æ–­æ¿€æ´»ç æ˜¯å¦è¿‡æœŸ
 		if(registerTime + TIME_OUT < curTime) {
 			return false;
 		}
-		//¼¤»îÓÃ»§×´Ì¬
+		//æ¿€æ´»ç”¨æˆ·çŠ¶æ€
 		return dao.updateStatus(username, "1") == 1;
 	}
 	
@@ -129,19 +141,19 @@ public class UserService {
 	
 	
 	/**
-	 * ¸ù¾İ¼¤»îÂë»ñÈ¡ÓÃ»§ÃûºÍ×¢²áÊ±¼ä
-	 * array[0]:ÓÃ»§Ãû
-	 * array[1]:×¢²áÊ±¼ä
+	 * æ ¹æ®æ¿€æ´»ç è·å–ç”¨æˆ·åå’Œæ³¨å†Œæ—¶é—´
+	 * array[0]:ç”¨æˆ·å
+	 * array[1]:æ³¨å†Œæ—¶é—´
 	 * @param actiCode
 	 * @return
 	 */
 	private String[] decodeActi(String actiCode) {
-		log.debug("¼¤»îÂë£º" + actiCode);
+		log.debug("æ¿€æ´»ç ï¼š" + actiCode);
 		String info = cipher.decode(actiCode);
 		if(info == null) {
 			return null;
 		}
-		log.debug("½âÃÜºóµÄ¼¤»îÂëĞÅÏ¢£º" + info);
+		log.debug("è§£å¯†åçš„æ¿€æ´»ç ä¿¡æ¯ï¼š" + info);
 		String[] infos = info.split("&");
 		if(infos.length != 2) {
 			return null;
@@ -156,12 +168,16 @@ public class UserService {
 	
 	/**
 	 * 
-	 * ¸ù¾İÓÃ»§ÃûÉú³É¼¤»îÓÃµÄURL
+	 * æ ¹æ®ç”¨æˆ·åç”Ÿæˆæ¿€æ´»ç”¨çš„URL
 	 * @param username
 	 * @return
 	 */
 	private String getActiUrl(Long userId) {
 		String encodeStr = encrypt(userId, KEY[0]);
+		//å°†åŠ å¯†åçš„å­—ç¬¦ä¸²æ”¾å…¥ç¼“å­˜
+		redisTemplate.opsForValue()
+			.set(encodeStr, userId.toString(), TIME_OUT, TimeUnit.MINUTES);
+		//ç”Ÿæˆè´¦å·æ¿€æ´»çš„URL
 		String url = MvcUriComponentsBuilder.fromMethodName(
 				RegisterController.class, "activiti", encodeStr, null)
 				.build()
@@ -172,6 +188,10 @@ public class UserService {
 	
 	private String getRestUrl(Long userId) {
 		String encodeStr = encrypt(userId, KEY[1]);
+		//å°†åŠ å¯†åçš„å­—ç¬¦ä¸²æ”¾å…¥ç¼“å­˜
+		redisTemplate.opsForValue()
+			.set(encodeStr, userId.toString(), TIME_OUT, TimeUnit.MINUTES);
+		//ç”Ÿæˆå¯†ç é‡ç½®çš„URL
 		String url = MvcUriComponentsBuilder.fromMethodName(
 				UserController.class, "resetPasswordForm", encodeStr, userId, null)
 				.build()
@@ -181,7 +201,7 @@ public class UserService {
 	}
 	
 	/**
-	 * ¼ÓÃÜ·½Ê½£ºmd5(userId & currentTimeMills & key2, key1)
+	 * åŠ å¯†æ–¹å¼ï¼šmd5(userId & currentTimeMills & key2, key1)
 	 * @param userId
 	 * @param key
 	 * @return
@@ -193,27 +213,39 @@ public class UserService {
 	
 	private Long decrypt(String input, String[] key) {
 		String decode = cipher.decode(key[0], input);
-		//½âÎöÊı¾İ¸öÊıºË¶Ô
+		//è§£ææ•°æ®ä¸ªæ•°æ ¸å¯¹
 		String[] infos = (decode == null ? null : decode.split("&"));
 		if(infos == null || infos.length != 3) {
 			return null;
 		}
-		//Ê±¼äÓĞĞ§ÆÚºË¶Ô
-		Long timeStamp = Long.valueOf(infos[1]);
-		Long curTime = System.currentTimeMillis();
-		if(timeStamp > curTime || (timeStamp + TIME_OUT < curTime)) {
-			return null;
-		}
-		//KEY2ºË¶Ô
+		//KEY2æ ¸å¯¹
 		if(!key[1].equals(infos[2])) {
 			return null;
 		}
-		//ÓÃ»§ÓĞĞ§ĞÔºË¶Ô
+		//ç”¨æˆ·æœ‰æ•ˆæ€§æ ¸å¯¹
 		Long userId = Long.valueOf(infos[0]);
 		if(userId == null || userId == 0) {
 			return null;
 		}
 		return userId;
+	}
+	
+	public List<User> list() {
+		List<User> userList = dao.list(User.class);
+		return userList;
+	}
+	
+	public PageBean<User> findAll(int page, int pageSize) {
+		return dao.findAll(page, pageSize);
+	}
+	
+	
+	public User getById(Long id) {
+		return dao.getById(id);
+	}
+	
+	public void deleteById(Long id) {
+		dao.remove(User.class, id);
 	}
 	
 }

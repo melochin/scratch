@@ -14,17 +14,27 @@
 		<script src="<c:url value="/js/tools/browser.min.js"/>" ></script>
 		<script type="text/javascript" src="<c:url value="/js/tools/react.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tools/react-dom.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
 		
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
+		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 		<title>
-			<t:insertAttribute name="title" ignore="true"/>
+			<t:getAsString name="title" ignore="true"/>
 		</title>
 	</head>
 	<body>
-		<div>
+		<div class="row">
 			<t:insertAttribute name="header"/>
-			<t:insertAttribute name="content"/>
 		</div> 
+		<div class="row" style="padding:35px 0 0 0;">
+			<div class="col-md-1">
+				<t:insertAttribute name="nav"/>
+			</div>
+			<div class="col-md-10 content-box">
+				<t:insertAttribute name="content"/>
+			</div>
+		</div>
 	</body>
 </html>

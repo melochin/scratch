@@ -26,7 +26,7 @@ import scratch.model.User;
 import scratch.service.UserService;
 
 
-public class ConfigurationTest extends ContextClass{
+public class ConfigurationTest extends ContextTest{
 
 	private MockMvc mockMvc;
 	
@@ -40,18 +40,18 @@ public class ConfigurationTest extends ContextClass{
 	 */
 	@Before
 	public void setup() {
-		//MockMvcÖĞ×¢ÈëWebApplicationContext
+		//MockMvcï¿½ï¿½×¢ï¿½ï¿½WebApplicationContext
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 	
 /*	@Test
 	public void test() throws Exception {
 		//perform return ResultActions
-		//resultActions.andExpect(ResultMatcher matcher); ¶Ô½á¹û½øĞĞÆÚÍûÅĞ¶Ï
+		//resultActions.andExpect(ResultMatcher matcher); ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 		//MockMvcResultMatchers.*provides a number of expectations
 		MvcResult result = mockMvc.perform(get("/user/login"))
-			.andDo(print())		//´òÓ¡ˆÌĞĞºóµÄĞÅÏ¢
-			.andDo(log())		//†–î}£ºŒëHÉÏÊ¹ÓÃµÄÊÇapacheµÄlog£¬ÄÇüNlogÎÄ¼şÓ›ä›ÔÚÄÄÑe£¿
+			.andDo(print())		//ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½Ğºï¿½ï¿½ï¿½ï¿½Ï¢
+			.andDo(log())		//ï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½Hï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½apacheï¿½ï¿½logï¿½ï¿½ï¿½ï¿½ï¿½Nlogï¿½Ä¼ï¿½Ó›ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ï¿½
 			.andExpect(status().isOk())
 			.andExpect(handler().methodName("loginForm"))
 			.andExpect(view().name("/user/login"))
@@ -61,7 +61,7 @@ public class ConfigurationTest extends ContextClass{
 	@Test
 	public void testUser() throws Exception {
 		mockMvc.perform(post("/user/register/user").param("username", "hejianok"))
-				.andExpect(content().string("ÕËºÅ´æÔÚ"));
+				.andExpect(content().string("ï¿½ËºÅ´ï¿½ï¿½ï¿½"));
 	}
 	
 	@Test

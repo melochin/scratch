@@ -17,10 +17,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import scratch.model.dictionary.SearchType;
-
 
 @Entity
 @Table(name="search_tag")
@@ -35,7 +31,7 @@ public class SearchTag implements Comparable<SearchTag>{
 	@Column(name="name", length=255)
 	private String tagName;
 	
-	//¼¶Áª²Ù×÷ËùÓÐ£¬¼ÓÔØ·½Ê½ÀÁ¼ÓÔØ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	@JsonIgnore
 	@OneToMany(mappedBy="searchTag", cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
 	private List<SearchKeyword> searchKeyWords = new ArrayList<SearchKeyword>();
@@ -48,7 +44,7 @@ public class SearchTag implements Comparable<SearchTag>{
 	@JsonIgnore
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="type_id")
-	private SearchType type;
+	private VideoType type;
 	
 
 	public SearchTag() {}
@@ -85,11 +81,11 @@ public class SearchTag implements Comparable<SearchTag>{
 		this.user = user;
 	}
 
-	public SearchType getType() {
+	public VideoType getType() {
 		return type;
 	}
 
-	public void setType(SearchType type) {
+	public void setType(VideoType type) {
 		this.type = type;
 	}
 
@@ -101,7 +97,7 @@ public class SearchTag implements Comparable<SearchTag>{
 		this.searchKeyWords = searchKeyWords;
 	}
 	
-	//SearchKeyword£¬ÐèÒªÉèÖÃhashcode Óë equal
+	//SearchKeywordï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½hashcode ï¿½ï¿½ equal
 	public void addKeyword(SearchKeyword word) {
 		searchKeyWords.add(word);
 		word.setSearchTag(this);

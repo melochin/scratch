@@ -2,30 +2,25 @@ package scratch.service.test;
 
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.bilibili.service.ScratchService;
-import scratch.test.ContextClass;
+import scratch.service.bilibili.ScratchService;
+import scratch.test.ContextTest;
 
-public class ScratchServiceTest extends ContextClass{
+public class ScratchServiceTest extends ContextTest{
 
 	@Autowired
 	private ScratchService service;
 	
-	//@Test
+	@Test
 	@Rollback(false)
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void scratchTest() throws InterruptedException {
@@ -47,7 +42,7 @@ public class ScratchServiceTest extends ContextClass{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void SchedulerTest() throws IllegalStateException, InterruptedException, ExecutionException {
         Calendar c = new GregorianCalendar();
         c.set(Calendar.HOUR_OF_DAY, 10);

@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.service.SearchTagService;
-import scratch.test.ContextClass;
+import scratch.test.ContextTest;
 
-public class TagServiceTest extends ContextClass{
+public class TagServiceTest extends ContextTest{
 	
 	private static Logger log = Logger.getLogger(TagServiceTest.class);
 	
@@ -30,16 +30,16 @@ public class TagServiceTest extends ContextClass{
 	@Transactional
 	@Test
 	public void insertTest() {
-		//Tag±£´æµ¥¶À²âÊÔ
+		//Tagï¿½ï¿½ï¿½æµ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		System.out.println("Save Test");
-		SearchTag tag = new SearchTag("á°");
+		SearchTag tag = new SearchTag("ï¿½");
 		service.update(tag);
 	}
 	
 	@Test
 	public void insertNullTest() {
 		System.out.println("Save NULL Test");
-		SearchTag tag = new SearchTag("á°");
+		SearchTag tag = new SearchTag("ï¿½");
 		tag.setTagName(null);
 		service.update(tag);
 	}		
@@ -47,7 +47,7 @@ public class TagServiceTest extends ContextClass{
 	@Test
 	public void updateTest() {
 		System.out.println("Update Test");
-		SearchTag tag = new SearchTag("á°");
+		SearchTag tag = new SearchTag("ï¿½");
 		service.update(tag);
 		tag.setTagName("K");
 		service.update(tag);

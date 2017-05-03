@@ -15,8 +15,6 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
 
-<!-- 	<import resource="classpath:mail.properties;classpath:jdbc.properties"/>
- -->	
  	<!-- 读取配置文件 -->
 	<context:property-placeholder location="classpath:mail.properties,classpath:jdbc.properties"/>
 	
@@ -56,6 +54,36 @@
 		</property>
 	</bean>
 	
+	<!-- mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:scratch/dao/*.xml" />
+		<property name="typeAliasesPackage" value="scratch.model" />
+		<property name="configLocation" value="/WEB-INF/config.xml" />
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>
+	                    	helperDialect=mysql
+	                        reasonable=true
+	                        supportMethodsArguments=true
+	                        params=count=countSql
+	                        autoRuntimeDialect=true
+	                        rowBoundsWithCount = true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="scratch.dao.inter" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	
 	<!-- 事务管理 -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="hibernateSessionFactory"></property>
@@ -86,16 +114,14 @@
     	</property>
 	</bean>
 	
-	<bean id="page" class="scratch.service.Page" scope="request">
-		<aop:scoped-proxy/>
-		<property name="perPageItem" value="40" />
+	<bean id="page" class="scratch.support.service.Page">
+		<property name="perPageItem" value="20" />
 	</bean>
 	
 	<!-- 自动注册Bean-->
 	<context:component-scan base-package="scratch.dao" />			
 	<context:component-scan base-package="scratch.aspect" />
 	<context:component-scan base-package="scratch.service" />
-	<context:component-scan base-package="scratch.service.specific"/>
 	<context:component-scan base-package="scratch.service.user" />	
 	<context:component-scan base-package="scratch.support" />
 	
@@ -117,7 +143,8 @@
         </property>     
    </bean>  
    
-   <bean class="scratch.service.MailService">
+   <!-- 开启邮箱服务 -->
+   <bean class="scratch.support.service.MailService">
    		<property name="templates">
    			<list>
    				<value>register</value>
@@ -138,7 +165,10 @@
    		</property>
    </bean>
    
-<!--    <task:scheduler id="myScheduler" pool-size="5"/>
-   <task:annotation-driven scheduler="myScheduler"/> -->
+   <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
+   
+   <task:scheduler id="myScheduler" pool-size="5"/>
+   <task:annotation-driven scheduler="myScheduler"/>
+   <import resource="redis-context.xml"/>
    
 </beans>

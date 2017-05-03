@@ -15,7 +15,7 @@ import scratch.model.User;
 
 @Repository
 @Transactional
-public class SearchKeywordDao extends BasicDao{
+public class SearchKeywordDao extends BasicDao<SearchKeyword>{
 
 	private Session session;
 	

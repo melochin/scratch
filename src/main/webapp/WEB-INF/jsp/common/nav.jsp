@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false" %>
 <div>
@@ -7,12 +9,8 @@
 		</div>
 	</div>
     <ul class="sidebar-nav">
-        <li><a href="<c:url value="/"/>"><i class="glyphicon glyphicon-home" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Home</span></a></li>
-        <li><a href='<c:url value="/search/tag"/>'><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Tag</span></a></li>
-        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Statistics</span></a></li>
-        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Calender</span></a></li>
-        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Users</span></a></li>
-        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Setting</span></a></li>
+        <li><a href="<c:url value="/"/>"><i class="glyphicon glyphicon-home" aria-hidden="true"></i><span class="hidden-xs hidden-sm">主页</span></a></li>
+        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">设置</span></a></li>
     </ul>
 </div>
 <script>

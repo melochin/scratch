@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -12,11 +13,13 @@ import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.service.Page;
+import scratch.support.service.Page;
 
 @Transactional
 public class BasicDao<E> {
 
+	protected Logger log = Logger.getLogger(BasicDao.class);
+	
 	@Autowired
 	protected SessionFactory sessionFactory;
 	
@@ -29,7 +32,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * ĞÂÔö¶ÔÏó
+	 * æ–°å¢å¯¹è±¡
 	 * @param o
 	 */
 	public void save(E o) {
@@ -38,7 +41,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * ¸üĞÂ¶ÔÏó
+	 * æ›´æ–°å¯¹è±¡
 	 * @param o
 	 */
 	public void update(E o){
@@ -47,7 +50,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * ¸üĞÂ¶ÔÏó£º¸ù¾İÖ÷¼ü
+	 * æ›´æ–°å¯¹è±¡ï¼šæ ¹æ®ä¸»é”®
 	 * @param o
 	 * @param id
 	 */
@@ -67,7 +70,7 @@ public class BasicDao<E> {
 	
 	
 	/**
-	 * ĞÂÔö/¸üĞÂ¶ÔÏó
+	 * æ–°å¢/æ›´æ–°å¯¹è±¡
 	 * @param o
 	 */
 	public void saveOrUpdate(E o) {
@@ -82,18 +85,18 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * ĞÂÔö/¸üĞÂ¶ÔÏó
+	 * æ–°å¢/æ›´æ–°å¯¹è±¡
 	 * @param o
 	 * @param id
 	 */
 	public void saveOrUpdate(E o, Serializable id) {
 		Session session = getCurrentSession();
-		//IdÈç¹û²»´æÔÚ£¬ÔòÈÏÎªÊÇĞÂµÄ¶ÔÏó
+		//Idå¦‚æœä¸å­˜åœ¨ï¼Œåˆ™è®¤ä¸ºæ˜¯æ–°çš„å¯¹è±¡
 		if(id == null) {
 			session.save(o);
 			return;
 		}
-		//Id´æÔÚ£¬¶ÁÈ¡Êı¾İ¿âÖĞµÄ¶ÔÏó
+		//Idå­˜åœ¨ï¼Œè¯»å–æ•°æ®åº“ä¸­çš„å¯¹è±¡
 		Object dbObject = null;
 		try {
 			dbObject = getNewDBObject(o, id, o.getClass());
@@ -104,7 +107,7 @@ public class BasicDao<E> {
 	}
 	
 	private E getNewDBObject(E newObject, Serializable id, Class<?> clazz) throws IllegalArgumentException, IllegalAccessException {
-		//»ñµÃÊı¾İ¿âÖĞµÄ¶ÔÏó
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ĞµÄ¶ï¿½ï¿½ï¿½
 		@SuppressWarnings("unchecked")
 		E dbObject = (E) getCurrentSession().get(newObject.getClass(), id);
 		if(dbObject == null) return newObject;
@@ -125,7 +128,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * É¾³ı¶ÔÏó
+	 * åˆ é™¤å¯¹è±¡
 	 * @param o
 	 */
 	public void remove(E o) {
@@ -134,7 +137,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * É¾³ı¶ÔÏó£º¸ù¾İID
+	 * åˆ é™¤å¯¹è±¡ï¼šæ ¹æ®ID
 	 * @param o
 	 * @param id
 	 */
@@ -148,7 +151,7 @@ public class BasicDao<E> {
 	
 	
 	/**
-	 * »ñÈ¡µ¥¸ö¶ÔÏó
+	 * è·å–å•ä¸ªå¯¹è±¡
 	 * @param clazz
 	 * @return
 	 */
@@ -167,7 +170,7 @@ public class BasicDao<E> {
 	
 
 	/**
-	 * »ñÈ¡¶à¸ö¶ÔÏó
+	 * è·å–å¤šä¸ªå¯¹è±¡
 	 * @param clazz
 	 * @return
 	 */
@@ -179,7 +182,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * Í¨¹ıhql»ñÈ¡µ¥¸ö¶ÔÏó
+	 * é€šè¿‡hqlè·å–å•ä¸ªå¯¹è±¡
 	 * @param hql
 	 * @param args
 	 * @return
@@ -190,7 +193,7 @@ public class BasicDao<E> {
 	}
 	
 	/**
-	 * Í¨¹ıhql»ñÈ¡¶à¸ö¶ÔÏó
+	 * é€šè¿‡hqlè·å–å¤šä¸ªå¯¹è±¡
 	 * @param hql
 	 * @param args
 	 * @return
@@ -206,13 +209,13 @@ public class BasicDao<E> {
 			return null;
 		}
 		
-		//Èç¹ûÒª½øĞĞ·ÖÒ³²éÑ¯
+		//å¦‚æœè¦è¿›è¡Œåˆ†é¡µæŸ¥è¯¢
 		if(page != null) {
-			//ÏÈ»ñÈ¡×Ü¼ÇÂ¼Êı
+			//å…ˆè·å–æ€»è®°å½•æ•°
 			c.setProjection(Projections.rowCount());
 			page.setTotalItem(Long.valueOf(c.uniqueResult().toString()));
 			c.setProjection(null);
-			//¹ıÂË¼ÇÂ¼Êı
+			//è¿‡æ»¤è®°å½•æ•°
 			c.setFirstResult(page.getFirstIndex())
 				.setMaxResults(page.getPerPageItem());
 		}
@@ -221,17 +224,17 @@ public class BasicDao<E> {
 	
 	
 	/**
-	 * Í¨¹ıhql¸üĞÂ¶ÔÏó
+	 * é€šè¿‡hqlæ›´æ–°å¯¹è±¡
 	 * @param hql
 	 * @param args
-	 * @return Ó°ÏìĞĞÊı
+	 * @return å½±å“è¡Œæ•°
 	 */
 	public int updateByHql(String hql, Object...args) {
 		return createQuery(hql, args).executeUpdate();
 	}
 	
 	/**
-	 * Í¨¹ıhqlºÍ²ÎÊı£¬´´½¨Query¶ÔÏó
+	 * é€šè¿‡hqlå’Œå‚æ•°ï¼Œåˆ›å»ºQueryå¯¹è±¡
 	 * @param hql
 	 * @param args
 	 * @return

@@ -1,8 +1,14 @@
 package scratch.dao;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
 import org.springframework.stereotype.Repository;
 
+import scratch.dao.inter.IUserDao;
 import scratch.model.User;
+import scratch.support.service.Page;
+import scratch.support.service.PageBean;
 
 @Repository
 public class UserDao extends BasicDao<User> {
@@ -34,6 +40,13 @@ public class UserDao extends BasicDao<User> {
 
 	public User getByNameAndEmail(String username, String email) {
 		return getByHql(GET_USER_BY_NAME_AND_EMAIL, username, email);
+	}
+
+	public PageBean<User> findAll(int page, int pageSize) {
+		Page p = new Page(page, pageSize);
+		Criteria c = createCriteria(User.class);
+		List<User> userList = listByCriteria(c, p);
+		return new PageBean<User>(userList, p);
 	}
 
 }
