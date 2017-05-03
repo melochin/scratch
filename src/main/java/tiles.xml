@@ -4,8 +4,9 @@
        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd"> 
 
 <tiles-definitions>
+
 	<!-- 模板 -->
-	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp">
+	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp" preparer="scratch.view.MenuView">
 		<put-attribute name="title" value="" />
 		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
 		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav-user.jsp" />
@@ -87,5 +88,21 @@
 		<put-attribute name="content" value="/WEB-INF/jsp/bili/scratch_setting.jsp" />
 	</definition>
 
+	<definition name="bili_video_type" extends="template-with-nav">
+		<put-attribute name="title" value="setting" />
+		<put-attribute name="content" value="/WEB-INF/jsp/bili/video_type.jsp" />
+	</definition>
 	
+	
+	<definition name="admin_user_form" template="/WEB-INF/jsp/tiles/modal-form.jsp">
+		<put-attribute name="form" value="/WEB-INF/jsp/admin/user/user.jsp" />
+		<put-attribute name="modal-edit" value="/WEB-INF/jsp/admin/user/edit.jsp" />
+		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/user/save.jsp" />
+	</definition>
+
+	<definition name="admin_user" extends="template-with-nav">
+		<put-attribute name="title" value="用户管理" />
+		<put-attribute name="content" value="admin_user_form" />
+	</definition>
+
 </tiles-definitions>

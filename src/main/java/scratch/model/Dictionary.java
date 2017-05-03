@@ -8,16 +8,16 @@ import javax.persistence.MappedSuperclass;
 public class Dictionary {
 	
 	@Id
-	private Long code;
+	private Integer code;
 	
 	@Column(name="name", length=20)
 	private String name;
 
-	public Long getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
-	public void setCode(Long code) {
+	public void setCode(Integer code) {
 		this.code = code;
 	}
 
@@ -58,6 +58,11 @@ public class Dictionary {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Dictionary [code=" + code + ", name=" + name + "]";
 	}
 	
 }

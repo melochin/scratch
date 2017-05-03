@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.UserRole;
-import scratch.bilibili.model.VideoType;
-import scratch.bilibili.service.VideoTypeService;
+import scratch.service.bilibili.VideoTypeService;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.model.User;
+import scratch.model.VideoType;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
-import scratch.support.GlobalSession;
-import scratch.support.SessionSupport;
+import scratch.support.web.SessionSupport;
 
 @Controller
 @RequestMapping("/search")

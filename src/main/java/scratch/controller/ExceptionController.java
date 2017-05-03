@@ -1,6 +1,12 @@
 package scratch.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -10,33 +16,50 @@ import scratch.exception.PrivilegeException;
 @ControllerAdvice
 public class ExceptionController {
 	
+	private static Logger log = Logger.getLogger(ExceptionController.class);
+	
+	
 	/**
-	 * �����û�Ȩ���쳣
+	 * 处理权限
 	 * @param e
 	 * @param model
 	 * @return
 	 */
 	@ExceptionHandler
-	public ModelAndView hanlderPrivilege(PrivilegeException e, Model model) {
+	public String hanlderPrivilege(PrivilegeException e, Model model) {
 		model.addAttribute("error", e.getMessage());
-		//��/�����Զ�λ������
 		model.addAttribute("jump", "user/login");
-		return new ModelAndView("common_message");
+		return "common_message";
 	}
 	
 	/**
-	 * ���������쳣
+	 * 处理校验异常
+	 * @param e
+	 * @return
+	 */
+	@ExceptionHandler
+	public ModelAndView handleBeanValid(BindException e) {
+		List<String> errors = new ArrayList<String>();
+		ModelAndView view = new ModelAndView("common_message");
+		for(FieldError fieldError : e.getFieldErrors()) {
+			errors.add(fieldError.getDefaultMessage());
+		}
+		view.addObject("errors", errors);
+		return view;
+	}
+	
+	/**
+	 * 处理所有异常
 	 * @param e
 	 * @param model
 	 * @return
 	 */
 	@ExceptionHandler
-	public ModelAndView hanlderException(Exception e, Model model) {
-		String error = "";
-		error = e.getMessage();
-		e.printStackTrace();
-		model.addAttribute("error", error.isEmpty() ? "ҳ�淢������" : "ҳ�淢������:" + error);
-		return new ModelAndView("common_message");
+	public String hanlderException(Exception e, Model model) {
+		String error = e.getMessage();
+		log.error(error, e);
+		model.addAttribute("error", error.isEmpty() ? "程序发生异常" : "异常错误:" + error);
+		return "common_message";
 	}
 	
 }

@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -32,6 +33,13 @@
 		<div class="col-md-8 msg">
 			<div  id="messBox" class="alert alert-autocloseable-info">
 				${success}${error }
+				<c:if test="${errors != null}">
+					<ul>
+						<c:forEach var="e" items="${errors }">
+							<li>${e }</li>
+						</c:forEach>				
+					</ul>
+				</c:if>
 		    </div>
 		</div>
 	<div class="col-md-2"></div>

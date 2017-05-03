@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.rory.regex.RegexMatch;
+import scratch.support.regex.RegexMatch;
 
 public class RegexMatchTest {
 

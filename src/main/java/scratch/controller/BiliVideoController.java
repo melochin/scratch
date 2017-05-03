@@ -3,7 +3,9 @@ package scratch.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -15,14 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.aspect.Role;
-import scratch.aspect.UserRole;
-import scratch.bilibili.model.Video;
-import scratch.bilibili.service.VideoService;
+import scratch.service.bilibili.VideoService;
 import scratch.model.User;
-import scratch.service.PageBean;
+import scratch.model.Video;
 import scratch.service.SearchTagService;
-import scratch.support.SessionSupport;
+import scratch.support.service.PageBean;
+import scratch.support.web.SessionSupport;
 
 @Controller
 public class BiliVideoController {
@@ -32,6 +32,8 @@ public class BiliVideoController {
 	
 	@Autowired
 	private SearchTagService tagService;
+	
+	private static Logger log = Logger.getLogger(BiliVideoController.class);
 	
 	@RequestMapping(value="videos/{type}", method=RequestMethod.GET)
 	public ModelAndView listViodes(@PathVariable("type") Long type, Model model) {
@@ -47,14 +49,28 @@ public class BiliVideoController {
 	}
 	
 	@RequestMapping(path="/ajax/search", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody PageBean<List<Video>> query(@RequestParam(name="keyword", required=false) String keyword, 
-			@RequestParam(name="type", required=false) Long type,
+	public @ResponseBody PageBean<Video> query(@RequestParam(name="keyword", required=false) String keyword, 
+			@RequestParam(name="type", required=false) Integer type,
 			@RequestParam(name="order", required=false) String order,
 			@RequestParam(name="page", defaultValue="1") Integer page) throws UnsupportedEncodingException {
+		
+		long startTime = 0;
+		if(log.isDebugEnabled()) {
+			startTime = System.nanoTime();
+		}
 		if(keyword != null && !keyword.isEmpty()) {
 			keyword = URLDecoder.decode(keyword, "UTF-8");
 		}
-		return videoService.list(keyword, type, order, page);
+		
+		PageBean<Video> list = videoService.list(keyword, type, order, page);
+		
+		if(log.isDebugEnabled()) {
+			log.debug("检索结束，共耗时:" + 
+					TimeUnit.SECONDS.convert((System.nanoTime() - startTime), TimeUnit.NANOSECONDS) + 
+					"秒");
+		}
+		
+		return list;
 	}
 	
 	@RequestMapping(path="/ajax/follow/videos", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)

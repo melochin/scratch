@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import scratch.exception.PrivilegeException;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.CipherSupport;
-import scratch.support.CookieSupport;
-import scratch.support.SessionSupport;
+import scratch.support.cipher.CipherSupport;
+import scratch.support.web.CookieSupport;
+import scratch.support.web.SessionSupport;
 
 /**
  * 1.核对用户身份

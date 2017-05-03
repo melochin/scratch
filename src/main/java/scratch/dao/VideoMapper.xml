@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IVideoDao">
+
+	<!-- video table 中 col tid 存在关联表，采用resutlMap才能构建VieoType对象 -->
+	<resultMap id="VideoMap" type="Video">
+		<id property="avid" column="avid" javaType="long"/>
+		<result property="title" column="title"/>
+		<result property="picUrl"  column="pic_url"/>
+		<result property="uploader" column="uploader"/>
+		<result property="createDate" column="create_date"/>
+		<result property="updateDate" column="update_date"/>
+		<result property="duration" column="duration"/>
+		<result property="play" column="play"/>
+		<result property="description" column="description"/>
+		<association property="type" javaType="VideoType">
+			<id property="code" column="tid" javaType="int" />
+		</association>
+	</resultMap>
+	
+	<!-- 根据关键词、视频类型检索数据 -->
+	<select id="list" resultMap="VideoMap">
+	
+		select * from bili_video where 1 = 1
+
+		<if test="(words != null and words.size > 0) || (types != null and types.size > 0)">
+			<!-- 关键词筛选 -->
+			<if test="words != null and words.size > 0 ">
+				AND (
+				<foreach item="word" collection="words" separator="or">
+
+					locate (#{word} , title) > 0
+					<!-- title like CONCAT('%',#{word},'%') -->
+				</foreach>
+				)
+			</if>
+
+			<!-- 视频类型筛选 -->
+			<if test="types != null and types.size > 0 ">
+				AND tid in (
+					<foreach item="type" collection="types" separator=",">
+						#{type}
+					</foreach>
+				)
+			</if>
+
+		</if>
+
+		<!-- 排序 -->
+		<if test="order != null">
+			<choose>
+				<when test="order == 'createDate' ">
+					ORDER BY create_date desc
+				</when>
+				<when test="order == 'play' ">
+					ORDER BY play desc
+				</when>
+			</choose>
+		</if>
+
+	</select>
+
+	<!-- 保存对象 -->
+	<insert id="save">
+		insert into bili_video
+		(avid, tid, title, url, pic_url, uploader,
+		create_date, update_date, play, duration, description)
+		values(#{video.avid} ,#{video.type.code}, #{video.title}, #{video.url}, #{video.picUrl},
+		#{video.uploader},
+		#{video.createDate}, #{video.updateDate}, #{video.play}, #{video.duration},
+		#{video.description})
+	</insert>
+
+	<!-- 更新对象 -->
+	<update id="update">
+		update bili_video set
+		tid = #{video.type.code},
+		title = #{video.title},
+		url = #{video.url},
+		pic_url = #{video.picUrl},
+		uploader = #{video.uploader},
+		create_date = #{video.createDate},
+		update_date = #{video.updateDate},
+		play = #{video.play},
+		duration = #{video.duration},
+		description = #{video.description},
+		where avid = #{video.avid}
+	</update>
+
+	<!-- 获取对象 -->
+	<select id="getById" resultMap="VideoMap">
+		select * from bili_video where
+		avid = #{id}
+	</select>
+
+	<!-- 根据类型统计个数 -->
+	<select id="countsByType" resultType="hashmap">
+		select tid, count(*) count from bili_video group by tid;
+	</select>
+
+</mapper>  

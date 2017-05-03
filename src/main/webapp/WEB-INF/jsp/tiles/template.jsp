@@ -21,7 +21,7 @@
 		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 		<title>
-			<t:insertAttribute name="title" ignore="true"/>
+			<t:getAsString name="title" ignore="true"/>
 		</title>
 	</head>
 	<body>

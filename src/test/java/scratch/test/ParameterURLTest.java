@@ -3,7 +3,7 @@ package scratch.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.rory.regex.ParameterURL;
+import scratch.support.regex.ParameterURL;
 
 public class ParameterURLTest {
 

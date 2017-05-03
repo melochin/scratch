@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.RedirectAttrSupport;
+import scratch.support.web.RedirectAttrSupport;
 
 @Controller
 @SessionAttributes("user")

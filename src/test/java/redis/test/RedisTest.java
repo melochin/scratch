@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import scratch.test.ContextClass;
+import scratch.test.ContextTest;
 
-public class RedisTest extends ContextClass {
+public class RedisTest extends ContextTest {
 
 	@Autowired
 	private StringRedisTemplate template;

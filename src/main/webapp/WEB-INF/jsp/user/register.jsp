@@ -16,7 +16,7 @@
 					<input class="form-control" name="password" type="password" 
 						placeholder="密码" jerror="密码只能以数字或字母组合，且长度不能少于6位超过18位" jpattern="^[a-zA-Z0-9_]{6,18}$" />
 					<input class="form-control" name="rePassword" type="password" 
-						placeholder="确认密码"jerror="与上次输入的密码不同" jsameas="password" />
+						placeholder="确认密码" jerror="与上次输入的密码不同" jsameas="password" />
 					<span id="error" class="error">${error}</span>
 					<div class="row">
 						<input class="btn btn-primary col-md-11" type="submit" value="注册" />

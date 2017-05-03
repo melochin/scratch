@@ -8,12 +8,12 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
-public class PropertySourceTest extends ContextClass{
+public class PropertySourceTest extends ContextTest{
 
 	@Test
 	public void setPropertySourceTest() {
 		StandardEnvironment env = (StandardEnvironment) wac.getEnvironment();
-		//ÉèÖÃPropertySource
+		//ï¿½ï¿½ï¿½ï¿½PropertySource
 		env.getPropertySources().addFirst(new PropertySource<String>("test") {
 			@Override
 			public Object getProperty(String name) {
@@ -24,7 +24,7 @@ public class PropertySourceTest extends ContextClass{
 			}
 			
 		});
-		//ÅÐ¶Ï»ñÈ¡µÄPropertyÊÇ·ñÕýÈ·
+		//ï¿½Ð¶Ï»ï¿½È¡ï¿½ï¿½Propertyï¿½Ç·ï¿½ï¿½ï¿½È·
 		Assert.state(env.getProperty("foo").equals("lish"));
 		System.out.println(env.getProperty("jdbc.password"));
 	}

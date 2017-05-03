@@ -1,6 +1,7 @@
 package scratch.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import scratch.aspect.PasswordEncode;
@@ -19,7 +21,9 @@ import scratch.controller.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.MailException;
 import scratch.model.User;
-import scratch.support.CipherSupport;
+import scratch.support.cipher.CipherSupport;
+import scratch.support.service.MailService;
+import scratch.support.service.PageBean;
 
 @Transactional
 @Service
@@ -64,6 +68,9 @@ public class UserService {
 	public void add(User user) throws MailException {
 		if(isExist(user)) throw new RuntimeException("账号已经存在");
 		dao.save(user);
+		//如果用户的状态处于激活，那就不发生邮件
+		//后台直接添加的用户可能处于该状态
+		if(!StringUtils.isEmpty(user.getStatus()) && user.getStatus().equals("1")) return;
 		//抛出checked异常，不影响事务
 		try{
 			sendActiviMail(user);	
@@ -78,8 +85,8 @@ public class UserService {
 	}
 
 	@PasswordEncode
-	public void update(User u, Long id) {
-		dao.update(u, id);
+	public void update(User u) {
+		dao.update(u, u.getUserId());
 	}
 	
 	
@@ -221,6 +228,24 @@ public class UserService {
 			return null;
 		}
 		return userId;
+	}
+	
+	public List<User> list() {
+		List<User> userList = dao.list(User.class);
+		return userList;
+	}
+	
+	public PageBean<User> findAll(int page, int pageSize) {
+		return dao.findAll(page, pageSize);
+	}
+	
+	
+	public User getById(Long id) {
+		return dao.getById(id);
+	}
+	
+	public void deleteById(Long id) {
+		dao.remove(User.class, id);
 	}
 	
 }

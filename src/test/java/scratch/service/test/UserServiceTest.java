@@ -11,17 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.test.ContextClass;
+import scratch.test.ContextTest;
 
-public class UserServiceTest extends ContextClass{
+public class UserServiceTest extends ContextTest{
 
 	@Autowired
 	private UserService userService;
 	
 	/**
-	 * ÓÃ»§×¢²á²âÊÔ
-	 * 1.ÓÊÏäÊÂÎñÊÇ·ñ»áµ¼ÖÂÓÃ»§×¢²á»Ø¹ö£¿
-	 * 2.ÔÚÓÃ»§×¢²áÖĞÒıÈëcheckedÒì³££¬Ê¹ÓÊ¼ş·¢ËÍÊ§°Ü£¬Ò²²»»áµ¼ÖÂ×¢²áÓÃ»§ÊÂÎñ»Ø¹ö
+	 * ï¿½Ã»ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * 1.ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½áµ¼ï¿½ï¿½ï¿½Ã»ï¿½×¢ï¿½ï¿½Ø¹ï¿½ï¿½ï¿½
+	 * 2.ï¿½ï¿½ï¿½Ã»ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½checkedï¿½ì³£ï¿½ï¿½Ê¹ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½Ò²ï¿½ï¿½ï¿½áµ¼ï¿½ï¿½×¢ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ø¹ï¿½
 	 * @throws MailException 
 	 */
 	@Rollback

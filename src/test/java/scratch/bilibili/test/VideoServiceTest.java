@@ -4,11 +4,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.bilibili.dao.VideoDao;
-import scratch.bilibili.service.VideoService;
-import scratch.test.ContextClass;
+import scratch.service.bilibili.VideoService;
+import scratch.dao.VideoDao;
+import scratch.test.ContextTest;
 
-public class VideoServiceTest extends ContextClass{
+public class VideoServiceTest extends ContextTest{
 
 	@Autowired
 	private VideoService service;

@@ -6,8 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.bilibili.service.VideoTypeService;
+import scratch.service.bilibili.VideoTypeService;
 
 @Controller
 public class HomeController {
@@ -16,7 +17,7 @@ public class HomeController {
 	private VideoTypeService typeSerivce;
 	
 	/**
-	 * 显示主页
+	 * 鏄剧ず涓婚〉
 	 * @param session
 	 * @return
 	 */
@@ -27,11 +28,12 @@ public class HomeController {
 	}
 	
 	/**
-	 * 显示信息
+	 * 鏄剧ず淇℃伅
 	 * @return
 	 */
 	@RequestMapping(value="/common/message", method=RequestMethod.GET)
-	public ModelAndView message() {
+	public ModelAndView message(RedirectAttributes ra, Model model) {
+		model.addAllAttributes(ra.getFlashAttributes());
 		return new ModelAndView("common_message");
 	}
 	

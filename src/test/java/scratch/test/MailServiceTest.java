@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import scratch.exception.MailException;
 import scratch.model.User;
-import scratch.service.MailService;
 import scratch.service.MailTemplate;
 import scratch.service.UserService;
+import scratch.support.service.MailService;
 
-public class MailServiceTest extends ContextClass{
+public class MailServiceTest extends ContextTest{
 
 	@Autowired
 	private MailService service;

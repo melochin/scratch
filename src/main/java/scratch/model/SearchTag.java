@@ -18,8 +18,6 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import scratch.bilibili.model.VideoType;
-
 @Entity
 @Table(name="search_tag")
 public class SearchTag implements Comparable<SearchTag>{

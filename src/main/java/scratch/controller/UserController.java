@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.ModelSupport;
+import scratch.support.web.ModelSupport;
 
 
 @SessionAttributes({"reset_key", "reset_userId"})	//多个request请求中需要使用
@@ -123,7 +123,7 @@ public class UserController {
 		User u = new User();
 		u.setPassword(password);
 		
-		userService.update(u, userId);
+		userService.update(u);
 		status.setComplete();
 		
 		//密码修改成功，移除缓存中的key，该key作废

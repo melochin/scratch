@@ -20,7 +20,7 @@ $("document").ready(function() {
 	
 	loadHotVideos();
 
-})
+});
 
 
 function loadFollowViodes() {
@@ -59,6 +59,7 @@ function loadHotVideos($element) {
 			var params = {keyword:"", type : videoType  , order : "play"};
 			var _this = this;
 			AJAX.getVideos(params, function(data){
+				console.debug(data);
 				ReactDOM.render(<Videos  data={data.data} max={"12"} cols={"6"}/>, _this);
 			});
 		});
@@ -499,8 +500,20 @@ var Video = React.createClass({
 			width = "col-md-" + width;
 		}
 		var play = this.props.play;
-		if(play > 10000) {
-			play = parseFloat(play /10000).toFixed(1) + "万";
+		var unit = "";
+		if(play > 1000) {
+			play = parseFloat(play /1000).toFixed(1)
+			unit = "千";
+		}
+		if(play > 1000) {
+			play = parseFloat(play /1000).toFixed(1)
+			unit = "百万";
+		}
+		play = play + unit;
+		
+		var uploader = this.props.uploader;
+		if(uploader.length > 3) {
+			uploader = uploader.substring(0,3) + "..";
 		}
 
 		return(
@@ -516,9 +529,13 @@ var Video = React.createClass({
 					</div>
 					<div className="row" >
 						<div className="col-md-6" >
-							<h6>上传者: {this.props.uploader}</h6>
+							<h6>
+								<span className="glyphicon glyphicon-upload">
+									{uploader}
+								</span>
+							</h6>
 						</div>
-						<div className="col-md-4 col-md-offset-2">
+						<div className="col-md-6">
 							<h6>
 								<span className="glyphicon glyphicon-play-circle">{play}</span>
 							</h6>
