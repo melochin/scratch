@@ -5,14 +5,13 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.MailTemplate;
 import scratch.service.UserService;
+import scratch.support.service.MailException;
 import scratch.support.service.MailService;
 
 public class MailServiceTest extends ContextTest{
@@ -27,7 +26,7 @@ public class MailServiceTest extends ContextTest{
 	public void sendMailTest() throws MailException, MessagingException {
 		Map<String, Object> model = new HashMap<>();
 		model.put("url", "www.baidu.com");
-		service.sendMail(MailTemplate.REGISTER, "398299262@qq.com", model);
+		service.sendMail(MailTemplate.REGISTER.toString(), "398299262@qq.com", model);
 	}
 	
 	@Test

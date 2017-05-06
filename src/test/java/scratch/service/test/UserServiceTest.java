@@ -8,9 +8,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
+import scratch.support.service.MailException;
 import scratch.test.ContextTest;
 
 public class UserServiceTest extends ContextTest{
