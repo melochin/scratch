@@ -16,10 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
-import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.Result;
+import scratch.support.service.MailException;
 import scratch.support.service.PageBean;
 
 @Controller("AdminUserController")

@@ -21,16 +21,27 @@ import scratch.support.regex.RegexMatch;
 public class VideoReader extends ScratchReader<Video>{
 
 	private final static String VEDIO_URL = "http://www.bilibili.com/video/av";
+	
 	private final static String PARENT_NODE = "data";
+	
 	private final static String VEDIOS = "archives";
+	
 	private final static String TITLE = "title";
+	
 	private final static String PIC ="pic";
+	
 	private final static String AV = "aid";
+	
 	private final static String TYPE ="tid"; 
+	
 	private final static String UPLOADER = "author";
+	
 	private final static String CREATE_TIME = "create";
+	
 	private final static String PLAY = "play";
+	
 	private final static String DURATION = "duration";
+	
 	private final static String DESC = "description";
 	
 	private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -39,16 +50,17 @@ public class VideoReader extends ScratchReader<Video>{
 	protected void read(String html, RegexMatch match, List<Video> returnList) {
 		try{
 			format.setLenient(false);
-			//ȥ�����ò��ֵ�����
+			//处理HTML文本
 			html = html.substring(9, html.length()-2);
-			//���ı�ת����JsonNode
-			ObjectMapper m = new ObjectMapper();
-			JsonNode tree = m.readTree(html);
+			
+			//获取JSON处理工具
+			JsonNode tree = new ObjectMapper().readTree(html);
 			JsonNode videos = tree.findValue(PARENT_NODE)
 					.findValue(VEDIOS);
 			if(videos == null) return;
+			
+			//解析数据
 			for(JsonNode v : videos) {
-				//��ȡ������Ϣ
 				Long avid = v.findValue(AV).asLong();
 				if(avid == 0) continue;
 				String avUrl = VEDIO_URL + avid;
@@ -66,7 +78,7 @@ public class VideoReader extends ScratchReader<Video>{
 					createTime = null;
 				}
 				String uploader = v.findValue(UPLOADER).asText();
-				//�������
+				//构造Video
 				Video video = new Video();
 				video.setAvid(avid);
 				video.setUrl(avUrl);
@@ -79,7 +91,7 @@ public class VideoReader extends ScratchReader<Video>{
 				video.setPlay(play);
 				video.setDuration(duration);
 				video.setDescription(description);
-				//�����б�
+				//添加到列表
 				returnList.add(video);
 			}
 		} catch (Exception e) {

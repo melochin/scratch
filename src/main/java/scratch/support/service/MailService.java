@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.ui.velocity.VelocityEngineUtils;
-
-import scratch.exception.MailException;
-import scratch.service.MailTemplate;
 /**
  * 邮件发送服务
  * @author melochin
@@ -28,19 +25,28 @@ public class MailService {
 	private VelocityEngine velocityEngine;
 	
 	//模板名 模板路径 主题名
-	private List<String> templates;
-	private List<String> templatePaths;
-	private List<String> subjects;
+	private List<MailTemplate> templates;
 	
-	public void sendMail(MailTemplate template, String toMail, Map<String, Object> map) throws MailException, MessagingException {
-		//判断模板是否存在
-		int index = templates.indexOf(template.toString());
-		if(index < 0) {
-			throw new MailException("邮件模板不存在");
+	
+	public MailTemplate findTemplate(String name) throws MailException {
+		if(templates == null || templates.size() == 0) {
+			throw new MailException("dont have any mail template");
 		}
+		for(MailTemplate template : templates) {
+			if(name.equals(template.getName())) {
+				return template;
+			}
+		}
+		throw new MailException("cant find mail template[" + name + "]");
+	}
+	
+	public void sendMail(String templateName, String toMail, Map<String, Object> map) throws MailException, MessagingException {
+		//判断模板是否存在
+		MailTemplate template = findTemplate(templateName);
 		//获取模板文件路径、模板主题
-		String templatePath = templatePaths.get(index);
-		String subject = subjects.get(index);
+		String templatePath = template.getPath();
+		String subject = template.getSubject();
+		
 		//读取模板
 		String content = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, 
 				templatePath, "utf-8", map);
@@ -55,28 +61,28 @@ public class MailService {
 		mailSender.send(message);
 	}
 
-	public List<String> getTemplates() {
+	public JavaMailSender getMailSender() {
+		return mailSender;
+	}
+
+	public void setMailSender(JavaMailSender mailSender) {
+		this.mailSender = mailSender;
+	}
+
+	public VelocityEngine getVelocityEngine() {
+		return velocityEngine;
+	}
+
+	public void setVelocityEngine(VelocityEngine velocityEngine) {
+		this.velocityEngine = velocityEngine;
+	}
+
+	public List<MailTemplate> getTemplates() {
 		return templates;
 	}
 
-	public void setTemplates(List<String> templates) {
+	public void setTemplates(List<MailTemplate> templates) {
 		this.templates = templates;
 	}
 
-	public List<String> getTemplatePaths() {
-		return templatePaths;
-	}
-
-	public void setTemplatePaths(List<String> templatePaths) {
-		this.templatePaths = templatePaths;
-	}
-
-	public List<String> getSubjects() {
-		return subjects;
-	}
-
-	public void setSubjects(List<String> subjects) {
-		this.subjects = subjects;
-	}
-	
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IAnimeEpisodeDao">
+	
+	<resultMap type="AnimeEpisode" id="AnimeEpisodeMap">
+		<id property="id" column="id"/>
+		<result property="number" column="no"/>
+		<result property="url" column="url"/>
+		<result property="scratchTime" column="scratch_time"/>
+		<association property="anime" javaType="Anime">
+			<id property="id" column="anime_id"/>
+			<result property="name" column="anime_name"/>
+		</association>
+	</resultMap>
+	
+	
+	<select id="findByUrl" resultMap="AnimeEpisodeMap">
+		select * from anime_episode where url = #{url};
+	</select>
+	
+	<select id="findByAnimeAndTime" resultMap="AnimeEpisodeMap">
+		select 
+		 	e.id as id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+			from anime_episode e, anime a 
+			where e.anime_id = #{anime.id} 
+				and e.scratch_time > #{time}
+				and e.anime_id = a.id;
+	</select>
+	
+	<insert id="save">
+		insert into anime_episode (
+			anime_id, no, url, scratch_time
+		) 
+		values(
+			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}
+		)
+	</insert>
+
+</mapper>  

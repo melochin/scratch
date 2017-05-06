@@ -19,9 +19,9 @@ import scratch.aspect.PasswordEncode;
 import scratch.controller.RegisterController;
 import scratch.controller.UserController;
 import scratch.dao.UserDao;
-import scratch.exception.MailException;
 import scratch.model.User;
 import scratch.support.cipher.CipherSupport;
+import scratch.support.service.MailException;
 import scratch.support.service.MailService;
 import scratch.support.service.PageBean;
 
@@ -128,14 +128,14 @@ public class UserService {
 	public void sendActiviMail(User user) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("url", getActiUrl(user.getUserId()));
-		mailService.sendMail(MailTemplate.REGISTER, user.getEmail(), map);
+		mailService.sendMail(MailTemplate.REGISTER.toString(), user.getEmail(), map);
 		return;
 	}
 	
 	public void sendRestMail(User user) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("url", getRestUrl(user.getUserId()));
-		mailService.sendMail(MailTemplate.RESETPWD, user.getEmail(), map);
+		mailService.sendMail(MailTemplate.RESETPWD.toString(), user.getEmail(), map);
 		return;
 	}
 	

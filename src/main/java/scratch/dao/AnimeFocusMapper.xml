@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IAnimeFocusDao">
+	
+	<resultMap type="AnimeFocus" id="AnimeFocusMap">
+		<id property="id" column="id"/>
+		<result property="lastPushTime" column="last_push_time"/>
+		<association property="anime" javaType="Anime">
+			<id property="id" column="anime_id"/>
+			<result property="name" column="anime_name"/>
+		</association>
+		<association property="user" javaType="User">
+			<id property="userId" column="user_id"/>
+		</association>		
+	</resultMap>
+	
+	<select id="findByUserId" resultMap="AnimeFocusMap" >
+		select f.id as id, 
+			f.anime_id as anime_id, 
+			a.name as anime_name, 
+			f.user_id as user_id, 
+			f.last_push_time as last_push_time 
+			from anime_focus f, anime a 
+			where f.user_id = #{userId} and f.anime_id = a.id;
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="save">
+		insert into anime_focus (
+			anime_id, user_id, last_push_time
+		)
+		values(
+			#{focus.anime.id}, #{focus.user.userId}, #{focus.lastPushTime}
+		)	
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update">
+		update anime_focus 
+			set	last_push_time = #{focus.lastPushTime}
+			where anime_id = #{focus.anime.id} and 
+				user_id = #{focus.user.userId}
+	</update>
+	
+	<delete id="delete">
+		delete anime_focus where id = #{id}
+	</delete>
+	
+	<delete id="deleteByAnimeAndUser">
+		delete anime_focus where anime_id = #{animeId}, user_id = #{userId} 
+	</delete>
+	
+</mapper>  

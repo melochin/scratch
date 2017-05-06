@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IAnimeDao">
+	
+	<resultMap type="Anime" id="AnimeMap">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="alias" column="alias"/>
+		<result property="pic" column="pic"/>
+		<result property="description" column="description"/>
+		<result property="publishMonth" column="publish_month"/>
+		<result property="finished" column="finished"/>
+		<result property="episodeNo" column="episode_no"/>
+	</resultMap>
+	
+	
+	<select id="findById" resultMap="AnimeMap">
+		select * from anime where id = #{id}
+	</select>
+	
+	<select id="findAll" resultMap="AnimeMap">
+		select * from anime; 
+	</select>
+	
+	<select id="findByAlias" resultMap="AnimeMap">
+		select * from anime where alias = #{alias} or name = #{alias}
+	</select>
+
+	<insert id="save">
+		insert into anime (
+			name, alias, pic, description, publish_month, finished, episode_no
+		)
+		values(
+			#{anime.name}, 
+			#{anime.alias}, 
+			#{anime.pic}, 
+			#{anime.description}, 
+			#{anime.publishMonth},
+			<choose>
+				<when test="#{anime.finished == null}">
+					0,
+				</when>
+				<otherwise>
+					#{anime.finished},
+				</otherwise>
+			</choose>
+			#{anime.episodeNo}
+		)
+		
+	</insert>
+	
+	<update id="update">
+		update anime set
+			name = #{anime.name},
+			alias = #{anime.alias},
+			pic = #{anime.pic},
+			description = #{anime.description},
+ 			publish_month = #{anime.publishMonth},
+			finished = #{anime.finished},
+			episode_no = #{anime.episodeNo}			 			
+			where id = #{anime.id} 
+		
+	</update>
+	
+	<delete id="delete">
+		delete from anime where id = #{id}
+	</delete>
+	
+</mapper>  
