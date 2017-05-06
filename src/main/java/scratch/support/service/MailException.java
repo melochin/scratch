@@ -1,4 +1,4 @@
-package scratch.exception;
+package scratch.support.service;
 
 @SuppressWarnings("serial")
 public class MailException extends Exception{
@@ -7,11 +7,6 @@ public class MailException extends Exception{
 	
 	public MailException(String message) {
 		super(message);
-	}
-	
-	@Override
-	public String getMessage() {
-		return "∑¢ÀÕ” º˛ ß∞‹";
 	}
 	
 }

@@ -1,7 +1,7 @@
 package scratch.service;
 
 public enum MailTemplate {
-	REGISTER("register"), RESETPWD("resetpwd");
+	REGISTER("register"), RESETPWD("resetpwd"), ANIMEPUSH("animepush");
 	
 	private String template;
 	

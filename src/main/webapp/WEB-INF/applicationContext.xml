@@ -57,7 +57,7 @@
 	<!-- mybatis配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="mapperLocations" value="classpath:scratch/dao/*.xml" />
+		<property name="mapperLocations" value="classpath*:scratch/dao/*.xml" />
 		<property name="typeAliasesPackage" value="scratch.model" />
 		<property name="configLocation" value="/WEB-INF/config.xml" />
 		<property name="plugins">
@@ -145,24 +145,25 @@
    
    <!-- 开启邮箱服务 -->
    <bean class="scratch.support.service.MailService">
-   		<property name="templates">
-   			<list>
-   				<value>register</value>
-   				<value>resetpwd</value>
-   			</list>
-   		</property>
-   		<property name="templatePaths">
-   			<list>
-   				<value>mail_registert.html</value>
-   				<value>mail_resetpwd.html</value>
-   			</list>
-   		</property>
-   		<property name="subjects">
-   			<list>
-   				<value>用户注册</value>
-   				<value>密码重置</value>
-   			</list>
-   		</property>
+		<property name="templates">
+			<list>
+				<bean class="scratch.support.service.MailTemplate">
+					<property name="name" value="register" />
+					<property name="path" value="mail_registert.html" />
+					<property name="subject" value="用户注册" />
+				</bean>
+				<bean class="scratch.support.service.MailTemplate">
+					<property name="name" value="resetpwd" />
+					<property name="path" value="mail_resetpwd.html" />
+					<property name="subject" value="密码重置" />
+				</bean>
+				<bean class="scratch.support.service.MailTemplate">
+					<property name="name" value="animepush" />
+					<property name="path" value="mail_anime_push.html" />
+					<property name="subject" value="新番更新" />
+				</bean>
+			</list>
+		</property>   		
    </bean>
    
    <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
