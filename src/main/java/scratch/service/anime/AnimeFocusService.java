@@ -1,6 +1,7 @@
 package scratch.service.anime;
 
-import java.util.HashMap;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class AnimeFocusService {
 	 * @return
 	 */
 	public Map<Anime, Integer> findAllAnime(Long userId) {
-		Map<Anime, Integer> map = new HashMap<Anime, Integer>();
+		Map<Anime, Integer> map = new LinkedHashMap<Anime, Integer>();
 		List<AnimeFocus> focusList = focusDao.findByUserId(userId);
 		List<Anime> animeList = animeDao.findAll();
 		for(Anime anime : animeList) {
@@ -44,11 +45,11 @@ public class AnimeFocusService {
 		return map;
 	}
 	
-	
 	public void save(Anime anime, User user) {
-		focusDao.save(new AnimeFocus(anime, user));
+		AnimeFocus animeFocus = new AnimeFocus(anime, user);
+		animeFocus.setLastPushTime(new Date());
+		focusDao.save(animeFocus);
 	}
-	
 	
 	public void delete(Anime anime, User user) {
 		focusDao.deleteByAnimeAndUser(anime.getId(), user.getUserId());

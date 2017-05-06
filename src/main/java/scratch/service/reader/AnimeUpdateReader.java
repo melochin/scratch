@@ -12,20 +12,19 @@ import org.springframework.util.StringUtils;
 
 import scratch.model.Anime;
 import scratch.model.AnimeEpisode;
-import scratch.support.regex.RegexMatch;
 
 @Service
 public class AnimeUpdateReader extends ScratchReader<List<AnimeEpisode>> {
 
-	{
-		readerUrl = "http://www.dilidili.wang";
+	public AnimeUpdateReader() {
+		this.readerUrl = "http://www.dilidili.wang";
 	}
 
 	private final static String[] WEEKDAYS = {"#weekdiv1", "#weekdiv2", "#weekdiv3", 
 			"#weekdiv4", "#weekdiv5", "#weekdiv6", "#weekdiv7"};
-	
+
 	@Override
-	protected void read(String html, RegexMatch match, List<List<AnimeEpisode>> returnList) {
+	protected void read(String html, List<List<AnimeEpisode>> returnList) {
 		Document document = Jsoup.parse(html);
 		for(int i=0; i<WEEKDAYS.length; i++) {
 			List<AnimeEpisode> animeEpisodes = readWeekDay(document, WEEKDAYS[i]);

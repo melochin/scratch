@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import scratch.model.Video;
 import scratch.model.VideoType;
-import scratch.support.regex.RegexMatch;
 
 /**http://api.bilibili.com/archive_rank/getarchiverankbypartion
  * ?callback=callback&type=jsonp&_=1490537389048&tid=82&pn=1
@@ -47,7 +46,7 @@ public class VideoReader extends ScratchReader<Video>{
 	private final static DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	@Override
-	protected void read(String html, RegexMatch match, List<Video> returnList) {
+	protected void read(String html, List<Video> returnList) {
 		try{
 			format.setLenient(false);
 			//处理HTML文本

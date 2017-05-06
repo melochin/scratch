@@ -8,13 +8,11 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import scratch.support.regex.RegexMatch;
-
 @Service
 public class VideoPageReader extends ScratchReader<Long>{
 
 	@Override
-	protected void read(String html, RegexMatch match, List<Long> returnList) {
+	protected void read(String html, List<Long> returnList) {
 		try {
 			//ȥ�����ò��ֵ�����
 			html = html.substring(9, html.length()-2);

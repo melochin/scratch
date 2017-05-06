@@ -9,11 +9,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import scratch.model.AnimeEpisode;
-import scratch.support.regex.RegexMatch;
 
 public class FixUpdateReader extends ScratchReader<List<AnimeEpisode>> {
 
-	{
+	public FixUpdateReader() {
 		readerUrl = "http://www.fixsub.com/portfolio/%E8%B6%8A%E7%8B%B1";
 	}
 	
@@ -25,9 +24,8 @@ public class FixUpdateReader extends ScratchReader<List<AnimeEpisode>> {
 		configs.put("User-agent", "  Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0");
 	}
 	
-	
 	@Override
-	protected void read(String html, RegexMatch match, List<List<AnimeEpisode>> returnList) {
+	protected void read(String html, List<List<AnimeEpisode>> returnList) {
 		Document document = Jsoup.parse(html);
 		Elements eles = document.select("#content-container");
 		Elements urls = eles.select("a");

@@ -6,8 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import scratch.support.regex.RegexMatch;
-
 public class UserStatusReader extends ScratchReader<Boolean>{
 	
 	{
@@ -17,7 +15,7 @@ public class UserStatusReader extends ScratchReader<Boolean>{
 	private final static String STATUS = "status"; 
 
 	@Override
-	protected void read(String html, RegexMatch match, List<Boolean> returnList) {
+	protected void read(String html, List<Boolean> returnList) {
 		
 		System.out.println(html);
 		

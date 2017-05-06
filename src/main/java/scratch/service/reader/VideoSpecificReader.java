@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import scratch.model.Video;
-import scratch.support.regex.RegexMatch;
 
 public class VideoSpecificReader extends ScratchReader<Video>{
 
@@ -19,7 +18,7 @@ public class VideoSpecificReader extends ScratchReader<Video>{
 	private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 	
 	@Override
-	protected void read(String html, RegexMatch match, List<Video> returnList) {
+	protected void read(String html, List<Video> returnList) {
 		try {
 			Video v = new Video();
 			JsonNode tree = new ObjectMapper().readTree(html);

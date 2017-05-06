@@ -45,11 +45,11 @@
 	</update>
 	
 	<delete id="delete">
-		delete anime_focus where id = #{id}
+		delete from anime_focus where id = #{id}
 	</delete>
 	
 	<delete id="deleteByAnimeAndUser">
-		delete anime_focus where anime_id = #{animeId}, user_id = #{userId} 
+		delete from anime_focus where anime_id = #{animeId} and user_id = #{userId} 
 	</delete>
 	
 </mapper>  

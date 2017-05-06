@@ -1,5 +1,6 @@
 package scratch.controller.anime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import scratch.support.web.SessionSupport;
 @Controller
 public class AnimeFocusController {
 	
+	@Autowired
 	private AnimeFocusService service;
 	
 	@UserRole(value=Role.User)
@@ -24,21 +26,21 @@ public class AnimeFocusController {
 	public ModelAndView index(Model model) {
 		Long userId = SessionSupport.getUser().getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId));
-		return new ModelAndView("anime-focus");
+		return new ModelAndView("anime_focus");
 	}
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/add", method=RequestMethod.POST)
 	public ModelAndView add(@RequestParam("animeId") Long animeId) {
 		service.save(new Anime(animeId), SessionSupport.getUser());
-		return new ModelAndView("redirect:/focus");
+		return new ModelAndView("redirect:/anime/focus");
 	}
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/delete", method=RequestMethod.POST)
 	public ModelAndView delete(@RequestParam("animeId") Long animeId) {
 		service.delete(new Anime(animeId), SessionSupport.getUser());
-		return new ModelAndView("redirect:/focus");
+		return new ModelAndView("redirect:/anime/focus");
 	}
 	
 }

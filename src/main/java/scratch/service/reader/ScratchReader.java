@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import scratch.support.regex.RegexMatch;
+import scratch.support.regex.Connection;
 
 /**
  * 将HTML文本结构化的类
@@ -17,20 +17,25 @@ import scratch.support.regex.RegexMatch;
  */
  public abstract class ScratchReader<T> {
 	
+	 private Map<String,String> config = new HashMap<String, String>();
+	 
+	 private Connection connection;
+	 
 	 protected String readerUrl;
 	 
-	 protected Map<String,String> config = new HashMap<String, String>();
-	 
-	 public ScratchReader() {}
+	 public ScratchReader() {
+		 connection = new Connection();
+	 }
 	 
 	 public ScratchReader(String url) {
+		 this();
 		 readerUrl = url;
 	 }
 	 
 	 public void ConnectConfig(Map<String, String> configs) {
+		configs.put("User-agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36");
 		 return;
 	 }
-	 
 	 
 	/**
 	 * 将HTML文本转换成实体列表（由子类覆写）
@@ -38,7 +43,7 @@ import scratch.support.regex.RegexMatch;
 	 * @param match			解析HTML文本的工具
 	 * @param returnList	转换的实体（作为参数，写子类的时候就不会实例化该对象了，父类已经实例化）
 	 */
-	protected abstract void read(String html, RegexMatch match, List<T> returnList);
+	protected abstract void read(String html, List<T> returnList);
 	
 	/**
 	 * 读取HTML，返回实体列表
@@ -46,12 +51,11 @@ import scratch.support.regex.RegexMatch;
 	 * @return
 	 */
 	public List<T> read(String url) {
-		RegexMatch regexMatch = null;
 		List<T> t = new ArrayList<T>();
 		try {
 			ConnectConfig(config);
-			regexMatch = new RegexMatch(new URL(url), config);
-			read(regexMatch.getSourceText(), regexMatch, t);
+			String html = connection.toHtml(new URL(url), config);
+			read(html, t);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
