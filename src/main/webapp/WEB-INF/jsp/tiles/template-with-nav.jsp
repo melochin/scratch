@@ -18,6 +18,7 @@
 		<!-- 暂不处理 -->
 		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/js/common.js"/>"></script>
 		<!-- css -->
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/bootstrap/css/bootstrap-switch.css"/>" rel="stylesheet"></link>

@@ -10,7 +10,7 @@
 		<div class="panel-heading">
 			<span class="panel-title"><b>用户管理</b></span> <span
 				style="float: right">
-				<button class="btn btn-success btn-sm" onClick="insertUser()"
+				<button class="btn btn-success btn-sm"
 					data-toggle="modal" data-target="#modal-save">创建新用户</button>
 			</span>
 		</div>
@@ -70,10 +70,6 @@
 $("[name='status']").bootstrapSwitch();
 
 var $form = $("form[name='user-info']");
-
-function insertUser() {
-	
-}
 
 function saveUser() {
 	var $status = $form.find("input[name='status']");

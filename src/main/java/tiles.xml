@@ -105,4 +105,15 @@
 		<put-attribute name="content" value="admin_user_form" />
 	</definition>
 
+	<definition name="admimn_anime_form" template="/WEB-INF/jsp/tiles/modal-form.jsp">
+		<put-attribute name="form" value="/WEB-INF/jsp/admin/anime/index.jsp"/>
+		<put-attribute name="modal-edit" value="/WEB-INF/jsp/admin/anime/edit.jsp"/>
+		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/anime/save.jsp"/>
+	</definition>
+
+	<definition name="admin_anime" extends="template-with-nav">
+		<put-attribute name="title" value="番剧管理" />
+		<put-attribute name="content" value="admimn_anime_form" />
+	</definition>
+
 </tiles-definitions>
