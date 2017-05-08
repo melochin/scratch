@@ -1,16 +1,10 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <script type="text/javascript">
 	$(document).ready(function() {
-
-		var message = "${success }";
-		var className = "alert-success";
-		if(message == null || message == "") {
-			className = "alert-danger";
-		}
-		$("#messBox").addClass(className);
-		console.log(history);
 		//setTimeout("jump()", 5000);
 	});
 		
@@ -31,16 +25,30 @@
 <div class="row">
 	<div class="col-md-2"></div>
 		<div class="col-md-8 msg">
-			<div  id="messBox" class="alert alert-autocloseable-info">
-				${success}${error }
-				<c:if test="${errors != null}">
-					<ul>
-						<c:forEach var="e" items="${errors }">
-							<li>${e }</li>
-						</c:forEach>				
-					</ul>
-				</c:if>
-		    </div>
+			<c:choose>
+			
+				<!-- 显示success信息 -->
+				<c:when test="${success != null }">
+					<div id="messBox" class="alert alert-success alert-autocloseable-info">
+						${success }
+					</div>
+				</c:when>
+				
+				<!-- 显示error信息 -->
+				<c:otherwise>
+					<div id="messBox" class="alert alert-danger alert-autocloseable-info">
+						${error }
+						<c:if test="${errors != null}">
+							<ul>
+								<c:forEach var="e" items="${errors }">
+									<li>${e }</li>
+								</c:forEach>				
+							</ul>
+						</c:if>
+					</div>
+				</c:otherwise>
+				
+			</c:choose>
 		</div>
 	<div class="col-md-2"></div>
 </div>

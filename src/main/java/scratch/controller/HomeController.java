@@ -1,5 +1,7 @@
 package scratch.controller;
 
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,10 @@ import scratch.service.bilibili.VideoTypeService;
 
 @Controller
 public class HomeController {
+	
+	private final static String[] FACECHARS = {"(ง •̀_•́)ง ","(•̀ᴗ•́)و ̑̑ ", "ヽ(•̀ω•́ )ゝ", 
+			"(,,• ₃ •,,)", "(｡˘•ε•˘｡)", " (=ﾟωﾟ)ﾉ", "(╯‵□′)╯︵┻━┻", "ㄟ( ▔, ▔ )ㄏ", "(*´Д｀*) ",
+			"(°□°；) ", "∑(っ °Д °;)っ"};
 	
 	@Autowired
 	private VideoTypeService typeSerivce;
@@ -33,6 +39,10 @@ public class HomeController {
 	 */
 	@RequestMapping(value="/common/message", method=RequestMethod.GET)
 	public ModelAndView message(RedirectAttributes ra, Model model) {
+		if(model.asMap().size() == 0) {
+			Random random = new Random();
+			model.addAttribute("success", FACECHARS[random.nextInt(FACECHARS.length)]);
+		}
 		model.addAllAttributes(ra.getFlashAttributes());
 		return new ModelAndView("common_message");
 	}
