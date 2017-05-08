@@ -95,8 +95,8 @@
 	
 	
 	<definition name="admin_user_form" template="/WEB-INF/jsp/tiles/modal-form.jsp">
+		<put-attribute name="title" value="用户" />
 		<put-attribute name="form" value="/WEB-INF/jsp/admin/user/user.jsp" />
-		<put-attribute name="modal-edit" value="/WEB-INF/jsp/admin/user/edit.jsp" />
 		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/user/save.jsp" />
 	</definition>
 
@@ -106,8 +106,8 @@
 	</definition>
 
 	<definition name="admimn_anime_form" template="/WEB-INF/jsp/tiles/modal-form.jsp">
+		<put-attribute name="title" value="番剧" />
 		<put-attribute name="form" value="/WEB-INF/jsp/admin/anime/index.jsp"/>
-		<put-attribute name="modal-edit" value="/WEB-INF/jsp/admin/anime/edit.jsp"/>
 		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/anime/save.jsp"/>
 	</definition>
 

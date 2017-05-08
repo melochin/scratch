@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -63,6 +64,14 @@ public class UserController {
 			result = new Result<User>("用户不存在");
 		}
 		return result;
+	}
+	
+	@UserRole(Role.Admin)
+	@RequestMapping(value="/form/{userId}")
+	public ModelAndView userForm(@PathVariable("userId") Long id, Model model) {
+		User user = userService.getById(id);
+		model.addAttribute("user", user);
+		return new ModelAndView("/admin/user/edit");
 	}
 	
 	/**

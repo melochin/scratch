@@ -15,6 +15,8 @@
 		<script src="<c:url value="/js/tools/browser.min.js"/>" ></script>
 		<script type="text/javascript" src="<c:url value="/js/tools/react.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tools/react-dom.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/formvalidation/js/formValidation.min.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/formvalidation/js/bootstrap.min.js"/>"></script>
 		<!-- 暂不处理 -->
 		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
@@ -22,6 +24,7 @@
 		<!-- css -->
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/bootstrap/css/bootstrap-switch.css"/>" rel="stylesheet"></link>
+		<link href="<c:url value="/formvalidation/css/formValidation.min.css" />" rel="stylesheet"></link>
 		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
 

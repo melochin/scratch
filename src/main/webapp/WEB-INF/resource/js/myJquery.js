@@ -2,19 +2,6 @@ var ERROR = "jerror";
 var PATTERN = "jpattern";
 var SAMEAS = "jsameas";
 $(document).ready(function(){
-	//焦点离开的时候判断，账号是否存在
-	var $userInput = $("#username");
-	$userInput.blur(function(){
-		$.post("register/user",
-			{username: $userInput.val()},
-			function(data, stats){
-				if(data != null) {
-					setMessage($userInput, data);
-				}
-			}
-		)
-		return false;
-	});
 	
 	//通用校验部分
 	var $validForm = $(".form-valid");

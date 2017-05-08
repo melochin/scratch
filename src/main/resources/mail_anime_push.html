@@ -1,7 +1,11 @@
 <html>
 	<body>
-	#foreach($episode in ${episodes})
-		<a href="${episode.url}">${episode.anime.name} ${episode.number}</a>
-	#end
+	<ul>
+		#foreach($episode in ${episodes})
+		<li>
+			<a href="${episode.url}">${episode.anime.name} ${episode.number}</a>
+		</li>
+		#end
+	</ul>
 	</body>
 </html>

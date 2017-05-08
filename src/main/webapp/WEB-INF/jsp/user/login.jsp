@@ -2,17 +2,20 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false" %>
+<script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
+
 <div class="row">
 	<div class="col-md-4"></div>
 	
 	<div class="col-md-4 login-form">
 		<section class="login-form">
-			<form action="login" method="post" role="login" class="form-valid" >
-				<input class="form-control" type="text" name="username" placeholder="用户名" 
-					jerror="用户名不能为空" jpattern="^.{3,30}$"/>
-				<input class="form-control" type="password" name="password" placeholder="密码" 
-					jerror="密码不能为空" jpattern="^.{6,30}$">
-				<span class="error">${error }</span>
+			<form action="login" method="post" role="login" id="userLoginForm" >
+				<div class="form-group">
+					<input class="form-control" type="text" name="username" placeholder="用户名" />
+				</div>
+				<div class="form-group">
+					<input class="form-control" type="password" name="password" placeholder="密码" />
+				</div>
 				<div class="checkbox">
 					<label>
 						<input type="checkbox" /> 记住我

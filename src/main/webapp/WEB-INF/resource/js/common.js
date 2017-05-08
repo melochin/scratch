@@ -26,3 +26,11 @@ Date.prototype.format = function (fmt) {
   }
   return fmt;
 }
+
+function extend(child, parent) {  
+    var child = child || {};  
+    for(var prop in parent) {  
+        child[prop] = parent[prop];  
+    }  
+    return child;  
+}  

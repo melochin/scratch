@@ -1,13 +1,9 @@
-package scratch.controller.admin;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+package scratch.controller.admin;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -19,7 +15,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -83,6 +78,15 @@ public class AnimeController {
 			result = new Result<Anime>("番剧不存在");
 		}
 		return result;
+	}
+
+	
+	@UserRole(value=Role.Admin)
+	@RequestMapping(value="/anime/form/{animeId}", method=RequestMethod.GET)
+	public ModelAndView animeForm(@PathVariable("animeId") Long animeId, Model model) {
+		Anime anime = serivce.findById(animeId);
+		model.addAttribute("anime", anime);
+		return new ModelAndView("/admin/anime/edit");
 	}
 	
 }
