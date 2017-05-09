@@ -1,4 +1,4 @@
-package scratch.service.bilibili;
+package scratch.service.anime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ import scratch.support.service.MailService;
 @Service
 public class AnimePushService {
 
+	private final static Logger log = Logger.getLogger(AnimePushService.class);
+
 	@Autowired
 	private IAnimeFocusDao focusDao;
 	
@@ -40,11 +43,14 @@ public class AnimePushService {
 	
 	private static ExecutorService exec = Executors.newCachedThreadPool();
 	
-/*	@Scheduled(fixedRate=30000)
-*/	public void push() {
+	@Scheduled(fixedRate=30*60*1000)
+	public void push() {
+		if(log.isInfoEnabled()) {
+			log.info("执行推送任务");
+		}
+		
 		//获取所有用户
 		List<User> userList = userDao.findAll();
-		System.out.println(userList);
 		for(User user : userList) {
 			//获取用户关注的Anime列表
 			List<AnimeFocus> animeFocusList = focusDao.findByUserId(user.getUserId());
@@ -62,15 +68,18 @@ public class AnimePushService {
 					}
 				}
 				episodeList.addAll(episodes);
-				System.out.println(episodeList);
 			}
 			//发送推送邮件(如果没有Anime没有更新的话，不发送推送)
 			if(episodeList.size() == 0) continue;
 			push(user, episodeList, animeFocusList);
 		}
+		
+		if(log.isInfoEnabled()) {
+			log.info("完成推送任务");
+		}
 	}
 	
-	public void push(final User u, final List<AnimeEpisode> episodeList, final List<AnimeFocus> focusList) {
+	private void push(final User u, final List<AnimeEpisode> episodeList, final List<AnimeFocus> focusList) {
 		
 		exec.execute(new Runnable() {
 

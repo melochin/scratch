@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import scratch.service.bilibili.AnimePushService;
+import scratch.service.anime.AnimePushService;
 import scratch.test.ContextTest;
 
 public class AnimePushServiceTest extends ContextTest{

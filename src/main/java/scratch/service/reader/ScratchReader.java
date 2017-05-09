@@ -33,7 +33,7 @@ import scratch.support.regex.Connection;
 	 }
 	 
 	 public void ConnectConfig(Map<String, String> configs) {
-		configs.put("User-agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36");
+		configs.put("User-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0");
 		 return;
 	 }
 	 
