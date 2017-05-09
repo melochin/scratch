@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
 <script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 	
@@ -32,6 +33,18 @@
 				<textarea class="form-control" name="description" placeholder="请输入描述" rows="4"></textarea>
 			</div>
 		</div>
+		
+		<div class="form-group">
+			<label class="col-sm-3 control-label">类别</label>
+			<div class="col-sm-6">
+				<select class="form-control" name="type">
+					<c:forEach var="animeType" items="${animeTypes.entrySet() }">
+						<option value="${animeType.key }">${animeType.value }</option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
+		
 		
 		<div class="form-group">
 			<label class="col-sm-3 control-label">开始连载日期</label>

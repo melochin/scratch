@@ -13,6 +13,7 @@
 		<result property="publishMonth" column="publish_month"/>
 		<result property="finished" column="finished"/>
 		<result property="episodeNo" column="episode_no"/>
+		<result property="type" column="type" />
 	</resultMap>
 	
 	
@@ -30,7 +31,7 @@
 
 	<insert id="save">
 		insert into anime (
-			name, alias, pic, description, publish_month, finished, episode_no
+			name, alias, pic, description, publish_month, finished, episode_no, type
 		)
 		values(
 			#{anime.name}, 
@@ -46,7 +47,8 @@
 					#{anime.finished},
 				</otherwise>
 			</choose>
-			#{anime.episodeNo}
+			#{anime.episodeNo}, 
+			#{anime.type}
 		)
 		
 	</insert>
@@ -59,7 +61,8 @@
 			description = #{anime.description},
  			publish_month = #{anime.publishMonth},
 			finished = #{anime.finished},
-			episode_no = #{anime.episodeNo}			 			
+			episode_no = #{anime.episodeNo},
+			type = #{anime.type}	 			
 			where id = #{anime.id} 
 		
 	</update>

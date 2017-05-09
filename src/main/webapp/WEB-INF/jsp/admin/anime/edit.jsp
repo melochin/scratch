@@ -2,6 +2,7 @@
 	pageEncoding="utf-8"%>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal"
@@ -46,6 +47,24 @@
 			<div class="col-sm-6">
 				<textarea class="form-control" name="description"
 					placeholder="请输入描述" rows="4">${anime.description }</textarea>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">类别</label>
+			<div class="col-sm-6">
+				<select class="form-control" name="type">
+					<c:forEach var="animeType" items="${animeTypes.entrySet() }">
+						<c:choose>
+							<c:when test="${anime.type == animeType.key }">
+								<option value="${animeType.key }" selected="selected">${animeType.value }</option>
+							</c:when>
+							<c:otherwise>
+								<option value="${animeType.key }">${animeType.value }</option>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</select>
 			</div>
 		</div>
 

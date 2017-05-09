@@ -2,9 +2,8 @@ package scratch.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class Anime {
 
@@ -19,11 +18,14 @@ public class Anime {
 	
 	private String description;
 	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date publishMonth;
 	
 	private Boolean finished;
 	
 	private Integer episodeNo;
+	
+	private Long type;
 
 	public Anime() {}
 	
@@ -97,6 +99,14 @@ public class Anime {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Long getType() {
+		return type;
+	}
+
+	public void setType(Long type) {
+		this.type = type;
 	}
 
 	@Override

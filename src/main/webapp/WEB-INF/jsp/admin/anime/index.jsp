@@ -7,7 +7,8 @@
 <table class="table table-hover">
 				<colgroup>
 	<col style="width:20%">
-	<col style="width:40%">
+	<col style="width:30%">
+	<col style="width:10%">
 	<col style="width:10%">
 	<col style="width:10%">
 	<col style="width:10%">
@@ -18,6 +19,7 @@
 		<th>描述</th>
 		<th>开始连载月份</th>
 		<th>是否完结</th>
+		<th>类型</th>
 		<th>操作</th>
 	</tr>
 </thead>
@@ -42,6 +44,9 @@
 						是
 					</c:otherwise>
 				</c:choose>
+			</td>
+			<td>
+				${animeTypes[anime.type]}
 			</td>
 			<td>
 				<a class="btn btn-link btn-sm" data-toggle="modal"
