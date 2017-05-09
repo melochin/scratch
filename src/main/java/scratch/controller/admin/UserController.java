@@ -39,7 +39,7 @@ public class UserController {
 	 * @return
 	 */
 	@UserRole(Role.Admin)
-	@RequestMapping("/index")
+	@RequestMapping("")
 	public ModelAndView list(@RequestParam(value="p", defaultValue="1") int page) {
 		ModelAndView model = new ModelAndView("admin_user");
 		PageBean<User> userList = userService.findAll(page, PAGE_USER_SIZE);

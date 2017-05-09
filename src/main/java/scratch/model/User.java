@@ -6,9 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name="user")
@@ -20,7 +21,7 @@ public class User {
 	private Long userId;
 	
 	@Column(name="username", length=30)
-	@NotNull(message="用户名不能为空")
+	@NotBlank(message="用户名不能为空")
 	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="用户名只能以数字或字母组合，且长度不能少于6位超过18位")
 	private String username;
 	
@@ -29,7 +30,7 @@ public class User {
 	private String email;
 	
 	@Column(name="password", length=30)
-	@NotNull(message="密码不能为空")
+	@NotBlank(message="密码不能为空")
 	@Size(min=6, message="密码长度不能少于6位")
 	private String password;
 	

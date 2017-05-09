@@ -26,15 +26,11 @@
 	<div class="col-md-2"></div>
 		<div class="col-md-8 msg">
 			<c:choose>
-			
-				<!-- 显示success信息 -->
 				<c:when test="${success != null }">
 					<div id="messBox" class="alert alert-success alert-autocloseable-info">
 						${success }
 					</div>
 				</c:when>
-				
-				<!-- 显示error信息 -->
 				<c:otherwise>
 					<div id="messBox" class="alert alert-danger alert-autocloseable-info">
 						${error }
@@ -47,7 +43,6 @@
 						</c:if>
 					</div>
 				</c:otherwise>
-				
 			</c:choose>
 		</div>
 	<div class="col-md-2"></div>

@@ -13,11 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import scratch.exception.PrivilegeException;
+import static scratch.exception.PrivilegeException.*;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.web.CookieSupport;
 import scratch.support.web.SessionSupport;
+
 
 /**
  * 1.核对用户身份
@@ -61,12 +63,12 @@ public class UserChecker {
         }
         //核对用户是否存在
         if(user == null) {
-        	throw new PrivilegeException("请先登录");
+        	throw new PrivilegeException(NOLOGIN);
         }
         //核对用户状态
         if(activi) {
         	if(!"1".equals(user.getStatus())) {
-        		throw new PrivilegeException("该账号尚未激活");
+        		throw new PrivilegeException(NOACTIVI);
         	}
         }
         //管理员才能使用的页面，核对用户账号

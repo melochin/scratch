@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.exception.PrivilegeException;
+import static scratch.exception.PrivilegeException.*;
 
 @ControllerAdvice
 public class ExceptionController {
 	
 	private static Logger log = Logger.getLogger(ExceptionController.class);
-	
 	
 	/**
 	 * 处理权限
@@ -26,10 +26,15 @@ public class ExceptionController {
 	 * @return
 	 */
 	@ExceptionHandler
-	public String hanlderPrivilege(PrivilegeException e, Model model) {
-		model.addAttribute("error", e.getMessage());
-		model.addAttribute("jump", "user/login");
-		return "common_message";
+	public String hanlderPrivilege(PrivilegeException e) {
+		String error = e.getMessage();
+		if(error.equals(NOLOGIN)) {
+			return "redirect:/user/login";
+		} else if (error.equals(NOACTIVI)) {
+			return "redirect:/user/login";
+		}
+		
+		return "redirect:/";
 	}
 	
 	/**

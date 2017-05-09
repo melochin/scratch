@@ -1,3 +1,4 @@
+
 package scratch.service;
 
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import scratch.aspect.PasswordEncode;
@@ -67,15 +67,22 @@ public class UserService {
 	@PasswordEncode
 	public void add(User user) throws MailException {
 		if(isExist(user)) throw new RuntimeException("账号已经存在");
+		if(user.getStatus() == null) {
+			user.setStatus("0");
+		}
+		if(user.getRole() == null) {
+			user.setRole(null);
+		}
 		dao.save(user);
 		//如果用户的状态处于激活，那就不发生邮件
 		//后台直接添加的用户可能处于该状态
-		if(!StringUtils.isEmpty(user.getStatus()) && user.getStatus().equals("1")) return;
+		if(user.getStatus().equals("1")) return;
 		//抛出checked异常，不影响事务
 		try{
 			sendActiviMail(user);	
 		} catch (Exception e) {
-			throw new MailException();
+			e.printStackTrace();
+			throw new MailException(e.getMessage());
 		}
 		return;
 	}

@@ -1,11 +1,15 @@
 package scratch.controller;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.model.User;
@@ -56,7 +61,7 @@ public class RegisterController {
 	 */
 	@RequestMapping(path="/register", method=RequestMethod.POST)
 	public String register(@Valid @ModelAttribute("user") User user, BindingResult result, 
-			RedirectAttributes ra) {
+			RedirectAttributes ra, SessionStatus status) {
 		//校验用户信息
 		if(result.hasErrors()) {
 			RedirectAttrSupport.setError(ra, result);
@@ -66,12 +71,14 @@ public class RegisterController {
 			service.add(user);
 		} catch(MailException e) {
 			ra.addFlashAttribute("error", "账号注册成功:" + e.getMessage());
+			status.setComplete();
 			return "redirect:/common/message";
 		} catch(Exception e) {
 			ra.addFlashAttribute("error", e.getMessage());
 			return "redirect:/user/register";
 		}
 		ra.addFlashAttribute("success", "注册成功，将会发送一份邮件给您，点击邮件里的链接完成账号验证，否则账号无法使用");
+		status.setComplete();
 		return "redirect:/common/message";
 	}
 	
@@ -117,11 +124,14 @@ public class RegisterController {
 		}
 	}
 	
-	@RequestMapping(path="/register/user", method=RequestMethod.POST)
-	public @ResponseBody String existUser(@RequestParam("username") String username) {
+	@RequestMapping(path="/register/user", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody Map<String, Object> existUser(@RequestParam("username") String username) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		User user = new User();
 		user.setUsername(username);
-		return service.isExist(user) ? "账号存在" : null;
+		boolean exist = service.isExist(user);
+		map.put("valid", !exist);
+		return map;
 	}
 
 }

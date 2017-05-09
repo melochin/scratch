@@ -38,11 +38,11 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(path="/login", method=RequestMethod.GET)
-	public String loginForm(@RequestHeader(name="referer", required=false) String referer, 
+	public String loginForm(@RequestHeader(name="referer", required=false, defaultValue="/") String referer, 
 			HttpServletRequest request, Model model) {
 		//判断referer是不是自身路径，防止重复定向
 		if(!StringUtils.isEmpty(referer)) {
-			if(request.getRequestURL().toString().equals(referer)) {
+			if(referer.indexOf("/user") > 0 || referer.indexOf("/common") > 0) {
 				referer = "/";
 			}
 		}
