@@ -1,4 +1,3 @@
-
 package scratch.service;
 
 import java.util.HashMap;
@@ -115,8 +114,8 @@ public class UserService {
 		return dao.getById(userId);
 	}
 	
-	public boolean activi(String actiCode) {
-		//根据解密激活码，获取信息
+	public boolean activi(Long userId) {
+/*		//根据解密激活码，获取信息
 		String[] infos = decodeActi(actiCode);
 		if(infos == null) {
 			return false;
@@ -129,7 +128,7 @@ public class UserService {
 			return false;
 		}
 		//激活用户状态
-		return dao.updateStatus(username, "1") == 1;
+*/		return dao.updateStatus(userId, "1") == 1;
 	}
 	
 	public void sendActiviMail(User user) throws MailException, MessagingException {

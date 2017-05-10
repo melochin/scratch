@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,9 @@ public class RegisterController {
 	
 	@Autowired
 	private UserService service;
+	
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
 	
 	@ModelAttribute
 	public void addUser(Model model) {
@@ -115,13 +119,21 @@ public class RegisterController {
 	 */
 	@RequestMapping(path="/register/activiti/{actiCode}", method=RequestMethod.GET)
 	public String activiti(@PathVariable("actiCode") String actiCode, Model model) {
-		if(!service.activi(actiCode)) {
+		
+		String userId = "";
+		
+		if(!redisTemplate.hasKey(actiCode)) {
 			model.addAttribute("error", "您所访问的页面不存在");
 			return "common_message";
-		} else {
+		}
+		userId = redisTemplate.opsForValue().get(actiCode);
+		
+		if(service.activi(Long.valueOf(userId))) {
 			model.addAttribute("success", "账号激活成功");
 			return "common_message";
 		}
+		model.addAttribute("error", "账号激活失败");
+		return "common_message";
 	}
 	
 	@RequestMapping(path="/register/user", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)

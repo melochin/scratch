@@ -19,6 +19,8 @@ public class UserDao extends BasicDao<User> {
 			+ "where username = ? and password = ?";
 	private static final String UPDATE_USER_STATUS_BY_NAME = "update User set status = ? "
 			+ "where username = ?";
+	private static final String UPDATE_USER_STATUS_BY_ID = "update User set status = ? "
+			+ "where userId = ?";
 	private static final String GET_USER_BY_NAME_AND_EMAIL = "from User "
 			+ "where username = ? and email = ?";
 
@@ -36,6 +38,10 @@ public class UserDao extends BasicDao<User> {
 
 	public int updateStatus(String username, String status) {
 		return updateByHql(UPDATE_USER_STATUS_BY_NAME, status, username);
+	}
+	
+	public int updateStatus(Long userId, String status) {
+		return updateByHql(UPDATE_USER_STATUS_BY_ID, status, userId);
 	}
 
 	public User getByNameAndEmail(String username, String email) {
