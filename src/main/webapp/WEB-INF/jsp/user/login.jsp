@@ -5,9 +5,8 @@
 <script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 
 <div class="row">
-	<div class="col-md-4"></div>
-	
-	<div class="col-md-4 login-form">
+	<div class="col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6 
+		login-form">
 		<section class="login-form">
 			<form action="login" method="post" role="login" id="userLoginForm" >
 				<div class="form-group">
@@ -30,6 +29,4 @@
 			</form>
 		</section>
 	</div>
-	
-	<div class="col-md-4" ></div>
 </div>
