@@ -28,7 +28,7 @@ public class AnimeFocusService {
 	 * @param userId
 	 * @return
 	 */
-	public Map<Anime, Integer> findAllAnime(Long userId, Integer type, Integer focus) {
+	public Map<Anime, Integer> findAllAnime(Long userId, Long type, Integer focus) {
 		Map<Anime, Integer> map = new LinkedHashMap<Anime, Integer>();
 		List<AnimeFocus> focusList = focusDao.findByUserId(userId);
 		List<Anime> animeList = null;

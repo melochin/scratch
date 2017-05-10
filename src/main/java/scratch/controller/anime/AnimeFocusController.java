@@ -28,7 +28,7 @@ public class AnimeFocusController {
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus", method=RequestMethod.GET)
-	public ModelAndView index(@RequestParam(value="type", required=false) Integer type,
+	public ModelAndView index(@RequestParam(value="type", required=false) Long type,
 			@RequestParam(value="focus", required=false) Integer focus,
 			Model model) {
 		Long userId = SessionSupport.getUser().getUserId();
