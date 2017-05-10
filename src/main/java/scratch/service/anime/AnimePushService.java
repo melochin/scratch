@@ -46,7 +46,7 @@ public class AnimePushService {
 	@Scheduled(fixedRate=30*60*1000)
 	public void push() {
 		if(log.isInfoEnabled()) {
-			log.info("执行推送任务");
+			log.info("start push service");
 		}
 		
 		//获取所有用户
@@ -75,7 +75,7 @@ public class AnimePushService {
 		}
 		
 		if(log.isInfoEnabled()) {
-			log.info("完成推送任务");
+			log.info("end push service");
 		}
 	}
 	

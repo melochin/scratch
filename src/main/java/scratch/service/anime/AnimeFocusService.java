@@ -28,19 +28,30 @@ public class AnimeFocusService {
 	 * @param userId
 	 * @return
 	 */
-	public Map<Anime, Integer> findAllAnime(Long userId) {
+	public Map<Anime, Integer> findAllAnime(Long userId, Integer type, Integer focus) {
 		Map<Anime, Integer> map = new LinkedHashMap<Anime, Integer>();
 		List<AnimeFocus> focusList = focusDao.findByUserId(userId);
-		List<Anime> animeList = animeDao.findAll();
+		List<Anime> animeList = null;
+	
+		if(type == null) {
+			animeList = animeDao.findAll();
+		} else {
+			animeList = animeDao.findByType(type);
+		}
+		
 		for(Anime anime : animeList) {
 			Integer focused = 0;
-			for(AnimeFocus focus : focusList) {
-				if(focus.getAnime().getId().equals(anime.getId())) {
+			for(AnimeFocus animeFocus : focusList) {
+				if(animeFocus.getAnime().getId().equals(anime.getId())) {
 					focused = 1;
 					break;
 				}
-			}	
-			map.put(anime, focused);
+			}
+			if(focus == null) {
+				map.put(anime, focused);
+			} else if(focus == focused) {
+				map.put(anime, focused);
+			}
 		}
 		return map;
 	}

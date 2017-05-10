@@ -16,6 +16,7 @@
 				<div class="form-group">
 					<input class="form-control" type="password" name="password" placeholder="密码" />
 				</div>
+				<span class="error">${error }</span>
 				<div class="checkbox">
 					<label>
 						<input type="checkbox" /> 记住我

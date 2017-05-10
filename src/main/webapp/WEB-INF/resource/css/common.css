@@ -234,4 +234,19 @@ nav.subbar > ul.nav.nav-tabs > li.active > a {
 }
 
 
+.anime-focus-filter {
+	margin:0 30px 30px 30px;
+	background: #f8f8f8;
+}
 
+.anime-focus-filter a{
+	font-size: 16px;
+}
+
+.anime-focus-filter .choose {
+	font-weight: bold;
+}
+
+.anime-focus .video-img {
+	height:250px;
+}

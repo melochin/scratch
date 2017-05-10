@@ -10,6 +10,8 @@ public interface IAnimeDao {
 
 	List<Anime> findAll();
 	
+	List<Anime> findByType(@Param("type")Integer type);
+	
 	Anime findById(@Param("id") Long id);
 	
 	Anime findByAlias(@Param("alias") String alias, Boolean finished);

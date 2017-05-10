@@ -25,6 +25,10 @@
 		select * from anime; 
 	</select>
 	
+	<select id="findByType" resultMap="AnimeMap">
+		select * from anime where type = #{type}
+	</select>
+	
 	<select id="findByAlias" resultMap="AnimeMap">
 		select * from anime where alias = #{alias} or name = #{alias}
 	</select>

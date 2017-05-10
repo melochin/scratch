@@ -31,10 +31,10 @@ input[readonly=readonly] {
 /*content container*/
 .content{
 	background:#EDEFF0;
-	margin:0 -15px;		/*µÖÏûcol´øÀ´µÄ15px*/
+	margin:0 -15px;		/*ï¿½ï¿½ï¿½ï¿½colï¿½ï¿½ï¿½ï¿½ï¿½ï¿½15px*/
 }
 
-/*¹¤¾ßÀ¸*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 .tool{
 	padding:5px 0;
 }
@@ -128,14 +128,14 @@ span.error {
 	color: #d52929;
 }
 
-/*ÏûÏ¢ÌáÊ¾*/
+/*ï¿½ï¿½Ï¢ï¿½ï¿½Ê¾*/
 .msg {
 	padding: 200px 0;
 	text-align:center;
 	font-size: 18px;
 }
 
-/*navµ¼Èë*/
+/*navï¿½ï¿½ï¿½ï¿½*/
 .navi .glyphicon {
 	color: #337ab7;
 	margin:0 10px 0 0;

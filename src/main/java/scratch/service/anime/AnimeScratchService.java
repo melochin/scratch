@@ -32,32 +32,32 @@ public class AnimeScratchService {
 	@Scheduled(fixedRate=30*60*1000)
 	public void diliRun() {
 		if(log.isInfoEnabled()) {
-			log.info("执行抓取任务");
+			log.info("start runing dili scratch service");
 		}
 		
 		List<AnimeEpisode> animeEpisodes = new DiliReader().read();
 		saveEpisode(animeEpisodes);
 		
 		if(log.isInfoEnabled()) {
-			log.info("完成抓取任务");
+			log.info("end dili scratch service");
 		}
 	}
 	
 	@Scheduled(fixedRate=30*60*1000)
 	public void fixRun() {
 		if(log.isInfoEnabled()) {
-			log.info("执行抓取任务");
+			log.info("start runing fix scratch service");
 		}
 		
 		List<AnimeEpisode> episodeList = new ArrayList<AnimeEpisode>();
-		for(int i=0; i<10; i++) {
+		for(int i=1; i<=10; i++) {
 			List<AnimeEpisode> episodes = new FixReader(i).read();
 			episodeList.addAll(episodes);
 		}
 		saveEpisode(episodeList);
 		
 		if(log.isInfoEnabled()) {
-			log.info("完成抓取任务");
+			log.info("end fix scratch service");
 		}
 	}
 	

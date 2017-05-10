@@ -28,7 +28,7 @@ public class FixReader extends ScratchReader<AnimeEpisode> {
 	
 	private static final String TITLE = "title";
 	
-	private static final String URL = "http://www.fixsub.com/我们的作品?set=";
+	private static final String URL = "http://www.fixsub.com/%E6%88%91%E4%BB%AC%E7%9A%84%E4%BD%9C%E5%93%81?set=";
 	
 	/**
 	 * 读取FIX作品栏的第page页
@@ -50,11 +50,11 @@ public class FixReader extends ScratchReader<AnimeEpisode> {
 	@Override
 	protected void read(String html, List<AnimeEpisode> returnList) {
 		Map<String, String> videos = new LinkedHashMap<String, String>();
-		
 		Document document = Jsoup.parse(html);
+		
 		Elements eles = document.select(PG_ITEM);
 		if(eles.size() == 0) {
-			log.error("DOM元素[" + PG_ITEM +"]丢失");
+			log.error("cant find DOM Elements [" + PG_ITEM +"]");
 		}
 		
 		//获取名称和具体页面链接

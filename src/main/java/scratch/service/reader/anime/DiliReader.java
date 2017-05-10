@@ -1,3 +1,4 @@
+
 package scratch.service.reader.anime;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DiliReader extends ScratchReader<AnimeEpisode> {
 		//过滤某星期日的数据
 		Elements root = document.select(weekDay);
 		if(root.size() == 0) {
-			log.error("DOM元素[" + weekDay +"]丢失");
+			log.error("cant find DOM Elements [" + weekDay +"]");
 		}
 		
 		List<AnimeEpisode> animeEpisodes = new ArrayList<AnimeEpisode>();
