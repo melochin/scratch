@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import scratch.model.Anime;
 import scratch.model.AnimeEpisode;
+import scratch.service.anime.AnimeScratchService;
 import scratch.service.reader.ScratchReader;
 
 public class FixReader extends ScratchReader<AnimeEpisode> {
@@ -30,12 +31,15 @@ public class FixReader extends ScratchReader<AnimeEpisode> {
 	
 	private static final String URL = "http://www.fixsub.com/%E6%88%91%E4%BB%AC%E7%9A%84%E4%BD%9C%E5%93%81?set=";
 	
+	private AnimeScratchService serivce;
+	
 	/**
 	 * 读取FIX作品栏的第page页
 	 * @param page
 	 */
-	public FixReader(int page) {
-		readerUrl = URL + page;
+	public FixReader(int page, AnimeScratchService serivce ) {
+		this.readerUrl = URL + page;
+		this.serivce = serivce;
 	}
 	
 	@Override
@@ -62,17 +66,33 @@ public class FixReader extends ScratchReader<AnimeEpisode> {
 			Elements as = div.select(A);
 			if(as.size() == 0) continue;
 			Element a = as.get(0);
+			//key:name, value:url
 			videos.put(a.attr(TITLE), a.attr(HREF));
+		}
+		
+		if(log.isDebugEnabled()) {
+			log.debug("get videos: " + videos.size());
 		}
 		
 		//解析具体页面链接
 		if(videos.size() == 0) return;
 		for(Entry<String, String> entry : videos.entrySet()) {
+			
+			//判断数据库中的anime是否存在，不存在直接下一个
+			Anime anime = serivce.getAnime(entry.getKey());
+			if(anime == null) continue;
+			
+			//读取anime对应的episode数据
 			FixUpdateReader updateReader = new FixUpdateReader(entry.getValue());
 			List<AnimeEpisode> episodes = updateReader.read();
+			
+			//设置episode的anime
+			for(AnimeEpisode episode : episodes) {
+				episode.setAnime(anime);
+			}
+			
 			returnList.addAll(episodes);
 		}
-		
 	}
 }
 

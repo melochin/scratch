@@ -10,6 +10,8 @@ public interface IAnimeDao {
 
 	List<Anime> findAll();
 	
+	List<Anime> findByFinished(@Param("finished") Boolean finished);
+	
 	List<Anime> findByType(@Param("type")Long type);
 	
 	Anime findById(@Param("id") Long id);

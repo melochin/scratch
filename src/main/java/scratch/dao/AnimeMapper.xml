@@ -16,13 +16,16 @@
 		<result property="type" column="type" />
 	</resultMap>
 	
-	
 	<select id="findById" resultMap="AnimeMap">
 		select * from anime where id = #{id}
 	</select>
 	
 	<select id="findAll" resultMap="AnimeMap">
 		select * from anime; 
+	</select>
+	
+	<select id="findByFinished" resultMap="AnimeMap">
+		select * from anime where finished = #{finished}
 	</select>
 	
 	<select id="findByType" resultMap="AnimeMap">
