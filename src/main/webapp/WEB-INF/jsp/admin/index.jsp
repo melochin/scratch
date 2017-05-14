@@ -2,18 +2,9 @@
     pageEncoding="UTF-8"%>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <div class="row">
-	<div class="col-md-6">
-	
-	</div>
-	<div class="col-md-6">
-	
-	</div>
-</div>
-<div class="row">
-	<div class="col-md-6">
-	
-	</div>
-	<div class="col-md-6">
-	
+	<div class="container">
+		<div class="jumbotron">
+		  <h2>欢迎来到后台管理</h2>
+		</div>
 	</div>
 </div>

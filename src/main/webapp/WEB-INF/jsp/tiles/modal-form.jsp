@@ -28,24 +28,11 @@
 	</div>
 </div>
 
-<div class="modal fade" id="modal-save" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">
-					新增
-					<t:insertAttribute name="title" ignore="true" />
-				</h4>
-			</div>
-			<t:insertAttribute name="modal-save" />
-		</div>
-	</div>
-</div>
+
+ <!-- Modal Structure -->
+ <div id="modal-save" class="modal modal-fixed-footer">
+ 	<t:insertAttribute name="modal-save" />
+ </div>
 
 <t:insertAttribute name="modal-edit" ignore="true" />
 

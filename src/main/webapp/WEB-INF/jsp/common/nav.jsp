@@ -1,19 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page isELIgnored="false" %>
-<div>
-	<div class="row">
-		<div class="col-xs-2 col-xs-offset-8 sidebar-caret" >
-			<a href onclick="return false;"><span><<</span></a>
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page isELIgnored="false"%>
+
+<ul class="collapsible collection" data-collapsible="accordion">
+	<li>
+		<a class="collection-item">首页</a>
+	</li>
+	<li>
+		<div class="collapsible-header collection-item">后台管理</div>
+		<div class="collapsible-body collection" style="padding:0px;">
+	        <a href="#!" class="collection-item">用户管理</a>
+	        <a href="#!" class="collection-item">番剧管理</a>
 		</div>
-	</div>
-    <ul class="sidebar-nav">
-        <li><a href="<c:url value="/"/>"><i class="glyphicon glyphicon-home" aria-hidden="true"></i><span class="hidden-xs hidden-sm">主页</span></a></li>
-        <li><a href="#"><i class="glyphicon glyphicon-tags" aria-hidden="true"></i><span class="hidden-xs hidden-sm">设置</span></a></li>
-    </ul>
-</div>
+	</li>
+</ul>
+
 <script>
+
+
+
 $(document).ready(function() {
 	$(".sidebar-caret a").click(function() {
 		$(".wrapper").toggleClass("toggled");

@@ -26,6 +26,9 @@
 <script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/js/common.js"/>"></script>
+<script type="text/javascript"
+	src="<c:url value="/materialize/js/materialize.js"/>"></script>
+
 <!-- css -->
 <link href="<c:url value="/bootstrap/css/bootstrap.css"/>"
 	rel="stylesheet"></link>
@@ -36,6 +39,9 @@
 	rel="stylesheet"></link>
 <link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
 <link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
+<link href="<c:url value="/materialize/css/materialize.css"/>"
+	rel="stylesheet"></link>
+
 <title><t:getAsString name="title" ignore="true" /></title>
 </head>
 <body>
@@ -47,9 +53,7 @@
 			<t:insertAttribute name="nav" />
 		</div>
 		<div class="col-md-10 content-box">
-			<div class="container">
 				<t:insertAttribute name="content" />
-			</div>
 		</div>
 	</div>
 </body>

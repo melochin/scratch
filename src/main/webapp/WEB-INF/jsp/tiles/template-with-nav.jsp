@@ -21,12 +21,15 @@
 		<script type="text/javascript" src="<c:url value="/js/myJquery.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/tag.js"/>"></script>
 		<script type="text/javascript" src="<c:url value="/js/common.js"/>"></script>
+		<script type="text/javascript" src="<c:url value="/materialize/js/materialize.js"/>"></script>
+		
 		<!-- css -->
 		<link href="<c:url value="/bootstrap/css/bootstrap.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/bootstrap/css/bootstrap-switch.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/formvalidation/css/formValidation.min.css" />" rel="stylesheet"></link>
 		<link href="<c:url value="/css/common.css"/>" rel="stylesheet"></link>
 		<link href="<c:url value="/css/mycss.css"/>" rel="stylesheet"></link>
+		<link href="<c:url value="/materialize/css/materialize.css"/>" rel="stylesheet"></link>
 
 		<title>
 			<t:insertAttribute name="title" ignore="true"/>

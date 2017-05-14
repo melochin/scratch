@@ -5,7 +5,8 @@
 <script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 	
 <form class="form-horizontal" id="saveAnimeForm" action="anime/save" method="post">
-	<div class="modal-body">
+	<div class="modal-content">
+     	 <h4>新增番剧</h4>
 		<div class="form-group">
 			<label class="col-sm-3 control-label">名称</label>
 			<div class="col-sm-6">

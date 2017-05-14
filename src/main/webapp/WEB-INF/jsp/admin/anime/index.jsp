@@ -6,12 +6,12 @@
 
 <table class="table table-hover">
 				<colgroup>
-	<col style="width:20%">
+	<col style="width:10%">
 	<col style="width:30%">
 	<col style="width:10%">
 	<col style="width:10%">
 	<col style="width:10%">
-	<col style="width:10%">
+	<col style="width:40%">
 </colgroup>
 <thead>
 	<tr>
@@ -51,6 +51,8 @@
 			<td>
 				<a class="btn btn-link btn-sm" data-toggle="modal"
 					data-target="#modal-edit" href="anime/form/${anime.id }">编辑</a>
+				<a class="btn btn-link btn-sm" data-toggle="modal"
+					data-target="#modal-edit" href="anime/link/${anime.id }">关联</a>
 				<a class="btn btn-link btn-sm" href="anime/delete/${anime.id }">删除</a>
 			</td>
 		</tr>
