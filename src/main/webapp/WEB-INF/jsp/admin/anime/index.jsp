@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@ page isELIgnored="false"%>
@@ -49,10 +50,8 @@
 				${animeTypes[anime.type]}
 			</td>
 			<td>
-				<a class="btn btn-link btn-sm" data-toggle="modal"
-					data-target="#modal-edit" href="anime/form/${anime.id }">编辑</a>
-				<a class="btn btn-link btn-sm" data-toggle="modal"
-					data-target="#modal-edit" href="anime/link/${anime.id }">关联</a>
+  				<button data-target="modal-edit" data-href="anime/form/${anime.id }" class="btn">编辑</button>
+				<button data-target="modal-edit" data-href="anime/link/${anime.id }" class="btn">关联</button>			
 				<a class="btn btn-link btn-sm" href="anime/delete/${anime.id }">删除</a>
 			</td>
 		</tr>
@@ -60,17 +59,4 @@
 	</tbody>
 </table>
 
-<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-		</div>
-	</div>
-</div>
-
-<script type="text/javascript">
-<!-- 移除模态框的数据，为了触发重复加载页面 -->
-$("#modal-edit").on("hidden.bs.modal", function() {
-    $(this).removeData("bs.modal");
-});
-</script>
+<div id="modal-edit" class="modal modal-fixed-footer"></div>

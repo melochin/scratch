@@ -36,11 +36,8 @@
 
 <t:insertAttribute name="modal-edit" ignore="true" />
 
-<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog"
+<div class="modal modal-fixed-footer" id="modal-edit" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content"></div>
-	</div>
 </div>
 
 <script type="text/javascript">

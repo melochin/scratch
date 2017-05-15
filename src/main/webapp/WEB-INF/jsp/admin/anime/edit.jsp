@@ -3,19 +3,13 @@
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal"
-		aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-	<h4 class="modal-title" id="myModalLabel">编辑番剧信息</h4>
-</div>
+<script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 
 <form class="form-horizontal" action="anime/update"
 	id="editAnimeForm" method="post">
-	<div class="modal-body">
-
+	
+	<div class="modal-content">
+		<h4>编辑番剧信息</h4>
 		<input name="id" type="hidden" value="${anime.id }"/>
 
 		<div class="form-group">
@@ -78,7 +72,6 @@
 
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 		<input type="submit" class="btn btn-primary" value="保存" />
 	</div>
 </form>

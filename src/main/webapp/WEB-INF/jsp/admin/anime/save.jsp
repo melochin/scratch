@@ -1,19 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
-    pageEncoding="utf-8"%>
+	pageEncoding="utf-8"%>
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
-	
-<form class="form-horizontal" id="saveAnimeForm" action="anime/save" method="post">
+
+<form class="form-horizontal" id="saveAnimeForm" action="anime/save"
+	method="post">
 	<div class="modal-content">
-     	 <h4>新增番剧</h4>
+	
+		<h4>新增番剧</h4>
 		<div class="form-group">
 			<label class="col-sm-3 control-label">名称</label>
 			<div class="col-sm-6">
 				<input class="form-control" name="name" placeholder="请输入番剧名称" />
 			</div>
 		</div>
-		
+
 		<div class="form-group">
 			<label class="col-sm-3 control-label">别名</label>
 			<div class="col-sm-6">
@@ -31,10 +33,11 @@
 		<div class="form-group">
 			<label class="col-sm-3 control-label">描述</label>
 			<div class="col-sm-6">
-				<textarea class="form-control" name="description" placeholder="请输入描述" rows="4"></textarea>
+				<textarea class="form-control" name="description"
+					placeholder="请输入描述" rows="4"></textarea>
 			</div>
 		</div>
-		
+
 		<div class="form-group">
 			<label class="col-sm-3 control-label">类别</label>
 			<div class="col-sm-6">
@@ -45,15 +48,14 @@
 				</select>
 			</div>
 		</div>
-		
-		
+
 		<div class="form-group">
 			<label class="col-sm-3 control-label">开始连载日期</label>
 			<div class="col-sm-6">
 				<input class="form-control" name="publishMonth" type="date" />
 			</div>
 		</div>
-		
+
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
