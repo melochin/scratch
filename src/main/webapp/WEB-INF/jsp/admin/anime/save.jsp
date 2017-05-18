@@ -5,7 +5,7 @@
 <script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 
 <form class="form-horizontal" id="saveAnimeForm" action="anime/save"
-	method="post">
+	method="post" enctype="multipart/form-data">
 	<div class="modal-content">
 	
 		<h4>新增番剧</h4>
@@ -24,10 +24,15 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-3 control-label">图片链接</label>
-			<div class="col-sm-6">
-				<input class="form-control" name="pic" placeholder="请输入图片链接" />
-			</div>
+			<div class="file-field input-field">
+	    		<div class="btn col-sm-offset-1 col-sm-2">
+	        		<span>上传图片</span>
+	   		     	<input type="file" name="picFile">
+	  	    	</div>
+		   	   	<div class="file-path-wrapper col-sm-6">
+		      		<input class="file-path validate" type="text" name="picFileText">
+		      	</div>
+	    	</div>
 		</div>
 
 		<div class="form-group">

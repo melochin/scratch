@@ -103,6 +103,14 @@ var animeValidate = extend({
     				message: '无效链接'
     			}
     		}
+    	},
+    	picFileText: {
+    		validators: {
+    			regexp: {
+    				regexp: /\w+.(png|jpg)$/,
+    				message: '只支持png、jpg格式的文件'
+    			}
+    		}    		
     	}
     }
 }, commonValite);

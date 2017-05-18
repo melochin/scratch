@@ -1,9 +1,9 @@
-
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<script type="text/babel" src="<c:url value="/js/react-common.js"/>"></script>
 
 <table class="table table-hover">
 				<colgroup>
@@ -60,3 +60,5 @@
 </table>
 
 <div id="modal-edit" class="modal modal-fixed-footer"></div>
+<div id="page" data-page="${animeList.getPageNum() }" data-total="${animeList.getPages() }" data-url="anime?p=" >
+</div>

@@ -22,6 +22,10 @@
 	
 	<mvc:resources location="/WEB-INF//resource/" mapping="/**" /> 
 	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"></property>
+	</bean>
+	
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" />
 	
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">

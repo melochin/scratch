@@ -10,15 +10,13 @@
 	<li>
 		<div class="collapsible-header collection-item">后台管理</div>
 		<div class="collapsible-body collection" style="padding:0px;">
-	        <a href="#!" class="collection-item">用户管理</a>
-	        <a href="#!" class="collection-item">番剧管理</a>
+	        <a href="<c:url value='/admin/user' />" class="collection-item">用户管理</a>
+	        <a href="<c:url value='/admin/anime' />" class="collection-item">番剧管理</a>
 		</div>
 	</li>
 </ul>
 
 <script>
-
-
 
 $(document).ready(function() {
 	$(".sidebar-caret a").click(function() {

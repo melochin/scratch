@@ -21,7 +21,7 @@
 
 <ul id="user-ops" class="dropdown-content">
 	<c:if test="${user_g.role == 1 }">
-		<li><a href="<c:url value="/bili/setting"/>">admin</a></li>
+		<li><a href="<c:url value="/admin"/>">admin</a></li>
 		<li class="divider"></li>
 	</c:if>
 	<li><a href="<c:url value="/user/logout"/>">log out</a></li>
