@@ -1,8 +1,24 @@
+$(document).ready(function() {
+	initPage();
+});
 
-function loadPage(url, curPage, totalPage) {
-	ReactDOM.render(<Page url={url} curPage={curPage}  totalPage={totalPage} /> , $("#page").get(0));
+/*
+ * <div id="page" data-page="1" data-total="2" data-url="user?p=" ></div>
+ * */
+function initPage() {
+	var $page = $("#page");
+	$page.each(function() {
+		var cur = $(this).attr("data-page");
+		var total = $(this).attr("data-total");
+		var url = $(this).attr("data-url");
+		loadPage(url, cur, total, this);
+	});
 }
 
+
+function loadPage(url, curPage, totalPage, page) {
+	ReactDOM.render(<Page url={url} curPage={curPage}  totalPage={totalPage} /> , page);
+}
 
 var Page = React.createClass({
 	render: function() {
@@ -12,23 +28,24 @@ var Page = React.createClass({
 		var totalPage = this.props.totalPage;
 		var left = null;
 		var right = null;
-		
+
 		if(curPage >= 1 && curPage <= totalPage) {
+			
 			if(curPage - 1 > 0) {
-				var url = url + (curPage - 1);
+				var pre = url + (parseInt(curPage) - 1);
 				left = (
 					<li>
-						<a href={url} aria-label="Previous"> 
+						<a href={pre} aria-label="Previous"> 
 							<span aria-hidden="true">&laquo;</span>
 						</a>
 					</li>
 				);
 			}
 			
-			if(curPage + 1 > 0) {
-				var url = url + (curPage + 1);
+			if(curPage + 1 <= totalPage) {
+				var next = url + (parseInt(curPage) + 1);
 				right = (
-					<li><a href={url} aria-label="Next"> 
+					<li><a href={next} aria-label="Next"> 
 						<span aria-hidden="true">&raquo;</span>
 					</a></li>
 				);
@@ -36,7 +53,6 @@ var Page = React.createClass({
 		}
 		var url = url + curPage;
 		return(
-			<nav aria-label="Page navigation">
 				<ul className="pagination">
 					{left}
 				<li>
@@ -44,7 +60,6 @@ var Page = React.createClass({
 				</li>
 					{right}
 				</ul>
-			</nav>		
 		)
 	}
 });

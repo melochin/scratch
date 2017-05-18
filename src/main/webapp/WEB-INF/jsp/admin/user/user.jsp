@@ -35,18 +35,7 @@
 		</c:forEach>
 	</tbody>
 </table>
-<nav aria-label="Page navigation">
-	<ul class="pagination">
-		<c:if test="${userList.page.curPage - 1  >= 1}">
-			<li><a href="index?p=${userList.page.curPage - 1 }"
-				aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-			</a></li>
-		</c:if>
-		<li><a href="index?p=${userList.page.curPage } ">${userList.page.curPage }</a></li>
-		<c:if test="${userList.page.curPage + 1 <= userList.page.totalPage }">
-			<li><a href="index?p=${userList.page.curPage + 1 }"
-				aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-			</a></li>
-		</c:if>
-	</ul>
-</nav>
+
+<div id="page" data-page="${userList.page.curPage }" data-total="${userList.page.totalPage }" 
+	data-url="user?p=" >
+</div>

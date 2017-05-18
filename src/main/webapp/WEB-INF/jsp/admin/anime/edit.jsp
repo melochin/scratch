@@ -3,19 +3,13 @@
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal"
-		aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-	<h4 class="modal-title" id="myModalLabel">编辑番剧信息</h4>
-</div>
+<script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
 
 <form class="form-horizontal" action="anime/update"
-	id="editAnimeForm" method="post">
-	<div class="modal-body">
-
+	id="editAnimeForm" method="post" enctype="multipart/form-data">
+	
+	<div class="modal-content">
+		<h4>编辑番剧信息</h4>
 		<input name="id" type="hidden" value="${anime.id }"/>
 
 		<div class="form-group">
@@ -35,11 +29,16 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-3 control-label">图片链接</label>
-			<div class="col-sm-6">
-				<input class="form-control" name="pic" placeholder="请输入图片链接" 
-					value="${anime.pic }"/>
-			</div>
+			<div class="file-field input-field">
+	    		<div class="btn col-sm-offset-1 col-sm-2">
+	        		<span>上传图片</span>
+	   		     	<input type="file" name="picFile">
+	  	    	</div>
+		   	   	<div class="file-path-wrapper col-sm-6">
+		      		<input class="file-path validate" type="text" name="picFileText"
+		      			value="${anime.pic }">
+		      	</div>
+	    	</div>
 		</div>
 
 		<div class="form-group">
@@ -78,7 +77,6 @@
 
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 		<input type="submit" class="btn btn-primary" value="保存" />
 	</div>
 </form>

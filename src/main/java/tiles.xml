@@ -4,20 +4,21 @@
        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd"> 
 
 <tiles-definitions>
-
 	<!-- 模板 -->
-	<definition name="template" template="/WEB-INF/jsp/tiles/template.jsp" preparer="scratch.view.MenuView">
+	<definition name="template" template="/WEB-INF/jsp/tiles/template-user.jsp" preparer="scratch.view.MenuView">
 		<put-attribute name="title" value="" />
+		<put-attribute name="lib" value="/WEB-INF/jsp/common/lib.jsp" />
 		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
 		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav-user.jsp" />
 		<put-attribute name="content" value="" />		
 	</definition>
 	
-	<definition name="template-with-nav" template="/WEB-INF/jsp/tiles/template-with-nav.jsp">
+	<definition name="template-admin" template="/WEB-INF/jsp/tiles/template-admin.jsp">
 		<put-attribute name="title" value="" />
+		<put-attribute name="lib" value="/WEB-INF/jsp/common/lib.jsp" />
 		<put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp"/>
 		<put-attribute name="content" value="" />		
-		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav.jsp"></put-attribute>
+		<put-attribute name="nav" value="/WEB-INF/jsp/common/nav-admin.jsp"></put-attribute>
 	</definition>
 	
 	<!-- 前台 -->
@@ -78,19 +79,24 @@
 		<put-attribute name="content" value="/WEB-INF/jsp/tag.jsp"/>
 	</definition>
 	
-	<definition name="info" extends="template-with-nav">
+	<definition name="info" extends="template-admin">
 		<put-attribute name="title" value="video" />
 		<put-attribute name="content" value="/WEB-INF/jsp/videos.jsp" />
 	</definition>
 	
-	<definition name="bili_setting" extends="template-with-nav">
+	<definition name="bili_setting" extends="template-admin">
 		<put-attribute name="title" value="setting" />
 		<put-attribute name="content" value="/WEB-INF/jsp/bili/scratch_setting.jsp" />
 	</definition>
 
-	<definition name="bili_video_type" extends="template-with-nav">
+	<definition name="bili_video_type" extends="template-admin">
 		<put-attribute name="title" value="setting" />
 		<put-attribute name="content" value="/WEB-INF/jsp/bili/video_type.jsp" />
+	</definition>
+	
+	<definition name="admin_index" extends="template-admin">
+		<put-attribute name="title" value="后台管理" />
+		<put-attribute name="content" value="/WEB-INF/jsp/admin/index.jsp" />
 	</definition>
 	
 	
@@ -100,7 +106,7 @@
 		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/user/save.jsp" />
 	</definition>
 
-	<definition name="admin_user" extends="template-with-nav">
+	<definition name="admin_user" extends="template-admin">
 		<put-attribute name="title" value="用户管理" />
 		<put-attribute name="content" value="admin_user_form" />
 	</definition>
@@ -111,7 +117,7 @@
 		<put-attribute name="modal-save" value="/WEB-INF/jsp/admin/anime/save.jsp"/>
 	</definition>
 
-	<definition name="admin_anime" extends="template-with-nav">
+	<definition name="admin_anime" extends="template-admin">
 		<put-attribute name="title" value="番剧管理" />
 		<put-attribute name="content" value="admimn_anime_form" />
 	</definition>
