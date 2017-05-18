@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import scratch.aspect.Role;
+import scratch.aspect.UserRole;
 import scratch.service.bilibili.VideoTypeService;
 
 @Controller
@@ -29,8 +31,15 @@ public class HomeController {
 	 */
 	@RequestMapping(value={"/", "/search"}, method=RequestMethod.GET)
 	public ModelAndView mainPage(Model model){
-		model.addAttribute("types", typeSerivce.list(new Integer(1)));
-		return new ModelAndView("index");
+		/*model.addAttribute("types", typeSerivce.list(new Integer(1)));
+		return new ModelAndView("index");*/
+		return new ModelAndView("redirect:/anime/focus");
+	}
+	
+	@UserRole(value=Role.Admin)
+	@RequestMapping(value="/admin", method=RequestMethod.GET)
+	public ModelAndView adminPage(Model model){
+		return new ModelAndView("admin_index");
 	}
 	
 	/**

@@ -1,6 +1,7 @@
 package scratch.support.regex;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,6 +13,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * ��ȡHTML�ı�
@@ -20,6 +23,8 @@ import java.util.Map.Entry;
  */
 public class Connection {
 
+	private Logger log = Logger.getLogger(Connection.class);
+	
 	public static final String POST = "post";
 	
 	public static final String GET = "get";
@@ -66,8 +71,12 @@ public class Connection {
 				html.append(temp);
 			}
 			
+		} catch (FileNotFoundException e) {
+			log.error(e);
+			return null;
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e);
+			return null;
 		}
 
 		return html.toString();

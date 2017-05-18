@@ -4,7 +4,14 @@
 
 <mapper namespace="scratch.dao.inter.IAnimeDao">
 	
-	<resultMap type="Anime" id="AnimeMap">
+	<resultMap id="AnimeTypeWithAlias" type="Anime" extends="AnimeMap">
+		<collection property="aliass" ofType="AnimeAlias">
+			<result property="hostId" column="host_id"/>
+			<result property="alias" column="host_alias"/>
+		</collection>
+	</resultMap>
+	
+	<resultMap id="AnimeMap" type="Anime">
 		<id property="id" column="id"/>
 		<result property="name" column="name"/>
 		<result property="alias" column="alias"/>
@@ -16,13 +23,23 @@
 		<result property="type" column="type" />
 	</resultMap>
 	
+	<select id="findWithAlias" resultMap="AnimeTypeWithAlias">
+		select a.*, b.host_id as host_id, b.alias as host_alias 
+			from anime a, anime_alias b 
+			where a.id = b.anime_id and a.finished = '0';
+	</select>
+	
 	<select id="findById" resultMap="AnimeMap">
 		select * from anime where id = #{id}
 	</select>
 	
 	<select id="findAll" resultMap="AnimeMap">
-		select * from anime; 
+		select * from anime
 	</select>
+	
+	<select id="find" resultMap="AnimeMap">
+		select * from anime
+	</select>	
 	
 	<select id="findByFinished" resultMap="AnimeMap">
 		select * from anime where finished = #{finished}
@@ -64,7 +81,9 @@
 		update anime set
 			name = #{anime.name},
 			alias = #{anime.alias},
-			pic = #{anime.pic},
+			<if test="anime.pic != null">
+				pic = #{anime.pic},
+			</if>
 			description = #{anime.description},
  			publish_month = #{anime.publishMonth},
 			finished = #{anime.finished},

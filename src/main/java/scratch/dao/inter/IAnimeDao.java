@@ -4,11 +4,18 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageRowBounds;
+
 import scratch.model.Anime;
 
 public interface IAnimeDao {
 
 	List<Anime> findAll();
+	
+	List<Anime> findWithAlias();
+	
+	Page<Anime> find(PageRowBounds page);
 	
 	List<Anime> findByFinished(@Param("finished") Boolean finished);
 	
