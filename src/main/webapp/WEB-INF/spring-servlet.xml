@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:aop="http://www.springframework.org/schema/aop"
-		xmlns:context="http://www.springframework.org/schema/context"
-		xmlns:mvc="http://www.springframework.org/schema/mvc"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans 
-			http://www.springframework.org/schema/beans/spring-beans.xsd 
-			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd  
-			http://www.springframework.org/schema/aop 
-			http://www.springframework.org/schema/aop/spring-aop.xsd 
-			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:github="http://www.springframework.org/schema/social/github"
+	xmlns:social="http://www.springframework.org/schema/social"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/social/github http://www.springframework.org/schema/social/spring-social-github.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social-1.1.xsd">
 	
 	<mvc:annotation-driven>
 		<!-- 消息转换器 -->
@@ -54,4 +56,36 @@
 	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
 	
 	<import resource="redis-context.xml"/>
+	
+	<context:property-placeholder location="classpath:github.properties"/>
+	
+	<github:config app-id="${github.client.id}" app-secret="${github.client.secret}" />
+	
+	<bean id="userIdSource" class="org.springframework.social.connect.web.SessionUserIdSource"></bean>
+	
+	<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors.NoOpTextEncryptor"/>
+	
+	<social:jdbc-connection-repository data-source-ref="dataSource" 
+		encryptor-ref="textEncryptor"
+		user-id-source-ref="userIdSource"/>
+	
+	<bean class="org.springframework.social.connect.web.ConnectController">
+		<property name="interceptors">
+			<list>
+				<bean class="scratch.interceptor.GitHubConnectInterceptor"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="socialInterceptor" class="scratch.interceptor.SocialInterceptor"/>
+	
+	<bean class="org.springframework.web.servlet.handler.MappedInterceptor">
+		<constructor-arg name="includePatterns">
+			<list>
+				<value>/connect/*</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg name="interceptor" ref="socialInterceptor" />
+	</bean>
+	
 </beans>

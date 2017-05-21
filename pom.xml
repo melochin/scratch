@@ -12,7 +12,14 @@
 		<finalName>scratch</finalName>
 	</build>
 
+	<properties>
+		<spring-framework-version>4.3.8.RELEASE</spring-framework-version>
+		<spring-security-version>4.2.2.RELEASE</spring-security-version>
+		<spring-social-version>2.0.0.M2</spring-social-version>
+	</properties>
+
 	<dependencies>
+	
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -82,38 +89,7 @@
 			<version>4.2.0.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>4.2.2.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>4.2.2.RELEASE</version>
-		</dependency>
-
-		<!-- Spring orm -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>4.2.2.RELEASE</version>
-		</dependency>
-
-		<!-- Spring 事务 -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>4.2.2.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>4.2.2.RELEASE</version>
-		</dependency>
-
+		
 		<!-- 切面 -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -217,45 +193,90 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.10.2</version>
 		</dependency>
-
-		<!-- Spring Social -->
+		
+		<!-- Spring -->
+		
+		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>4.2.2.RELEASE</version>
+			<version>${spring-security-version}</version>
+		</dependency>
+
+		<!-- Spring Test-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-framework-version}</version>
+		</dependency>
+		
+		<!-- Spring WebMvc-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring-framework-version}</version>
+		</dependency>
+
+		<!-- Spring AOP-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring-framework-version}</version>
+		</dependency>
+
+		<!-- Spring ORM -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring-framework-version}</version>
+		</dependency>
+
+		<!-- Spring TX -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring-framework-version}</version>
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring-framework-version}</version>
+		</dependency>
+		
+		<!-- Spring Social -->
+		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-security</artifactId>
-			<version>2.0.0.M2</version>
+			<version>${spring-social-version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-core</artifactId>
-			<version>2.0.0.M2</version>
+			<version>${spring-social-version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-config</artifactId>
-			<version>2.0.0.M2</version>
+			<version>${spring-social-version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-web</artifactId>
-			<version>2.0.0.M2</version>
+			<version>${spring-social-version}</version>
 		</dependency>
 		
+		<!-- Spring Social GitHub-->
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-github</artifactId>
 			<version>1.0.0.M4</version>
 		</dependency>
-
 	</dependencies>
+	
 	<repositories>
 		<repository>
 			<id>org.springframework.maven.milestone</id>
