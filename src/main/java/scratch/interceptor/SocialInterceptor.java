@@ -1,10 +1,18 @@
 package scratch.interceptor;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import scratch.model.User;
+import scratch.support.web.SessionSupport;
 
 public class SocialInterceptor implements HandlerInterceptor{
 
@@ -18,11 +26,33 @@ public class SocialInterceptor implements HandlerInterceptor{
 	 * 拦截成功拦截的视图名，进行重定向
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		if("connect/githubConnected".equals(modelAndView.getViewName())) {
-			modelAndView.setViewName("redirect:/");
+		
+		String viewName = modelAndView.getViewName();
+		Map<String, Object> model = modelAndView.getModel();
+		
+		if(viewName == null || viewName.indexOf("Connected") == -1) {
+			return;
 		}
+		
+		//判断是否存在Connection
+		if(!model.containsKey("connections")) {
+			return;
+		}
+		List<Connection<?>> connections = (List<Connection<?>>) model.get("connections");
+		if(connections.isEmpty()) {
+			return;
+		}
+		
+		//获取用户信息，存入Session中
+		ConnectionData data = connections.get(0).createData();
+		User user = new User(data.getDisplayName());
+		user.setStatus("1");
+		SessionSupport.setUser(user);
+		
+		modelAndView.setViewName("redirect:/");
 	}
 
 	@Override

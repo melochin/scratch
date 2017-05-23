@@ -59,7 +59,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations" value="classpath*:scratch/dao/*.xml" />
 		<property name="typeAliasesPackage" value="scratch.model" />
-		<property name="configLocation" value="/WEB-INF/config.xml" />
+		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
 		<property name="plugins">
 			<array>
 				<bean class="com.github.pagehelper.PageInterceptor">
@@ -170,6 +170,6 @@
    
 <!--    <task:scheduler id="myScheduler" pool-size="5"/>
    <task:annotation-driven scheduler="myScheduler"/> -->
-   <import resource="redis-context.xml"/>
+	<import resource="redis-config.xml"/>
    
 </beans>
