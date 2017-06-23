@@ -1,4 +1,4 @@
-package scratch.service.api.renren;
+package scratch.api.renren;
 
 import java.util.Date;
 

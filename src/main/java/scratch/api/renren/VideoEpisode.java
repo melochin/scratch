@@ -1,4 +1,4 @@
-package scratch.service.api.renren;
+package scratch.api.renren;
 
 public class VideoEpisode {
 

@@ -55,6 +55,7 @@ import scratch.support.regex.Connection;
 		try {
 			ConnectConfig(config);
 			String html = connection.toHtml(new URL(url), config);
+			if(html == null) return t;
 			read(html, t);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

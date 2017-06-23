@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/social/live http://www.springframework.org/schema/social/spring-social-live.xsd">
 
 	<!-- 加载properties文件 -->
-	<context:property-placeholder location="classpath:social.properties"/>
+	<context:property-placeholder location="classpath*:/social.properties"/>
 	
 	<!-- 配置service provider提供的秘钥 -->
 	<github:config app-id="${github.client.id}" app-secret="${github.client.secret}" />

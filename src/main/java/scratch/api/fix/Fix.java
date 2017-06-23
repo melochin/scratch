@@ -1,0 +1,11 @@
+package scratch.api.fix;
+
+import java.util.List;
+
+import scratch.model.AnimeEpisode;
+
+public interface Fix {
+
+	List<AnimeEpisode> getDownloadList(String videoName);
+	
+}
