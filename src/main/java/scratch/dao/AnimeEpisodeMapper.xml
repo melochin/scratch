@@ -36,10 +36,10 @@
 	
 	<insert id="save">
 		insert into anime_episode (
-			anime_id, no, url, scratch_time
+			anime_id, no, url, scratch_time, host_id
 		) 
 		values(
-			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}
+			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}, #{episode.hostId}
 		)
 	</insert>
 

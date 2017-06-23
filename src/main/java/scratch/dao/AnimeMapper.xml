@@ -4,13 +4,6 @@
 
 <mapper namespace="scratch.dao.inter.IAnimeDao">
 	
-	<resultMap id="AnimeTypeWithAlias" type="Anime" extends="AnimeMap">
-		<collection property="aliass" ofType="AnimeAlias">
-			<result property="hostId" column="host_id"/>
-			<result property="alias" column="host_alias"/>
-		</collection>
-	</resultMap>
-	
 	<resultMap id="AnimeMap" type="Anime">
 		<id property="id" column="id"/>
 		<result property="name" column="name"/>
@@ -21,6 +14,13 @@
 		<result property="finished" column="finished"/>
 		<result property="episodeNo" column="episode_no"/>
 		<result property="type" column="type" />
+	</resultMap>
+	
+	<resultMap id="AnimeTypeWithAlias" type="Anime" extends="AnimeMap">
+		<collection property="aliass" ofType="AnimeAlias">
+			<result property="hostId" column="host_id"/>
+			<result property="alias" column="host_alias"/>
+		</collection>
 	</resultMap>
 	
 	<select id="findWithAlias" resultMap="AnimeTypeWithAlias">

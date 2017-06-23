@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
-import scratch.service.bilibili.ScratchService;
 import scratch.service.bilibili.VideoTypeService;
 import scratch.dao.VideoTypeDao;
 import scratch.model.VideoType;
 
 @Controller
-public class BiliController
- {
+public class BiliController {
 
 	@Autowired
 	private VideoTypeDao typeDao;
@@ -30,8 +28,8 @@ public class BiliController
 	@Autowired
 	private VideoTypeService typeService;
 	
-	@Autowired
-	private ScratchService scratchService;
+/*	@Autowired
+	private ScratchService scratchService;*/
 	
 	@UserRole(Role.Admin)
 	@RequestMapping(value="bili/setting")
@@ -52,14 +50,14 @@ public class BiliController
 		return typeService.listVideoCount();
 	}
 	
-	@UserRole(Role.Admin)
+/*	@UserRole(Role.Admin)
 	@RequestMapping(value="bili/ajax/startService", method=RequestMethod.GET) 
 	public void startService() {
 		scratchService.scratchVideo();
-	}
+	}*/
 	
 	
-	@UserRole(Role.Admin)
+/*	@UserRole(Role.Admin)
 	@RequestMapping(value="bili/ajax/isRun", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Map<String, Object> isServiceRun() {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -69,7 +67,7 @@ public class BiliController
 			map.put("record", scratchService.getRecentRecord());
 		}
 		return map;
-	}
+	}*/
 	
 	@UserRole(Role.Admin)
 	@RequestMapping(value="bili/setting/type")

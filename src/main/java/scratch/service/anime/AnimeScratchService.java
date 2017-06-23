@@ -2,21 +2,30 @@ package scratch.service.anime;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import scratch.api.dilidili.DilidiliImpl;
+import scratch.api.fix.FixImpl;
+import scratch.api.renren.RenrenImpl;
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.model.Anime;
+import scratch.model.AnimeAlias;
 import scratch.model.AnimeEpisode;
-import scratch.service.reader.anime.DiliReader;
-import scratch.service.reader.anime.FixReader;
+import scratch.service.reader.adpater.Adapter;
+import scratch.service.reader.adpater.DilidiliAdapter;
+import scratch.service.reader.adpater.FixAdapter;
+import scratch.service.reader.adpater.RenrenAdapter;
 
 @Service
 public class AnimeScratchService {
@@ -29,95 +38,105 @@ public class AnimeScratchService {
 	@Autowired
 	private IAnimeEpisodeDao episodeDao;
 	
-	private Map<String, Anime> animeNameMap =  new LinkedHashMap<String, Anime>();
-
-	private Map<String, Anime> animeAliasMap = new LinkedHashMap<String, Anime>();
-	
-	public synchronized void init() {
-		//寻找未完结的番剧
-		List<Anime> animes = animeDao.findByFinished(false);
-		for(Anime anime : animes) {
-			animeNameMap.put(anime.getName(), anime);
-			animeAliasMap.put(anime.getAlias(), anime);
-		}
-	}
-	
-	public synchronized Anime getAnime(String name) {
-		//先从名字里找
-		if(animeNameMap.containsKey(name)) {
-			return animeNameMap.get(name);
-		} 
-		//再从别名里找
-		if(animeAliasMap.containsKey(name)) {
-			return animeAliasMap.get(name);
-		}
-		return null;
-	}
-	
-	
-	//抓取Anime信息
-	/*@Scheduled(cron="0 07 17 * * ?")*/
-	//@Scheduled(fixedRate=60*60*1000)
-	public void diliRun() {
-		if(log.isInfoEnabled()) {
-			log.info("start runing dili scratch service");
-		}
-		
-		List<AnimeEpisode> animeEpisodes = null;
-		
-		try{
-			animeEpisodes = new DiliReader().read();
-			saveEpisode(animeEpisodes);
-		} catch (Exception e) {
-			if(log.isInfoEnabled()) {
-				log.error("dili scratch service abort: " + e.getMessage());
-			}
-		} finally {
-			if(log.isInfoEnabled()) {
-				log.info("end dili scratch service \n" + 
-						" get " + animeEpisodes.size() + " episode");
-			}
-		}
-	}
-	
 	/**
-	 * FIX抓取服务，延迟半小时执行，与D站服务保持在半小时时间差
-	 * 修改：读取具体的episode之前，判断下anime是否存在，判断方法由service提供
+	 * key: host code, value: anime alias list; 
+	 * hsot code = 0, 认为anime没有维护任何host的alias 
 	 */
-	//@Scheduled(fixedRate=60*60*1000, initialDelay=30*60*1000)
-	public void fixRun() {
+	private Map<Long, List<Anime>> animeAliasMap = new LinkedHashMap<Long, List<Anime>>();
+	
+	/** key: host code , value: adapater */
+	private Map<Long, Adapter> adpaterMap = new HashMap<Long, Adapter>();
+	
+	/** init adapterMap */
+	{
+		this.adpaterMap.put(new Long(1), new DilidiliAdapter(new DilidiliImpl()));
+		this.adpaterMap.put(new Long(2), new FixAdapter(new FixImpl()));
+		this.adpaterMap.put(new Long(3), new RenrenAdapter(new RenrenImpl()));
+	}
+	
+	/** init AnimeAliasMap */
+	private synchronized void init() {
+		// 获取未完结的番剧，且含有别名
+		List<Anime> animes = animeDao.findWithAlias();
+		for(Anime anime : animes) {
+			// 没有维护别名的，hostId全部默认为0，别名即为Anime name
+			if(CollectionUtils.isEmpty(anime.getAliass())) {
+				fillAnimeAliasMap(new Long(0), anime.getName(), anime);
+			} 
+			// 有别名的，存放对应hostId的AnimeList中
+			else {
+				
+				for(AnimeAlias alias : anime.getAliass()) {
+					fillAnimeAliasMap(alias.getHostId(), alias.getAlias(), anime);
+				}
+			}
+		}
+	}
+	
+	/** 填充AnimeAliasMap，为每个站点生成对应的Anime List  */
+	private void fillAnimeAliasMap(Long hostId, String alias, Anime anime) {
+		if(!animeAliasMap.containsKey(hostId)) {
+			animeAliasMap.put(hostId, new ArrayList<Anime>());
+		}
+		anime.setAlias(alias);
+		animeAliasMap.get(hostId).add(anime);
+	}
+	
+	
+	private synchronized List<Anime> getAnimeMap(Long hostId) {
 		
-		if(log.isInfoEnabled()) {
-			log.info("start runing fix scratch service");
+		List<Anime> animes = animeAliasMap.get(hostId);
+		if(animes == null) {
+			animes = new ArrayList<Anime>();
 		}
 		
+		return animes;
+	}
+	
+	
+	@Scheduled(fixedRate=60*60*1000)
+	public void run() {
+		// 初始化
 		init();
 		
-		List<AnimeEpisode> episodeList = new ArrayList<AnimeEpisode>();
+		List<AnimeEpisode> list = new ArrayList<AnimeEpisode>();
 		
-		try {
-			for(int i=1; i<=10; i++) {
-				List<AnimeEpisode> episodes = new FixReader(i, this).read();
-				episodeList.addAll(episodes);
-			}
-			saveEpisode(episodeList);
-		} catch (Exception e) {
+		if(log.isInfoEnabled()) {
+			log.info("start runing scratch service");
+		}
+		
+		// 遍历所有适配器，执行数据抓取任务
+		for(Entry<Long, Adapter> entry : adpaterMap.entrySet()) {
 			
-			if(log.isInfoEnabled()) {
-				log.error("fix scratch service abort: " + e.getStackTrace());
-			}
+			// 获取HostId及对应的适配器
+			Long hostId = entry.getKey();
+			Adapter adapter = entry.getValue();
 			
-		} finally {
+			// 加载对应的ANIME数据
+			List<Anime> animes = getAnimeMap(hostId);
 			
-			if(log.isInfoEnabled()) {
-				log.info("end fix scratch service: " + 
-						"get " + episodeList.size() + " episode");
+			// 使用适配器抓取数据
+			for(Anime anime : animes) {
+				List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
+				for(AnimeEpisode episode : episodes) {
+					episode.setHostId(hostId);
+				}
+				list.addAll(episodes);
 			}
 		}
 		
+		if(log.isInfoEnabled()) {
+			log.info("end scratch service \n" + 
+					" get " + list.size() + " episode");
+		}
+		
+		//保存数据
+		saveEpisode(list);
 	}
 	
-	public void saveEpisode(List<AnimeEpisode> animeEpisodes) {
+	
+	//保存数据
+	private void saveEpisode(List<AnimeEpisode> animeEpisodes) {
 		for(AnimeEpisode episode : animeEpisodes) {
 			//判断数据中是否已经存在,存在则跳过
 			if(episodeDao.findByUrl(episode.getUrl()) != null) continue;
@@ -131,6 +150,5 @@ public class AnimeScratchService {
 			episodeDao.save(episode);
 		}
 	}
-	
 	
 }

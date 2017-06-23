@@ -18,6 +18,8 @@ public class AnimeEpisode {
 	
 	private Date scratchTime;
 
+	private Long hostId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -56,6 +58,14 @@ public class AnimeEpisode {
 
 	public void setScratchTime(Date scratchTime) {
 		this.scratchTime = scratchTime;
+	}
+
+	public Long getHostId() {
+		return hostId;
+	}
+
+	public void setHostId(Long hostId) {
+		this.hostId = hostId;
 	}
 
 	@Override

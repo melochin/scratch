@@ -1,6 +1,7 @@
 package scratch.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Anime {
 
 	private Long id;
-	
+
 	@NotBlank(message="名称不能为空")
 	private String name;
 	
@@ -27,6 +28,8 @@ public class Anime {
 	
 	private Long type;
 
+	private List<AnimeAlias> aliass;
+	
 	public Anime() {}
 	
 	public Anime(Long id) {
@@ -107,6 +110,14 @@ public class Anime {
 
 	public void setType(Long type) {
 		this.type = type;
+	}
+	
+	public List<AnimeAlias> getAliass() {
+		return aliass;
+	}
+
+	public void setAliass(List<AnimeAlias> aliass) {
+		this.aliass = aliass;
 	}
 
 	@Override
