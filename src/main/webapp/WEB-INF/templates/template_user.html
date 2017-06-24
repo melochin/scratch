@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<th:block th:replace="lib" />
+</head>
+<body th:fragment="template_content(content)">
+	<div class="row">
+		<div th:replace="header :: header"></div>
+	</div>
+	<div class="row" style="padding: 35px 0 0 0;">
+		<div class="col-md-1">
+			<!-- <div th:replace="nav :: nav"></div> -->
+		</div>
+		<div class="col-md-10 content-box">
+			<div th:replace="${content}"></div>
+		</div>
+	</div>
+</body>
+</html>
