@@ -30,7 +30,28 @@
 		<property name="defaultEncoding" value="utf-8"></property>
 	</bean>
 	
-	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" />
+	<!-- View -->
+		
+	<!-- thymeleaf -->
+	
+	<bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+		<property name="prefix" value="/WEB-INF/templates/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML" />
+		<property name="characterEncoding" value="utf-8" />
+	</bean>
+
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver"/>
+	</bean>
+	
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+		<property name="order" value="1" />
+		<property name="characterEncoding" value="utf-8"></property>
+	</bean>
+	
+<!-- 	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" />
 	
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
 		<property name="definitions">
@@ -38,7 +59,7 @@
 				<value>classpath:tiles.xml</value>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 	
 	<!-- 视图解析器配置 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
