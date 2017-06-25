@@ -7,6 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +44,12 @@ public class AnimeScratchService {
 	
 	@Autowired
 	private IAnimeEpisodeDao episodeDao;
+	
+	private static BlockingQueue<AnimeEpisode> animeEpisodes = new LinkedBlockingQueue<AnimeEpisode>();
+	
+	private static Boolean isScratchRun = false;
+	
+	private static Boolean isSaveRun = false;
 	
 	/**
 	 * key: host code, value: anime alias list; 
@@ -96,49 +109,111 @@ public class AnimeScratchService {
 	
 	@Scheduled(fixedRate=60*60*1000)
 	public void run() {
+		
+		// 运行状态判断
+		synchronized (isScratchRun) {
+			if(isScratchRun) {
+				if(log.isDebugEnabled()) {
+					log.debug("scratch service is running, waiting for next time");				
+				}
+				return;
+			}
+			isScratchRun = true;
+		}
+		
 		// 初始化
 		init();
 		
-		List<AnimeEpisode> list = new ArrayList<AnimeEpisode>();
+		ExecutorService exec = Executors.newCachedThreadPool();
+		CountDownLatch countDownLatch = new CountDownLatch(adpaterMap.size());
+		ConcurrentMap<String, Integer> resultMap = new ConcurrentHashMap<String, Integer>();
 		
 		if(log.isInfoEnabled()) {
 			log.info("start runing scratch service");
 		}
 		
-		// 遍历所有适配器，执行数据抓取任务
+		// 遍历所有适配器，执行数据抓取线程任务
 		for(Entry<Long, Adapter> entry : adpaterMap.entrySet()) {
 			
 			// 获取HostId及对应的适配器
 			Long hostId = entry.getKey();
 			Adapter adapter = entry.getValue();
-			
 			// 加载对应的ANIME数据
 			List<Anime> animes = getAnimeMap(hostId);
 			
-			// 使用适配器抓取数据
-			for(Anime anime : animes) {
-				List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
-				for(AnimeEpisode episode : episodes) {
-					episode.setHostId(hostId);
+			// 网络访问任务可能超时，启用线程任务
+			exec.execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					int episodeCount = 0;
+					// 遍历Anime，执行数据抓取
+					for(Anime anime : animes) {
+						List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
+						for(AnimeEpisode episode : episodes) {
+							episode.setHostId(hostId);
+						}
+						episodeCount += episodes.size();
+						animeEpisodes.addAll(episodes);
+					}
+					// 保存抓取结果
+					resultMap.put(adapter.getClass().getName(), episodeCount);
+					countDownLatch.countDown();
 				}
-				list.addAll(episodes);
+				
+			});
+		}
+		// 结束线程，等待所有scratch任务完成
+		// 1.输出运行结果 2.重置运行状态
+		exec.execute(new Runnable() {
+
+			@Override
+			public void run() {
+				// 等待所有scratch任务完成
+				try {
+					countDownLatch.await();
+				} catch (InterruptedException e) {
+				}
+				// 输出运行结果
+				if(log.isInfoEnabled()) {
+					// 计算总共抓取的数据个数
+					int count = 0;
+					for(Entry<String, Integer> entry : resultMap.entrySet()) {
+						count += entry.getValue();
+					}
+					log.info("end scratch service \n" + 
+							"get " + count + " episode \n" +
+							resultMap);
+				}
+				//重置运行状态
+				synchronized(isScratchRun) {
+					isScratchRun = false;	
+				}
 			}
-		}
+			
+		});
 		
-		if(log.isInfoEnabled()) {
-			log.info("end scratch service \n" + 
-					" get " + list.size() + " episode");
-		}
-		
-		//保存数据
-		saveEpisode(list);
+		exec.shutdown();
 	}
 	
-	
-	//保存数据
-	private void saveEpisode(List<AnimeEpisode> animeEpisodes) {
-		for(AnimeEpisode episode : animeEpisodes) {
-			//判断数据中是否已经存在,存在则跳过
+	/** 保存数据 */
+	@Scheduled(fixedRate=60*60*1000, fixedDelay=30000)
+	public void saveResult() {
+		
+		if(isSaveRun) {
+			if(log.isDebugEnabled()) {
+				log.debug("save service is running, waiting for next time");
+			}
+			return;
+		}
+		isSaveRun = true;
+		
+		while(animeEpisodes.size() > 0) {
+			AnimeEpisode episode = animeEpisodes.poll();
+			if(episode == null) {
+				continue;
+			}
+			
 			if(episodeDao.findByUrl(episode.getUrl()) != null) continue;
 			
 			//根据别名查找番剧对象，为了将番剧与具体集建立关系
@@ -148,7 +223,10 @@ public class AnimeScratchService {
 			episode.setScratchTime(new Date());
 			//保存数据
 			episodeDao.save(episode);
+			
 		}
+		
+		isSaveRun = false;
 	}
 	
 }
