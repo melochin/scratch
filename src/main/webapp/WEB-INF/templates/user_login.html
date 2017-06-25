@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<th:block th:replace="lib" />
-<script type="text/javascript" th:src="${/js/validate.js}"></script>
+	<title>user login</title>
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+	<th:block th:replace="~{base/lib}"></th:block>
 </head>
-<body th:replace="template_user :: template_content(~{::.row})">
+<body th:replace="base/layout :: template_content(~{::.row})">
 	<div class="row">
 		<div
 			class="col-md-offset-3 col-md-6 col-xs-offset-3 col-xs-8 
@@ -42,7 +41,7 @@
 			<div class="col-md-4">
 				<label>使用其他账号登录</label>
 				<form th:action="@{/connect/github}" method="POST">
-					<input type="image" src="@{/pic/github.png}" height="55px;">
+					<input type="image" th:src="@{/pic/github.png}" height="55px;">
 				</form>
 			</div>
 		</div>
