@@ -33,18 +33,7 @@ public class DictService {
 		
 		// redis连接的状态标志
 		// 连接:数据将存储在缓存 	未连接:直接走DB
-		boolean connected = false;
-		
-		// 判断redis是否连接
-		try{
-			RedisConnection connection = redis.getConnectionFactory().getConnection();
-			connection.close();
-			connected = true;
-			log.debug("Redis连接，尝试从Redis读取数据");
-		} catch (RedisConnectionFailureException e) {
-			connected = false;
-			log.debug("Redis尚未连接，直接从数据库读取数据");
-		}
+		boolean connected = isRedisConnected();
 		
 		// 尝试从redis中读取字典数据
 		if(connected && redis.hasKey(REDIS_PREFIX + type)) {
@@ -67,6 +56,24 @@ public class DictService {
 		}
 		
 		return dics;
+	}
+	
+	/** 判断redis是否连接 */
+	private boolean isRedisConnected() {
+		
+		boolean connected = false;
+		
+		try{
+			RedisConnection connection = redis.getConnectionFactory().getConnection();
+			connection.close();
+			connected = true;
+			log.debug("Redis连接，尝试从Redis读取数据");
+		} catch (RedisConnectionFailureException e) {
+			connected = false;
+			log.debug("Redis尚未连接，直接从数据库读取数据");
+		}
+		
+		return connected;
 	}
 }
 
