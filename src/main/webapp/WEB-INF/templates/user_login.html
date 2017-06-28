@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>user login</title>
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+	<link href="../resource/semantic/semantic.css" rel="stylesheet"></link>
+	<script type="text/javascript" src="../resource/js/tools/jquery.js"></script>
+	<script type="text/javascript" src="../resource/semantic/semantic.js"></script>
+	<th:block th:replace="~{base/lib}"></th:block>
+</head>
+
+<body th:replace="base/layout :: template_content(~{::.row})" style="background-image:url(../resource/pic/background.png);background-size:cover
+;" >
+	<div class="ui doubling three column centered grid" style="padding-top:150px;">
+		<div class="column">
+			<div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
+				<form class="ui form" action="login" method="post" id="userLoginForm">
+					<div class="ui field fluid input left icon">
+						<input class="form-control" type="text" name="username"
+							placeholder="用户名" />
+						<i class="user icon"></i>
+					</div>
+					<div class="ui field fluid input left icon">
+						<input class="form-control" type="password" name="password"
+							placeholder="密码" />
+							<i class="hide icon"></i>
+					</div>
+					<span class="error" th:text="${error}"></span>
+					<div class="ui field checkbox">
+						<input type="checkbox" /> <label>记住我</label>
+					</div>
+					<div class="ui doubling two column grid">
+						<div class="ui column">
+							<input class="ui fluid green button" type="submit" value="登录" />
+						</div>
+						<div class="ui column">
+							<a class="ui fluid inverted white button" th:href="@{/user/register}">注册</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			
+			<div class="ui message">
+				忘记密码？<a th:href="@{/user/reset}"><span>找回账号</span></a>
+				<br>
+				如果账号还没有激活，请<a><span>激活账号</span></a>
+			</div>
+			
+			<div class="ui horizontal divider">
+					使用其他账号登录
+			</div>
+			
+			<button class="ui blue button">
+				<i class="github icon"></i>
+					Github
+			</button>
+			
+			
+<!-- 			<div class="col-md-4">
+			
+				<label>使用其他账号登录</label>
+				<form th:action="@{/connect/github}" method="POST">
+					<input type="image" th:src="@{/pic/github.png}" height="55px;">
+				</form>
+			</div> -->
+		</div>
+	</div>
+</body>
+</html>

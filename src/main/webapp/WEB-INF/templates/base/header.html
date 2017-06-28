@@ -1,0 +1,34 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- <script type="text/babel" src="<c:url value="/js/react-tag-video.js"/>"></script>
+ -->
+<nav class="navbar-container">
+	<div class="nav-wrapper">
+		<a href="#" class="brand-logo">Scratch</a>
+		<ul id="nav-mobile" class="right hide-on-med-and-down">
+			<li>
+				<th:block th:if="${user_g}">
+					<a href="" class="dropdown-toggle dropdown-button"
+						data-toggle="dropdown" data-activates="user-ops">
+						${user_g.username } <b class="caret"></b></a>
+				</th:block> <th:block th:unless="${user_g}">
+					<a class="btn btn-default btn-outline btn-circle collapsed"
+						th:href="@{/user/login}" aria-expanded="false"
+						aria-controls="nav-collapse2">Sign in</a>
+				</th:block> <!-- <c:if test="${user_g != null }">
+				</c:if> <c:if test="${user_g == null }">
+				</c:if> -->
+			</li>
+		</ul>
+	</div>
+</nav>
+
+<th:block th:if="${user_g}">
+	<ul id="user-ops" class="dropdown-content">
+		<th:block th:if="*{role} == 1">
+			<li><a th:href="@{/admin}">Administrator</a></li>
+			<li class="divider"></li>
+		</th:block>
+		<li><a th:href="@{/user/logout}">log out</a></li>
+	</ul>
+</th:block>
