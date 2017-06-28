@@ -155,6 +155,20 @@ $('.ui.search')
     ]
   })
 ;
+
+$.fn.api.settings.api = {
+  'add user'      : 'add/{id}',
+};
+
+$('.item.active')
+  .api({
+    action: "add user",
+    urlData: {
+    	id: 22
+    }
+  })
+;
+
 	</script>
 </body>
 </html>
