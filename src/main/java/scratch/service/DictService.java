@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import scratch.dao.inter.IDictDao;
+import scratch.model.Dict;
 
 @Service
 public class DictService {
@@ -28,34 +29,33 @@ public class DictService {
 	
 	private final static Logger log = Logger.getLogger(DictService.class);
 	
+	public List<Dict> findAllDictionaries() {
+		return findByType("-1");
+	}
+	
 	@SuppressWarnings("unchecked")
-	public Map<Long, String> findByType(String type) {
+	public List<Dict> findByType(String parentCode) {
 		
 		// redis连接的状态标志
 		// 连接:数据将存储在缓存 	未连接:直接走DB
 		boolean connected = isRedisConnected();
 		
 		// 尝试从redis中读取字典数据
-		if(connected && redis.hasKey(REDIS_PREFIX + type)) {
-			return  (Map<Long, String>) redis.opsForValue().get(REDIS_PREFIX + type);
+		if(connected && redis.hasKey(REDIS_PREFIX + parentCode)) {
+			return  (List<Dict>) redis.opsForValue().get(REDIS_PREFIX + parentCode);
 		}
 		
 		// 直接从DB中读取字典数据
-		List<Map<String, Object>> maps = dao.findByType(type);
-		if(maps == null || maps.size() == 0) {
+		List<Dict> dicts = dao.findByParentCode(parentCode, true);
+		if(dicts == null || dicts.size() == 0) {
 			return null;
 		}
-		Map<Long, String> dics = new LinkedHashMap<Long, String>();
-		for(Map<String, Object> m : maps) {
-			dics.put((Long)m.get("code"), (String)m.get("name"));
-		}
-		
 		// 将数据缓存在redis中
 		if(connected) {
-			redis.opsForValue().set(REDIS_PREFIX + type, dics, 6, TimeUnit.HOURS);	
+			redis.opsForValue().set(REDIS_PREFIX + parentCode, dicts, 6, TimeUnit.HOURS);	
 		}
 		
-		return dics;
+		return dicts;
 	}
 	
 	/** 判断redis是否连接 */

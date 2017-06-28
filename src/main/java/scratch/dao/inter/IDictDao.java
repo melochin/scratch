@@ -17,4 +17,7 @@ public interface IDictDao {
 	@MapKey("name")
 	List<Map<String, Object>> findByType(@Param("type") String type);
 	
+	List<Dict> findByParentCode(
+			@Param("parentCode") String parentCode, @Param("mustBeUsed") boolean mustBeUsed);
+	
 }

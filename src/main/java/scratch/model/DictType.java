@@ -2,7 +2,8 @@ package scratch.model;
 
 public class DictType {
 
-	public static final String ANIMETYPE = "animeType";
-
-	public static final String HOST = "host";
+	public static final String HOST = "01";
+	
+	public static final String ANIMETYPE = "02";
+	
 }

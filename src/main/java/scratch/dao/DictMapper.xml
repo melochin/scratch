@@ -11,5 +11,14 @@
 	<select id="findByType" resultType="HashMap">
 		select code, name  from dictionary where type = #{type};
 	</select>
+	
+	<select id="findByParentCode" resultType="Dict">
+		select code, value, parent_code as parentCode, sequence, used from dictionary 
+			where parent_code = #{parentCode} 
+			<if test="mustBeUsed">
+				and used = '1' 
+			</if>
+			order by sequence asc;
+	</select>
 
 </mapper>  
