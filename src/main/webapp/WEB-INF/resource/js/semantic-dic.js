@@ -1,13 +1,6 @@
-var content = [ {
-	title : 'Horse',
-	description : 'An Animal',
-}, {
-	title : 'Cow',
-	description : 'Another Animal',
-} ];
-
 $.fn.api.settings.api = {
 	'get dictionary data' : 'dic/parentcode/{code}',
+	'update dictionary data' : 'dict/update'
 };
 	
 $(document).ready(function() {
@@ -22,30 +15,69 @@ $(document).ready(function() {
 		}
 	});
 
-	$('.ui.search').search({
-		source : content,
-		searchFields : [ 'title' ]
-	});
-
-
 	var $table = $('.ui.ten.wide.column');
 	$('.item').api({
+		_this : this,
 		action : "get dictionary data",
 		beforeSend: function(settings) {
 			ReactDOM.render(<Loading />, $table.get(0));
 			return settings;
 		},
 		onSuccess : function(data) {
+			var _this = this;
 			console.debug(data);
-			ReactDOM.render(<Table dicts={data} />, $table.get(0));
+			ReactDOM.render(<Table dicts={data.data} code={data.code} />, $table.get(0));
 			$('#addDictionaryData').click(function() {
-				$('.ui.small.modal').modal('show');
+				var code = $(this).attr("data-code");
+				$('#modal-dicdata').modal({
+					onShow: function() {
+						$(this).find("input[name='parentCode']").val(code);
+					},
+					onApprove: function() {
+						$(this).find("form").submit(function() {
+							$.ajax({
+								type: $(this).attr("method"),
+								url: $(this).attr("action"),
+								data: $(this).serialize(),
+								success: function(msg) {
+									_this.click();
+								}
+							});
+							return false;
+						});
+						$(this).find("form").submit();
+					}
+				});
+				$('#modal-dicdata').modal('show');
 			});
+		}
+	});
+			
+	$('#addDictionary').click(function() {
+		$('#modal-dic').modal('show');
+	});		
+			
+	$('.ui.search').search({
+		source : dictionaries,
+		fields: {
+			title : 'value'
+		},
+		searchFields : [ 'value' ],
+		onSelect: function(result, response) {
+			var code = result.code;
+			$('a[data-code="'+code +'"]').click();
 		}
 	});
 	
 });
 
+function initModal() {
+	$('#modal-dicdata')
+	  .modal('attach events', 'addDictionaryData', 'show')
+	  .onShow
+}	
+	
+	
 var Loading = React.createClass({
 	
 	render: function() {
@@ -68,7 +100,7 @@ var Table = React.createClass({
 		return(
 			<div>
 			<div>
-				<button id="addDictionaryData" className="ui teal button">
+				<button id="addDictionaryData" className="ui teal button" data-code={this.props.code}>
 					<i className="ui add icon"></i> 字典数据
 				</button>
 			</div>
@@ -95,24 +127,28 @@ var Tr = React.createClass({
 	render: function() {
 		return (
 			<tr>
-				<td>
-					<h3>{this.props.code}</h3>
-				</td>
-				<td className="single line">
-					<div className="ui transparent input">
-						<input type="text" placeholder="文字" value={this.props.value}></input>
-					</div>
-				</td>
-				<td>
-					<div className="ui transparent input">
-						<input type="text" placeholder="顺序" value={this.props.sequence}></input>
-					</div>
-				</td>
-				<td><select className="ui dropdown" value={this.props.used}>
-						<option value="" >状态</option>
-						<option value="1">使用</option>
-						<option value="0">暂停</option>
-				</select></td>
+				<form>
+					<td>
+						<h3>{this.props.code}</h3>
+					</td>
+					<td className="single line">
+						<div className="ui transparent input">
+							<input type="text" placeholder="文字" value={this.props.value} name="value"></input>
+						</div>
+					</td>
+					<td>
+						<div className="ui transparent input">
+							<input type="text" placeholder="顺序" value={this.props.sequence} name="sequence"></input>
+						</div>
+					</td>
+					<td>
+						<select className="ui dropdown" value={this.props.used} name="used">
+							<option value="" >状态</option>
+							<option value="1">使用</option>
+							<option value="0">暂停</option>
+						</select>
+					</td>
+				</form>
 			</tr>		
 		)
 	}

@@ -33,7 +33,7 @@
 				<div class="results"></div>
 			</div>
 
-			<button class="ui fluid teal button">
+			<button id="addDictionary" class="ui fluid teal button">
 				<i class="ui add icon"></i> 新增
 			</button>
 			
@@ -41,7 +41,7 @@
 			
 			<th:block th:each="dictionary : ${dictionaries}">
 				<a class="item" th:data-code="*{dictionary.code}">
-					<th:block th:text="*{dictionary.value}"/>
+					<th:block th:text="'[' + *{dictionary.code} + ']' + *{dictionary.value}"/>
 					<div class="ui label right pointing dropdown icon button">
 						<i class="settings icon"></i>
 						<div class="menu">
@@ -91,5 +91,12 @@
 			<div class="ui approve green button">Approve</div>
 		</div>
 	</div>
+	
+	<th:block th:replace="~{dic_add :: modal-dic('-1')}" />
+	<th:block th:replace="~{dic_add :: modal-dic('1')}" />
+	
+	<script type="text/javascript" th:inline="javascript">
+		var dictionaries = [[${dictionaries}]];
+	</script>
 </body>
 </html>
