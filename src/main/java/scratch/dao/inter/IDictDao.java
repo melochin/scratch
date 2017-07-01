@@ -20,4 +20,13 @@ public interface IDictDao {
 	List<Dict> findByParentCode(
 			@Param("parentCode") String parentCode, @Param("mustBeUsed") boolean mustBeUsed);
 	
+	
+	int save(@Param("dict") Dict dict);
+	
+	int update(@Param("dict") Dict dict);
+	
+	int delete(@Param("dict") Dict dict);
+	
+	Dict findByCodeAndParentCode(@Param("code") String code, @Param("parentCode") String parentCode);
+	
 }

@@ -1,8 +1,6 @@
 package scratch.service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -11,6 +9,7 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import scratch.dao.inter.IDictDao;
 import scratch.model.Dict;
@@ -29,9 +28,29 @@ public class DictService {
 	
 	private final static Logger log = Logger.getLogger(DictService.class);
 	
-	public List<Dict> findAllDictionaries() {
-		return findByType("-1");
+	@Transactional
+	public int save(Dict dict) {
+		return dao.save(dict);
 	}
+	
+	@Transactional
+	public int update(Dict dict) {
+		return dao.update(dict);
+	}
+	
+	@Transactional
+	public int delete(Dict dict) {
+		return dao.delete(dict);
+	}
+	
+	public List<Dict> findAllDictionaries() {
+		return dao.findByParentCode("-1", false);
+	}
+	
+	public Dict findByCodeAndParentCode(String code, String parentCode) {
+		return dao.findByCodeAndParentCode(code, parentCode);
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<Dict> findByType(String parentCode) {

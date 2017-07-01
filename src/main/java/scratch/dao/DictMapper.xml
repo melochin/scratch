@@ -20,5 +20,24 @@
 			</if>
 			order by sequence asc;
 	</select>
+	
+	<select id="findByCodeAndParentCode" resultType="Dict">
+		select code, value, parent_code as parentCode, sequence, used from dictionary 
+			where parent_code = #{parentCode} and code = #{code}
+	</select>
+	
+	<update id="update">
+		update dictionary set value = #{dict.value}, sequence = #{dict.sequence}, used = #{dict.used}
+			where code = #{dict.code} and parent_code = #{dict.parentCode}
+	</update>
+
+	<delete id="delete">
+		delete from dictionary where code = #{dict.code} and parent_code = #{dict.parentCode}
+	</delete>
+
+	<insert id="save">
+		insert into dictionary (code, parent_code, value, sequence, used) 
+			values(#{dict.code}, #{dict.parentCode}, #{dict.value}, #{dict.sequence}, #{dict.used})
+	</insert>
 
 </mapper>  
