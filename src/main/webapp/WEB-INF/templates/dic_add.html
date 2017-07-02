@@ -8,17 +8,17 @@
 	
 	<div class="header" th:text="${code == '-1'} ? '新增字典' : '新增字典数据'"></div>
 	
-	<div class="content ui form">
+	<div class="content ui form" th:id="${code == '-1'} ? 'form-dic' : 'form-dicdata'">
 		<form class="" th:action="${code == '-1' ? 'dict/addDic' : 'dict/addDicData'}" method="post">
-			<div class="ui field fluid input">
+			<div class="ui field fluid">
 				<!-- parentCode 如何传递？ -->
 				<input name="code" placeholder="编码" />
 				<input name="parentCode" type="hidden"/>	
 			</div>
-			<div class="ui field fluid input">
+			<div class="ui field fluid">
 				<input name="value" placeholder="文字"/>
 			</div>	
-			<div class="ui field fluid input">
+			<div class="ui field fluid">
 				<input name="sequence" placeholder="顺序"/>
 			</div>	
 			<div class="ui field fluid input">
