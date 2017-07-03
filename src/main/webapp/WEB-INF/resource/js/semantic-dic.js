@@ -2,8 +2,13 @@
 $.fn.api.settings.api = {
 	'get dictionary data' : 'dic/parentcode/{code}',
 	'update dictionary data' : 'dict/update',
-	'validate dictionary code' : 'dict/validate/code'
+	'validate dictionary code' : 'dict/validate/code',
+	'delete dictionary data' : 'dict/delete'
 };
+
+$.fn.form.settings.debug = true;
+$.fn.form.settings.verbose = true;
+$.fn.form.settings.performance = false;
 
 // 校验信息模板设置
 $.fn.form.settings.prompt = {
@@ -91,6 +96,10 @@ $(document).ready(function() {
 			        }
 				]
 			}
+		},
+		onFailure : function() {
+			console.debug("fail");
+			return true;
 		}
 	});
 
@@ -148,34 +157,66 @@ var Loading = React.createClass({
 	}
 });
 
+// <Table dicts={data.data} code={data.code}  item={_this} />
+
 var Table = React.createClass({
+	// 刷新重新加载
+	refresh : function() {
+		this.props.item.click();
+	},
+	// 删除事件
+	handleDeleteEvent : function() {
+		var _this = this;
+		$.ajax({
+			url : $.fn.api.settings.api['delete dictionary data'],
+			method : 'post',
+			data : {
+				code : $('.basic.delete.modal').find(".ok.button").attr("data-code"),
+				parentCode : this.props.code
+			},
+			success : function(data) {
+				if(data.success) {
+					$('.basic.delete.modal').modal('close');
+					_this.refresh();
+				} else {
+					alert("删除失败");
+				}
+				
+			}
+		});
+	},
 	
-	handleDeleteClick : function() {
-		$('.basic.delete.modal').modal('show');
-		var code = this.props.code;
-		console.debug(code);
+	handleDeleteClickEvent : function(dict) {
+		var $modal = $('.basic.delete.modal');
+		$modal.find(".content").find("p").text("确定删除" + dict.value + "?");
+		$modal.find(".ok.button").attr("data-code", dict.code);
+		$modal.modal('show');
 	},
 	
 	handleClick: function() {
 		var code = this.props.code;
 		var item = this.props.item;
+		var _this = this;
 		$('#modal-dicdata').modal({
 			onShow: function() {
 				$(this).find("input[name='parentCode']").val(code);
 			},
 			onApprove: function() {
-				$(this).find("form").submit(function() {
+/*				$(this).find("form").submit(function() {
 					$.ajax({
 						type: $(this).attr("method"),
 						url: $(this).attr("action"),
 						data: $(this).serialize(),
 						success: function(msg) {
-							item.click();
+							_this.refresh();
 						}
 					});
 					return false;
 				});
-				$(this).find("form").submit();
+				$(this).find("form").submit();*/
+			},
+			onHidden : function() {
+				$(this).find("form").form("reset");
 			}
 		});
 		$('#modal-dicdata').modal('show');
@@ -183,12 +224,16 @@ var Table = React.createClass({
 	
 	render: function() {
 		var _this = this;
+		var trs;
 		
-		var trs = this.props.dicts.map(function(dict, index) {
-			return (
-				<Tr code={dict.code} value={dict.value} sequence={dict.sequence} used={dict.used} deleteClick={_this.handleDeleteClick}/>
-			)
-		});		
+		if(this.props.dicts != null) {
+			trs = this.props.dicts.map(function(dict, index) {
+				return (
+						<Tr code={dict.code} value={dict.value} sequence={dict.sequence} used={dict.used} 
+							deleteClick={_this.handleDeleteClickEvent.bind(_this, dict)}/>
+					)
+				});
+		}
 		return(
 			<div>
 			<div>
@@ -210,7 +255,7 @@ var Table = React.createClass({
 					{trs}
 				</tbody>
 			</table>
-			<DeleteModal />
+			<DeleteModal deleteEvent={this.handleDeleteEvent}/>
 			</div>
 		)
 	}
@@ -254,8 +299,8 @@ var DeleteModal = React.createClass({
 		return (
 			<div className="ui small basic delete modal transition hidden" style={{'marginTop' : '-123.5px'}}>
 				<div className="ui icon header">
-					<i className="archive icon"></i>
-						Archive Old Messages
+					<i className="warning circle icon"></i>
+					系统配置信息
 				</div>
 				<div className="content">
 					<p>确定删除?</p>
@@ -265,7 +310,7 @@ var DeleteModal = React.createClass({
 			        	<i className="remove icon"></i>
 			        	No
 			        </div>
-			        <div className="ui green ok inverted button">
+			        <div className="ui green ok inverted button" data-code="" onClick={this.props.deleteEvent}>
 			        	<i className="checkmark icon"></i>
 			        	Yes
 			        </div>
