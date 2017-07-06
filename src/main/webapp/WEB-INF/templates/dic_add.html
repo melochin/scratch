@@ -8,8 +8,8 @@
 	
 	<div class="header" th:text="${code == '-1'} ? '新增字典' : '新增字典数据'"></div>
 	
-	<div class="content ui form">
-		<form class="form" th:action="${code == '-1' ? 'dict/addDic' : 'dict/addDicData'}" method="post"
+	<div class="content">
+		<form class="ui form" th:action="${code == '-1' ? 'dict/addDic' : 'dict/addDicData'}" method="post"
 			th:id="${code == '-1'} ? 'form-dic' : 'form-dicdata'">
 			<div class="ui field fluid">
 				<!-- parentCode 如何传递？ -->
@@ -29,10 +29,7 @@
 					<option value="0">暂停</option>
 				</select>
 			</div>
-			<input class="ui button submit" type="submit">保存</button>
+			<input class="ui button green submit" type="submit" value="保存"/>
 		</form>
-	</div>
-	<div class="actions">
-		<div class="ui approve green button">Approve</div>
 	</div>
 </div>

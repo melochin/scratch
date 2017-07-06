@@ -11,10 +11,8 @@ $.fn.form.settings.verbose = true;
 $.fn.form.settings.performance = false;
 
 // 校验信息模板设置
-$.fn.form.settings.prompt = {
-	empty 	: '{name}不能为空',
-	number	: '{name}必须为数字'
-};
+$.fn.form.settings.prompt.empty = '{name}不能为空';
+$.fn.form.settings.prompt.number = '{name}必须为数字';
 
 $.fn.form.settings.onSuccess = function() {
 	console.debug(this);
@@ -26,15 +24,9 @@ $.fn.form.settings.rules.ajax = function(value, ajaxValue) {
 	var
 		action = ajaxValue.action,
 		eles = ajaxValue.elements,
-		prompt = ajaxValue.prompt,
 		url = $.fn.api.settings.api[action],
 		keys = Object.keys(eles),
-		map = {},
-		name = $(this).attr("name"),
-		$form = $(this).closest(".ui.form");
-		
-	console.debug(name);
-	console.debug($form);
+		map = {};
 	
 	for(var i=0; i<keys.length; i++) {
 		var key = keys[i];
@@ -42,22 +34,21 @@ $.fn.form.settings.rules.ajax = function(value, ajaxValue) {
 		map[key] = value;
 	}
 	
-	console.debug(prompt);
+	var success = false;
 	
 	$.ajax({
 		url : url, 
 		data: map,
+		async : false ,
 		success: function(data) {
 			console.debug(data.validate);
-			if(!data.validate) {
-				$form.form('add prompt', name, prompt);
-			}
+			success = data.validate;
 		}
 	});
 	
-	return true;
+	return success;
 };
-	
+
 $(document).ready(function() {
 	$('.ui.dropdown').dropdown();
 
@@ -77,9 +68,9 @@ $(document).ready(function() {
 						  elements : {
 							  code: $('#form-dicdata').find("input[name='code']"),
 							  parentCode: $('#form-dicdata').find("input[name='parentCode']")
-						  },
-						  prompt : '编码已经存在'
-					  }
+						  }
+					  },
+				  	  prompt : '编码已经存在'
 				  }
 				 ]
 				
@@ -96,10 +87,6 @@ $(document).ready(function() {
 			        }
 				]
 			}
-		},
-		onFailure : function() {
-			console.debug("fail");
-			return true;
 		}
 	});
 
@@ -160,6 +147,11 @@ var Loading = React.createClass({
 // <Table dicts={data.data} code={data.code}  item={_this} />
 
 var Table = React.createClass({
+	
+	getInitialState : function () {
+		return {currentDic : ""};
+	},
+	
 	// 刷新重新加载
 	refresh : function() {
 		this.props.item.click();
@@ -186,11 +178,20 @@ var Table = React.createClass({
 		});
 	},
 	
-	handleDeleteClickEvent : function(dict) {
-		var $modal = $('.basic.delete.modal');
-		$modal.find(".content").find("p").text("确定删除" + dict.value + "?");
-		$modal.find(".ok.button").attr("data-code", dict.code);
+	handleModifiedClickEvent : function(dict) {
+		this.setState({currentDic:dict});
+		var $modal = $('.add.modal');
 		$modal.modal('show');
+	},
+	
+	handleDeleteClickEvent : function(dict) {
+		this.setState({currentDic:dict});
+		var $modal = $('.basic.delete.modal');
+		$modal.modal('show');
+		/*
+		$modal.find(".content").find("p").text("确定删除" + dict.value + "?");
+		$modal.find(".ok.button").attr("data-code", dict.code);*/
+		
 	},
 	
 	handleClick: function() {
@@ -226,10 +227,13 @@ var Table = React.createClass({
 		var _this = this;
 		var trs;
 		
+		var form = <DidctForm dict={this.state.currentDic}/>;
+		
 		if(this.props.dicts != null) {
 			trs = this.props.dicts.map(function(dict, index) {
 				return (
 						<Tr code={dict.code} value={dict.value} sequence={dict.sequence} used={dict.used} 
+							modifyClick = {_this.handleModifiedClickEvent.bind(_this, dict)} 
 							deleteClick={_this.handleDeleteClickEvent.bind(_this, dict)}/>
 					)
 				});
@@ -255,7 +259,8 @@ var Table = React.createClass({
 					{trs}
 				</tbody>
 			</table>
-			<DeleteModal deleteEvent={this.handleDeleteEvent}/>
+			<DeleteModal deleteEvent={this.handleDeleteEvent} dict={this.state.currentDic}/>
+			<FormModal form={form} />
 			</div>
 		)
 	}
@@ -286,7 +291,7 @@ var Tr = React.createClass({
 					</select>
 				</td>
 				<td>
-					<button className="ui button">编辑</button>
+					<button className="ui button" onClick={this.props.modifyClick} >编辑</button>
 					<button className="ui button delete" data-code={this.props.code} onClick={this.props.deleteClick}>删除</button>
 				</td>
 			</tr>		
@@ -294,16 +299,26 @@ var Tr = React.createClass({
 	}
 });
 
+// header content
 var DeleteModal = React.createClass({
 	render: function() {
+		
+		var header = '标题';
+		var content = '确定删除';
+		
+		if(this.props.dict != null) {
+			content = '确认删除' + this.props.dict.value;
+			header = '数据字典信息';
+		}
+		
 		return (
 			<div className="ui small basic delete modal transition hidden" style={{'marginTop' : '-123.5px'}}>
 				<div className="ui icon header">
 					<i className="warning circle icon"></i>
-					系统配置信息
+					{header}
 				</div>
 				<div className="content">
-					<p>确定删除?</p>
+					<p>{content}</p>
 				</div>
 			    <div className="actions">
 			    	<div className="ui red basic cancel inverted button">
@@ -319,3 +334,98 @@ var DeleteModal = React.createClass({
 		 );
 	}
 })
+
+// action data
+var FormModal = React.createClass({
+	render : function() {
+		return(
+			<div className="ui small add modal">
+				<i className="close icon"></i>
+				<div className="header">{this.props.title}</div>
+				<div className="content">
+					{this.props.form}
+				</div>
+			</div>
+		);
+	}
+})
+
+// dict action
+var DidctForm = React.createClass({
+	
+	getInitialState: function() {
+		var dict = this.props.dict;
+		var action;
+		if(dict == null) {
+			dict = new Object;
+			dict.code = "";
+			dict.parentCode = "";
+			dict.value = "";
+			dict.sequence = "";
+			dict.used = "";
+			
+			action = "add";
+		} else {
+			action = "update";
+		}
+		return {"dict" : dict, "action" : action};
+	},
+	componentWillReceiveProps : function(nextProps) {
+		var dict = this.props.dict;
+		var action;
+		if(dict == null) {
+			dict = new Object;
+			dict.code = "";
+			dict.parentCode = "";
+			dict.value = "";
+			dict.sequence = "";
+			dict.used = "";
+			
+			action = "add";
+		} else {
+			action = "update";
+		}
+		this.setState({"dict" : dict, "action" : action});
+	},
+	
+	handleChange(event) {
+		var dic = this.state.dict;
+		dic[event.target.name] = event.target.value;
+		this.setState({"dict" : dic});
+	},
+	render: function() {
+		
+		console.debug(this.state.dict);
+		
+		var dict = this.state.dict;
+		var action = this.state.action;
+		
+		return (
+			<form className="ui form" action={action} method="post">
+				<div className="ui field fluid">
+					<label>编码</label>
+					<input name="code" placeholder="编码" value={dict.code} onChange={this.handleChange} type="text" />
+					<input name="parentCode" type="hidden" value={dict.parentCode}/>	
+				</div>
+				<div className="ui field fluid">
+					<label>文字</label>
+					<input name="value" placeholder="文字" value={dict.value} type="text" />
+				</div>	
+				<div className="ui field fluid">
+					<label>顺序</label>
+					<input name="sequence" placeholder="顺序" value={dict.sequence} type="text" />
+				</div>	
+				<div className="ui field fluid input">
+					<select className="ui dropdown" name="used" value={dict.used}>
+						<option value="">状态</option>
+						<option value="1" selected="selected">使用</option>
+						<option value="0">暂停</option>
+					</select>
+				</div>
+				<input className="ui button green submit" type="submit" value="保存"/>
+			</form>
+		);
+	}
+})
+
+
