@@ -47,6 +47,10 @@ public class DictService {
 		return dao.findByParentCode("-1", false);
 	}
 	
+	public List<Dict> findByParentCode(String parentCode) {
+		return dao.findByParentCode(parentCode, false);
+	}
+	
 	public Dict findByCodeAndParentCode(String code, String parentCode) {
 		return dao.findByCodeAndParentCode(code, parentCode);
 	}

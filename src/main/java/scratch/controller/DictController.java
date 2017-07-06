@@ -1,6 +1,6 @@
+
 package scratch.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,50 +25,48 @@ public class DictController {
 	@GetMapping("/dic")
 	public String index(Model model) {
 		model.addAttribute("dictionaries", dictService.findAllDictionaries());
-		System.out.println("Hello");
 		return "dic_index";
 	}
 	
 	@GetMapping(value="/dic/parentcode/{parentCode}", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map<String, Object> getDicts(@PathVariable("parentCode") String parentCode) {
-		Map<String, Object> result = new HashMap<String, Object>();
+	public @ResponseBody JsonResult getDicts(@PathVariable("parentCode") String parentCode) {
+		JsonResult result = new JsonResult();
 		result.put("code", parentCode);
-		result.put("data", dictService.findByType(parentCode));
+		result.put("data", dictService.findByParentCode(parentCode));
 		return result;
 	}
 	
 	@PostMapping(value="/dict/update", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map<String, String> update(Dict dict) {
-		Map<String, String> result = new HashMap<String, String>();
+	public @ResponseBody JsonResult update(Dict dict) {
+		JsonResult result = new JsonResult();
 		boolean success = true;
 		try{
 			dictService.update(dict);
 		} catch (Exception e) {
-			result.put("error", e.getMessage());
+			result.setError(e.getMessage());
 			success = false;
-			
 		}
-		result.put("success", String.valueOf(success));
+		result.setSuccess(success);
 		return result;
 	}
 	
 	@PostMapping(value="/dict/addDic", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map<String, String> addDic(Dict dict) {
+	public @ResponseBody JsonResult addDic(Dict dict) {
 		dict.setParentCode("-1");
 		return addDicData(dict);
 	}
 	
 	@PostMapping(value="/dict/addDicData", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map<String, String> addDicData(Dict dict) {
-		Map<String, String> result = new HashMap<String, String>();
+	public @ResponseBody JsonResult addDicData(Dict dict) {
+		JsonResult result = new JsonResult();
 		boolean success = true;
 		try{
 			dictService.save(dict);
 		} catch (Exception e) {
-			result.put("error", e.getMessage());
+			result.setError(e.getMessage());
 			success = false;
 		}
-		result.put("success", String.valueOf(success));
+		result.setSuccess(success);
 		return result;
 	}
 	
@@ -78,20 +76,18 @@ public class DictController {
 		return json.setSuccess(dictService.delete(dict) == 1);
 	}
 	
-	
-	
 	@GetMapping(value="/dict/validate/code", produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Map<String, Object> validateCode(Dict dict) {
-		Map<String, Object> result = new HashMap<String, Object>();
+		JsonResult result = new JsonResult();
 		try{
 			Dict newDict = dictService.findByCodeAndParentCode(dict.getCode(), dict.getParentCode());
 			if(newDict != null) {
-				result.put("validate", false);		
+				result.setValidate(false);
 			} else {
-				result.put("validate", true);
+				result.setValidate(true);
 			}
 		} catch (Exception e) {
-			result.put("error", e.getMessage());
+			result.setError(e.getMessage());
 		}
 		return result;
 	}
