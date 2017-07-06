@@ -172,5 +172,9 @@
    <task:annotation-driven scheduler="myScheduler"/> -->
 	<import resource="redis-config.xml"/>
    
+   <bean class="com.rabbitmq.client.ConnectionFactory">
+   		<property name="host" value="localhost"></property>
+   </bean>
+
 </beans>
 
