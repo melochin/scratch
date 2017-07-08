@@ -353,8 +353,7 @@ var FormModal = React.createClass({
 // dict action
 var DidctForm = React.createClass({
 	
-	getInitialState: function() {
-		var dict = this.props.dict;
+	updateState: function(dict) {
 		var action;
 		if(dict == null) {
 			dict = new Object;
@@ -363,40 +362,39 @@ var DidctForm = React.createClass({
 			dict.value = "";
 			dict.sequence = "";
 			dict.used = "";
-			
 			action = "add";
 		} else {
 			action = "update";
 		}
-		return {"dict" : dict, "action" : action};
+		this.setState({dict : dict, action : action});
 	},
-	componentWillReceiveProps : function(nextProps) {
-		var dict = this.props.dict;
-		var action;
-		if(dict == null) {
-			dict = new Object;
-			dict.code = "";
-			dict.parentCode = "";
-			dict.value = "";
-			dict.sequence = "";
-			dict.used = "";
-			
-			action = "add";
-		} else {
-			action = "update";
+	
+	getInitialState: function() {
+		return {dict : "", action : ""};
+	},
+	componentWillMount : function() {
+		this.updateState(this.props.dict);
+	},
+	componentWillUpdate : function(nextProps, nextState) {
+		
+		console.debug(this.props.dict);
+		console.debug(this.state.dict);
+		console.debug(nextProps);
+		console.debug(nextState);
+		
+		if(nextProps.dict !== this.props.dict) {
+			this.updateState(this.props.dict);
+			return true;
 		}
-		this.setState({"dict" : dict, "action" : action});
+		return false;
 	},
 	
 	handleChange(event) {
 		var dic = this.state.dict;
 		dic[event.target.name] = event.target.value;
-		this.setState({"dict" : dic});
+		this.updateState(dic);
 	},
 	render: function() {
-		
-		console.debug(this.state.dict);
-		
 		var dict = this.state.dict;
 		var action = this.state.action;
 		
