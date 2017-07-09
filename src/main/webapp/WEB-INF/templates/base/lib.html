@@ -1,28 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<!-- script -->
-<script type="text/javascript" th:src="@{/js/tools/jquery.js}"></script>
-<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.js}"></script>
-<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap-switch.js}"></script>
-<script type="text/javascript" th:src="@{/js/tools/browser.min.js}"/></script>
-<script type="text/javascript" th:src="@{/js/tools/react.js}"></script>
-<script type="text/javascript" th:src="@{/js/tools/react-dom.js}"></script>
-<script type="text/javascript" th:src="@{/formvalidation/js/formValidation.min.js}"></script>
-<script type="text/javascript" th:src="@{/formvalidation/js/bootstrap.min.js}"></script>
-<script type="text/javascript" th:src="@{/js/tag.js}"></script>
-<script type="text/javascript" th:src="@{/js/common.js}"></script>
-<script type="text/javascript" th:src="@{/materialize/js/materialize.js}"></script>
+<th:block th:fragment="bootstrap">
+	<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.js}"></script>
+	<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap-switch.js}"></script>
+	<link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"></link>
+	<link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap-switch.css}"></link>
+</th:block>
 
-<!-- css 样式 -->
-<!-- boostrap -->
-<link th:href="@{/bootstrap/css/bootstrap.css}" rel="stylesheet"></link>
-<link th:href="@{/bootstrap/css/bootstrap-switch.css}" rel="stylesheet"></link>
-<!-- 表单验证 -->
-<link th:href="@{/formvalidation/css/formValidation.min.css}" rel="stylesheet"></link>
-<link th:href="@{/materialize/css/materialize.css}" rel="stylesheet"></link>
-<!-- 自定义样式 -->
-<link th:href="@{/css/common.css}" rel="stylesheet"></link>
-<link th:href="@{/css/mycss.css}" rel="stylesheet"></link>
+<th:block th:fragment="react">
+	<script type="text/javascript" th:src="@{/js/tools/browser.min.js}"/></script>
+	<script type="text/javascript" th:src="@{/js/tools/react.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tools/react-dom.js}"></script>、
+</th:block>
+
+<th:block th:fragment="formValidation">
+	<script type="text/javascript" th:src="@{/formvalidation/js/formValidation.min.js}"></script>
+	<script type="text/javascript" th:src="@{/formvalidation/js/bootstrap.min.js}"></script>
+	<link rel="stylesheet" th:href="@{/formvalidation/css/formValidation.min.css}"></link>
+</th:block>
+
+<th:block th:fragment="materialize">
+	<script type="text/javascript" th:src="@{/materialize/js/materialize.js}"></script>
+	<link rel="stylesheet" th:href="@{/materialize/css/materialize.css}"></link>
+</th:block>
+
+<th:block th:fragment="semantic">
+	<script type="text/javascript" th:src="@{/semantic/semantic.js}"></script>
+	<link rel="stylesheet" th:href="@{/semantic/semantic.css}" ></link>
+</th:block>
+
+<th:block th:fragment="common">
+	<script type="text/javascript" th:src="@{/js/tools/jquery.js}"></script>
+	<link rel="stylesheet" th:href="@{/css/common.css}"></link>
+	<link rel="stylesheet" th:href="@{/css/mycss.css}"></link>
+</th:block>
+
+<th:block th:fragment="customer">
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tag.js}"></script>
+	<script type="text/javascript" th:src="@{/js/common.js}"></script>
+</th:block>
 
 </html>

@@ -1,31 +1,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<!-- <script type="text/babel" src="<c:url value="/js/react-tag-video.js"/>"></script>
- -->
 <nav class="navbar-container">
 	<div class="nav-wrapper">
-		<a href="#" class="brand-logo">Scratch</a>
+		<a th:href="@{/}" class="brand-logo">Scratch</a>
 		<ul id="nav-mobile" class="right hide-on-med-and-down">
-			<li>
-				<th:block th:if="${user_g}">
-					<a href="" class="dropdown-toggle dropdown-button"
-						data-toggle="dropdown" data-activates="user-ops">
-						${user_g.username } <b class="caret"></b></a>
-				</th:block> <th:block th:unless="${user_g}">
-					<a class="btn btn-default btn-outline btn-circle collapsed"
-						th:href="@{/user/login}" aria-expanded="false"
-						aria-controls="nav-collapse2">Sign in</a>
-				</th:block> <!-- <c:if test="${user_g != null }">
-				</c:if> <c:if test="${user_g == null }">
-				</c:if> -->
+			<li th:if="${session.user_g == null}">
+				<a class="btn btn-default btn-outline btn-circle collapsed"
+					th:href="@{/user/login}" aria-expanded="false"
+					aria-controls="nav-collapse2">Sign in</a>
+			</li>
+			<li th:unless="${session.user_g == null}">
+				<a href="" class="dropdown-toggle dropdown-button"
+					data-toggle="dropdown" data-activates="user-ops">
+					<th:block th:text="${session.user_g.username }"/>
+					<b class="caret"></b>
+				</a>
 			</li>
 		</ul>
 	</div>
 </nav>
 
-<th:block th:if="${user_g}">
-	<ul id="user-ops" class="dropdown-content">
-		<th:block th:if="*{role} == 1">
+<th:block th:if="${session.user_g != null}">
+	<ul id="user-ops" class="dropdown-content" th:object="${session.user_g}">
+		<th:block th:if="*{role == 1} ">
 			<li><a th:href="@{/admin}">Administrator</a></li>
 			<li class="divider"></li>
 		</th:block>
