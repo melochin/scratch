@@ -50,7 +50,7 @@ public class LoginController {
 			log.debug("request referer:" + referer);
 		}
 		model.addAttribute("referer", referer);
-		return "user_login";
+		return "/user/login";
 	}
 	
 	/**
