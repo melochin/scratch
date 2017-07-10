@@ -4,38 +4,29 @@
 		<li><a class="collection-item">首页</a></li>
 		<li>
 			<div class="collapsible-header collection-item">后台管理</div>
-			<div class="collapsible-body collection" style="padding: 0px;">
-				<a th:href="@{/admin/user}" class="collection-item">用户管理</a>
-				<a th:href="@{/admin/anime}" class="collection-item">番剧管理</a>
+			<div id="0" class="collapsible-body collection" style="padding: 0px;">
+				<a th:href="@{/admin/user}" class="collection-item" 
+					th:classappend="${moduel == 'user' ? 'active' : ''}">用户管理</a>
+				<a th:href="@{/admin/anime}" class="collection-item" 
+					th:classappend="${moduel == 'anime' ? 'active' : ''}">番剧管理</a>
 			</div>
 		</li>
 	</ul>
 
 	<script>
 	$(document).ready(function() {
-		$(".sidebar-caret a").click(function() {
-			$(".wrapper").toggleClass("toggled");
-		});	
-		var li = findLi();
-		if(li != null) {
-			$(".navi li").removeClass("active");
-			$(li).addClass("active");
-		}
-	});
-	
-	function findLi() {
-		//get current url
-		var curUrl = window.location.pathname;
-		//get href of a
-		var list = $(".sidebar-nav a");
-		for(var i=0; i<list.length; i++) {
-			var a = $(list.get(i));
-			if(a.attr("href") == curUrl) {
-				return a.parent("li");
+		var $active = $("a.active");
+		var num = null;
+		console.debug($active.length);
+		if($active.length == 1) {
+			num = $active.parent().attr("id")
+			console.debug($active.parent());
+			console.debug(num);
+			if(num >= 0) {
+				$('.collapsible').collapsible('open', num);	
 			}
 		}
-		return null;
-	}
+	})
 </script>
 </body>
 </html>
