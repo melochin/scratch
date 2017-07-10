@@ -39,7 +39,7 @@ public class HomeController {
 	@UserRole(value=Role.Admin)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
 	public ModelAndView adminPage(Model model){
-		return new ModelAndView("admin_index");
+		return new ModelAndView("/admin/index");
 	}
 	
 	/**
