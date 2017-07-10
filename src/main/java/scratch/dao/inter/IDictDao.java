@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 import scratch.model.Dict;
+import scratch.model.DictList;
 
 public interface IDictDao {
 
@@ -17,7 +18,7 @@ public interface IDictDao {
 	@MapKey("name")
 	List<Map<String, Object>> findByType(@Param("type") String type);
 	
-	List<Dict> findByParentCode(
+	DictList findByParentCode(
 			@Param("parentCode") String parentCode, @Param("mustBeUsed") boolean mustBeUsed);
 	
 	
