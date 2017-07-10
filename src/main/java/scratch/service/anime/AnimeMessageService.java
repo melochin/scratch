@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,11 @@ public class AnimeMessageService {
 	private void init() throws IOException, TimeoutException {
 		connection = factory.newConnection();
 		startListener();
+	}
+	
+	@PreDestroy
+	public void destroy() throws IOException {
+		connection.close();
 	}
 	
 	private void startListener() throws IOException, TimeoutException {
