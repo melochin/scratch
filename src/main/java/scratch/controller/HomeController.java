@@ -47,13 +47,13 @@ public class HomeController {
 	 * @return
 	 */
 	@RequestMapping(value="/common/message", method=RequestMethod.GET)
-	public ModelAndView message(RedirectAttributes ra, Model model) {
+	public String message(RedirectAttributes ra, Model model) {
 		if(model.asMap().size() == 0) {
 			Random random = new Random();
 			model.addAttribute("success", FACECHARS[random.nextInt(FACECHARS.length)]);
 		}
 		model.addAllAttributes(ra.getFlashAttributes());
-		return new ModelAndView("common_message");
+		return "base/message";
 	}
 	
 }

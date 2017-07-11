@@ -4,11 +4,11 @@
 	<title>user login</title>
 	<th:block th:replace="~{base/lib :: semantic}"></th:block>
 	<th:block th:replace="~{base/lib :: customer}"></th:block>
-	<!-- <link href="../resource/semantic/semantic.css" rel="stylesheet"></link>
-	<script type="text/javascript" src="../resource/js/tools/jquery.js"></script>
-	<script type="text/javascript" src="../resource/semantic/semantic.js"></script> -->
-</head>
 
+	<link th:remove="all" href="../resource/semantic/semantic.css" rel="stylesheet"></link>
+	<script th:remove="all" type="text/javascript" src="../resource/js/tools/jquery.js"></script>
+	<script th:remove="all" type="text/javascript" src="../resource/semantic/semantic.js"></script>
+</head>
 <body style="background:#ccc;background-size:cover;" >
 	<div class="ui doubling three column centered grid" style="padding-top:150px;">
 		<div class="column">
@@ -50,18 +50,12 @@
 			<div class="ui horizontal divider">
 					使用其他账号登录
 			</div>
-			
-			<button class="ui blue button">
-				<i class="github icon"></i>
-					Github
-			</button>
-<!-- 			<div class="col-md-4">
-			
-				<label>使用其他账号登录</label>
-				<form th:action="@{/connect/github}" method="POST">
-					<input type="image" th:src="@{/pic/github.png}" height="55px;">
-				</form>
-			</div> -->
+			<form th:action="@{/connect/github}" method="POST">
+				<button class="ui blue button" type="submit">
+					<i class="github icon"></i>
+						Github
+				</button>
+			</form>
 		</div>
 	</div>
 </body>
