@@ -6,9 +6,9 @@
 			<div class="collapsible-header collection-item">后台管理</div>
 			<div id="0" class="collapsible-body collection" style="padding: 0px;">
 				<a th:href="@{/admin/user}" class="collection-item" 
-					th:classappend="${moduel == 'user' ? 'active' : ''}">用户管理</a>
+					th:classappend="${module == 'user' ? 'active' : ''}">用户管理</a>
 				<a th:href="@{/admin/anime}" class="collection-item" 
-					th:classappend="${moduel == 'anime' ? 'active' : ''}">番剧管理</a>
+					th:classappend="${module == 'anime' ? 'active' : ''}">番剧管理</a>
 			</div>
 		</li>
 	</ul>

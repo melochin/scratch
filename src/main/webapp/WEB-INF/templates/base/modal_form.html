@@ -1,6 +1,6 @@
 <html xmlns:th="www.thymeleaf.org">
 
-<div th:fragment="setting(title, form)">
+<div th:fragment="setting(title, saveUrl, form)">
 <div style="margin: 20px;">
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -14,7 +14,7 @@
 					<span>
 						<a class="btn btn-link btn-sm" data-toggle="modal"
 							data-target="#modal"
-							th:href="@{anime/form}">新增</a>
+							th:href="@{{saveUrl}(saveUrl=${saveUrl})}">新增</a>
 					</span>
 				</div>
 			</div>
