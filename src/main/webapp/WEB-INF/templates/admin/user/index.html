@@ -1,0 +1,42 @@
+<html xmlns:th="www.thymeleaf.org">
+
+<head>
+<th:block th:replace="base/lib :: common"></th:block>
+<th:block th:replace="base/lib :: bootstrap"></th:block>
+<th:block th:replace="base/lib :: materialize"></th:block>
+<script type="text/javascript" th:src="@{/js/react-common.js}"></script>
+</head>
+
+<body th:replace="base/layout/admin :: layout(~{::#container})">
+	<div id="container"
+		th:insert="base/modal_form :: setting('用户', 'user/form', ~{::#content})">
+		<div id="content">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>用户名</th>
+						<th>邮箱</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="user : ${userList.data}">
+						<td th:text="${user.username}"></td>
+						<td th:text="${user.email }"></td>
+						<td th:text="${user.status == '1' ? '激活' : '未激活'}"></td>
+						<td><a class="btn btn-link btn-sm" data-toggle="modal"
+							data-target="#modal" th:href="'user/form/' + ${user.userId }">编辑</a>
+							<a class="btn btn-link btn-sm"
+							th:href="'user/delete?userId=' + ${user.userId }">删除</a></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div id="page" th:data-page="${userList.page.curPage }"
+				th:data-total="${userList.page.totalPage }" data-url="user?p=">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

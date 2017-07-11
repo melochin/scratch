@@ -10,7 +10,7 @@
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
 	<div id="container"
-		th:insert="base/modal_form :: setting('标题', ~{::#content})">
+		th:insert="base/modal_form :: setting('标题', 'anime/form', ~{::#content})">
 		<div id="content">
 			<table class="table table-hover">
 				<colgroup>

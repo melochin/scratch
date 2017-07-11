@@ -25,7 +25,7 @@ public class DictController {
 	@GetMapping("/dic")
 	public String index(Model model) {
 		model.addAttribute("dictionaries", dictService.findAllDictionaries());
-		return "dic_index";
+		return "/admin/dic/index";
 	}
 	
 	@GetMapping(value="/dic/parentcode/{parentCode}", produces=MediaType.APPLICATION_JSON_VALUE)

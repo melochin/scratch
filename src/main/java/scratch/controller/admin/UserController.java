@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,11 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	@ModelAttribute
+	public void addModel(Model model) {
+		model.addAttribute("module", "user");
+	}
+	
 	/**
 	 * 显示用户信息
 	 * 提供后台分页功能
@@ -40,11 +46,10 @@ public class UserController {
 	 */
 	@UserRole(Role.Admin)
 	@RequestMapping("")
-	public ModelAndView list(@RequestParam(value="p", defaultValue="1") int page) {
-		ModelAndView model = new ModelAndView("admin_user");
+	public String list(@RequestParam(value="p", defaultValue="1") int page, Model model) {
 		PageBean<User> userList = userService.findAll(page, PAGE_USER_SIZE);
-		model.addObject("userList", userList);
-		return model;
+		model.addAttribute("userList", userList);
+		return "/admin/user/index";
 	}
 	
 	/**
@@ -72,6 +77,12 @@ public class UserController {
 		User user = userService.getById(id);
 		model.addAttribute("user", user);
 		return new ModelAndView("/admin/user/edit");
+	}
+	
+	@UserRole(Role.Admin)
+	@RequestMapping(value="/form")
+	public String userFormForNew() {
+		return "/admin/user/save";
 	}
 	
 	/**

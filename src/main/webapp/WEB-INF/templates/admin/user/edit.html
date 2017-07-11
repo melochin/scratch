@@ -1,0 +1,62 @@
+<html xmlns:th="www.thymeleaf.org">
+
+<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+
+<!-- Modal -->
+<form class="form-horizontal" name="user-info" action="update" id="userEditForm"
+	method="post">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"
+			aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<h4 class="modal-title" id="myModalLabel">编辑用户信息</h4>
+	</div>
+	<div class="modal-body">
+		<input name="userId" type="hidden" th:value="${user.userId }"/>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">用户名</label>
+			<div class="col-sm-6">
+				<input class="form-control" name="username" th:value="${user.username }"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">邮箱</label>
+			<div class="col-sm-6">
+				<input class="form-control" name="email" th:value="${user.email }"/>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">密码</label>
+			<div class="col-sm-6">
+				<input class="form-control" name="password" type="password" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">激活状态</label>
+			<div class="col-sm-6 switch" id="toggle-state-switch">
+				<th:block th:if="${user.status == 1}">
+					<input class="form-control" name="status" type="checkbox" value="1" checked="checked"/>
+				</th:block>		
+				<th:block th:unless="${user.status == 1}">
+						<input class="form-control" name="status" type="checkbox" value="1"/>					
+				</th:block>		
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		<input type="submit" class="btn btn-primary" value="保存" />
+	</div>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("[name='status']").bootstrapSwitch();
+	
+})
+</script>
+
+</html>

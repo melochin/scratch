@@ -46,7 +46,7 @@ public class AnimeController {
 	
 	@ModelAttribute
 	public void addModel(Model model) {
-		model.addAttribute("moduel", "anime");
+		model.addAttribute("module", "anime");
 	}
 	
 	/**
