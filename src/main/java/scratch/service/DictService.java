@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import scratch.dao.inter.IDictDao;
 import scratch.model.Dict;
+import scratch.model.DictList;
 
 @Service
 public class DictService {
@@ -57,7 +58,7 @@ public class DictService {
 	
 	
 	@SuppressWarnings("unchecked")
-	public List<Dict> findByType(String parentCode) {
+	public DictList findByType(String parentCode) {
 		
 		// redis连接的状态标志
 		// 连接:数据将存储在缓存 	未连接:直接走DB
@@ -65,11 +66,11 @@ public class DictService {
 		
 		// 尝试从redis中读取字典数据
 		if(connected && redis.hasKey(REDIS_PREFIX + parentCode)) {
-			return  (List<Dict>) redis.opsForValue().get(REDIS_PREFIX + parentCode);
+			return  (DictList) redis.opsForValue().get(REDIS_PREFIX + parentCode);
 		}
 		
 		// 直接从DB中读取字典数据
-		List<Dict> dicts = dao.findByParentCode(parentCode, true);
+		DictList dicts = dao.findByParentCode(parentCode, true);
 		if(dicts == null || dicts.size() == 0) {
 			return null;
 		}

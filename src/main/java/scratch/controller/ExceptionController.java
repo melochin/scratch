@@ -9,7 +9,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
 
 import scratch.exception.PrivilegeException;
 import static scratch.exception.PrivilegeException.*;
@@ -18,6 +17,8 @@ import static scratch.exception.PrivilegeException.*;
 public class ExceptionController {
 	
 	private static Logger log = Logger.getLogger(ExceptionController.class);
+	
+	private final static String VIEW_ERROR = "/base/message";
 	
 	/**
 	 * 处理权限
@@ -43,14 +44,13 @@ public class ExceptionController {
 	 * @return
 	 */
 	@ExceptionHandler
-	public ModelAndView handleBeanValid(BindException e) {
+	public String handleBeanValid(BindException e, Model model) {
 		List<String> errors = new ArrayList<String>();
-		ModelAndView view = new ModelAndView("common_message");
 		for(FieldError fieldError : e.getFieldErrors()) {
 			errors.add(fieldError.getDefaultMessage());
 		}
-		view.addObject("errors", errors);
-		return view;
+		model.addAttribute("errors", errors);
+		return VIEW_ERROR;
 	}
 	
 	/**
@@ -64,7 +64,7 @@ public class ExceptionController {
 		String error = e.getMessage();
 		log.error(error, e);
 		model.addAttribute("error", error.isEmpty() ? "程序发生异常" : "异常错误:" + error);
-		return "common_message";
+		return VIEW_ERROR;
 	}
 	
 }

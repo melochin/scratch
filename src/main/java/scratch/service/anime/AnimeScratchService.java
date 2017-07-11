@@ -1,19 +1,18 @@
 package scratch.service.anime;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import scratch.api.dilidili.DilidiliImpl;
 import scratch.api.fix.FixImpl;
 import scratch.api.renren.RenrenImpl;
 import scratch.dao.inter.IAnimeDao;
-import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.model.Anime;
 import scratch.model.AnimeAlias;
 import scratch.model.AnimeEpisode;
@@ -43,13 +41,9 @@ public class AnimeScratchService {
 	private IAnimeDao animeDao;
 	
 	@Autowired
-	private IAnimeEpisodeDao episodeDao;
-	
-	private static BlockingQueue<AnimeEpisode> animeEpisodes = new LinkedBlockingQueue<AnimeEpisode>();
+	private AnimeMessageService messsageService;
 	
 	private static Boolean isScratchRun = false;
-	
-	private static Boolean isSaveRun = false;
 	
 	/**
 	 * key: host code, value: anime alias list; 
@@ -150,11 +144,18 @@ public class AnimeScratchService {
 					// 遍历Anime，执行数据抓取
 					for(Anime anime : animes) {
 						List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
+						
 						for(AnimeEpisode episode : episodes) {
 							episode.setHostId(hostId);
 						}
+						
+						try {
+							messsageService.push(episodes);
+						} catch (IOException | TimeoutException e) {
+							e.printStackTrace();
+						}
+						
 						episodeCount += episodes.size();
-						animeEpisodes.addAll(episodes);
 					}
 					// 保存抓取结果
 					resultMap.put(adapter.getClass().getName(), episodeCount);
@@ -194,39 +195,6 @@ public class AnimeScratchService {
 		});
 		
 		exec.shutdown();
-	}
-	
-	/** 保存数据 */
-	@Scheduled(fixedRate=60*60*1000, fixedDelay=30000)
-	public void saveResult() {
-		
-		if(isSaveRun) {
-			if(log.isDebugEnabled()) {
-				log.debug("save service is running, waiting for next time");
-			}
-			return;
-		}
-		isSaveRun = true;
-		
-		while(animeEpisodes.size() > 0) {
-			AnimeEpisode episode = animeEpisodes.poll();
-			if(episode == null) {
-				continue;
-			}
-			
-			if(episodeDao.findByUrl(episode.getUrl()) != null) continue;
-			
-			//根据别名查找番剧对象，为了将番剧与具体集建立关系
-			Anime anime = animeDao.findByAlias(episode.getAnime().getName(), false);
-			if(anime == null) continue;
-			episode.setAnime(anime);
-			episode.setScratchTime(new Date());
-			//保存数据
-			episodeDao.save(episode);
-			
-		}
-		
-		isSaveRun = false;
 	}
 	
 }

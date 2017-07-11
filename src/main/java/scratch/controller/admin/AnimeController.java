@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,6 +44,11 @@ public class AnimeController {
 	@Autowired
 	private DictService dictService;
 	
+	@ModelAttribute
+	public void addModel(Model model) {
+		model.addAttribute("module", "anime");
+	}
+	
 	/**
 	 * 维护页面
 	 * @param model
@@ -48,10 +56,10 @@ public class AnimeController {
 	 */
 	@UserRole(value=Role.Admin)
 	@RequestMapping(value="/anime")
-	public ModelAndView index(Model model, @RequestParam(defaultValue="1", name="p") Integer page) {
+	public String index(Model model, @RequestParam(defaultValue="1", name="p") Integer page) {
 		model.addAttribute("animeList", service.find(page));
 		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
-		return new ModelAndView("admin_anime");
+		return "/admin/anime/index";
 	}
 	
 	@UserRole(value=Role.Admin)
@@ -103,6 +111,13 @@ public class AnimeController {
 			result = new Result<Anime>("番剧不存在");
 		}
 		return result;
+	}
+	
+	@UserRole(value=Role.Admin)
+	@GetMapping(value="/anime/form")
+	public String animeFormForNew(Model model) {
+		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		return "/admin/anime/save";
 	}
 
 	@UserRole(value=Role.Admin)

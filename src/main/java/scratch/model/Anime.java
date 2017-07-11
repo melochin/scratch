@@ -26,7 +26,7 @@ public class Anime {
 	
 	private Integer episodeNo;
 	
-	private Long type;
+	private String type;
 
 	private List<AnimeAlias> aliass;
 	
@@ -104,11 +104,11 @@ public class Anime {
 		this.description = description;
 	}
 
-	public Long getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(Long type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 	

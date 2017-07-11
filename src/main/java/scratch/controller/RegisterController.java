@@ -53,7 +53,7 @@ public class RegisterController {
 	 */
 	@RequestMapping(path="/register", method=RequestMethod.GET)
 	public String registerForm(){
-		return "user_register";
+		return "/user/register";
 	}
 	
 	/**

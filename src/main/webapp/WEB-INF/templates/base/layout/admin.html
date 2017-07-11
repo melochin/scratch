@@ -1,0 +1,17 @@
+<html xmlns:th="www.thymeleaf.org">
+<body th:fragment="layout(content)">
+	<div class="display-table">
+		<div class="navbar navbar-default navbar-fixed-top topbar">
+			<div th:replace="~{base/header}"></div>
+		</div>
+		<div class="wrapper toggled">
+			<div class="sidebar">
+				<div th:replace="~{base/nav_admin}"></div>
+			</div>
+			<div class="main">
+				<div th:replace="${content}"></div>
+			</div>
+		</div>
+	</div> 
+</body>
+</html>

@@ -1,22 +1,28 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ page isELIgnored="false" %>
-<script type="text/javascript" src="<c:url value="/js/validate.js"/>"></script>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>user register</title>
+	<th:block th:replace="~{base/lib :: common}"></th:block>
+	<th:block th:replace="~{base/lib :: bootstrap}"></th:block>
+	<th:block th:replace="~{base/lib :: react}"></th:block>
+	<th:block th:replace="~{base/lib :: formValidation}"></th:block>
+	<th:block th:replace="~{base/lib :: materialize}"></th:block>
+	<th:block th:replace="~{base/lib :: semantic}"></th:block>
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+</head>
 
-<body>
+<body th:replace="base/layout/user :: layout(~{::.row})">
 	<div class="row">
 		<div class="col-md-4"></div>
 		<div class="col-md-4">
 			<section class="login-form form-valid">
 				<form action="register" method="post" id="userRegisterForm" role="login">
 					<div class="form-group">
-						<input id ="username" class="form-control" name="username" value="${user.username }"
+						<input id ="username" class="form-control" name="username" th:value="${user.username }"
 							placeholder="账号" />
 					</div>
 					<div class="form-group">
-						<input class="form-control" name="email" value="${user.email }" 
+						<input class="form-control" name="email" th:value="${user.email }" 
 							placeholder="邮箱" />
 					</div>
 					<div class="form-group">
@@ -36,3 +42,5 @@
 		<div class="col-md-4"></div>
 	</div>
 </body>
+
+</html>

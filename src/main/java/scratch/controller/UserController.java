@@ -39,7 +39,7 @@ public class UserController {
 	 */
 	@RequestMapping(value="/user/reset", method=RequestMethod.GET)
 	public String resetPasswordForm() {
-		return "user_reset";
+		return "/user/reset";
 	}
 	
 	/**

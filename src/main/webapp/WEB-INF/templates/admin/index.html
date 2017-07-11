@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+	<title>后台管理</title>
+	<th:block th:replace="base/lib :: common" />
+	<th:block th:replace="base/lib :: bootstrap" />
+	<th:block th:replace="base/lib :: materialize" />
+</head>
+<body th:replace="base/layout/admin :: layout(~{::.row})">
+	<div class="row">
+		<div class="container">
+			<div class="jumbotron">
+			  <h2>欢迎来到后台管理</h2>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

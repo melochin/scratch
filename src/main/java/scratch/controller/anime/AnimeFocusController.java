@@ -28,7 +28,7 @@ public class AnimeFocusController {
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus", method=RequestMethod.GET)
-	public ModelAndView index(@RequestParam(value="type", required=false) Long type,
+	public String index(@RequestParam(value="type", required=false) String type,
 			@RequestParam(value="focus", required=false) Integer focus,
 			Model model) {
 		Long userId = SessionSupport.getUser().getUserId();
@@ -36,7 +36,7 @@ public class AnimeFocusController {
 		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
 		model.addAttribute("type", type);
 		model.addAttribute("focus", focus);
-		return new ModelAndView("anime_focus");
+		return "/anime/focus";
 	}
 	
 	@UserRole(value=Role.User)
