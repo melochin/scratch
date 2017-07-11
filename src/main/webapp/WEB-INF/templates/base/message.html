@@ -1,0 +1,41 @@
+<html xmlns:th="www.themeleaf.org">
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		//setTimeout("jump()", 5000);
+	});
+		
+	function jump() {
+		var url = "${jump }";
+		if(url == null || url == "") {
+			//default use histroy
+			history.go(-1);	
+		} else {
+			//if specified use url
+			//window.location = url;
+			window.location = new URL(url, document.location);
+		}
+	}
+
+</script>
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8 msg">
+
+		<th:block th:if="${success != null}">
+			<div id="messBox"
+				class="alert alert-success alert-autocloseable-info">
+				${success }</div>
+		</th:block>
+		<th:block th:unless="${success != null}">
+			<div id="messBox" class="alert alert-danger alert-autocloseable-info">
+				${error }
+				<ul th:if="${errors != null}">
+					<li th:each="e : ${errors}">${e }</li>
+				</ul>
+			</div>
+		</th:block>
+	</div>
+	<div class="col-md-2"></div>
+</div>
