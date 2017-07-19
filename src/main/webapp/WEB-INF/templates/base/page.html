@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+
+<div th:fragment="page(page, url)">
+	<!-- pre page -->
+	<a th:if="${page.curePage - 1 > 0}" 
+		th:href="@{${url}(page=${page.curePage - 1})}" ></a>
+	<a th:href="@{${url}(page=${page.curePage)}"></a>	
+	<!-- next page -->	
+	<a th:if="${page.curePage + 1 <= page.totalPage}"
+		th:href="@{${url}(page=${page.curePage + 1})}"></a>
+</div>
+</html>

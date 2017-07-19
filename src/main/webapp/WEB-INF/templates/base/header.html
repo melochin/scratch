@@ -1,31 +1,40 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<nav class="navbar-container">
-	<div class="nav-wrapper">
-		<a th:href="@{/}" class="brand-logo">Scratch</a>
-		<ul id="nav-mobile" class="right hide-on-med-and-down">
-			<li th:if="${session.user_g == null}">
-				<a class="btn btn-default btn-outline btn-circle collapsed"
-					th:href="@{/user/login}" aria-expanded="false"
-					aria-controls="nav-collapse2">Sign in</a>
-			</li>
-			<li th:unless="${session.user_g == null}">
-				<a href="" class="dropdown-toggle dropdown-button"
-					data-toggle="dropdown" data-activates="user-ops">
-					<th:block th:text="${session.user_g.username }"/>
-					<b class="caret"></b>
-				</a>
-			</li>
-		</ul>
-	</div>
-</nav>
-
-<th:block th:if="${session.user_g != null}">
-	<ul id="user-ops" class="dropdown-content" th:object="${session.user_g}">
-		<th:block th:if="*{role == 1} ">
-			<li><a th:href="@{/admin}">Administrator</a></li>
-			<li class="divider"></li>
-		</th:block>
-		<li><a th:href="@{/user/logout}">log out</a></li>
-	</ul>
+<th:block th:remove="all">
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+	<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
 </th:block>
+
+<!--1.去掉 margin?-->
+<!--2.更改inverted颜色-->
+<div class="ui inverted stackable menu">
+	<div class="ui container">
+		<div class="item">
+			<a th:href="@{/}">Scratch</a>
+		</div>
+		<div class="right item">
+			<!--没有用户时-->
+			<a class="ui inverted button" th:href="@{/user/login}" th:if="${session.user_g == null}">Login</a>
+			<!--存在用户时-->
+			<div class="ui inverted dropdown"
+				th:href="@{/user/login}" th:unless="${session.user_g == null}"
+				th:text="${session.user_g.username}">
+				username
+				<i class="dropdown icon"></i>
+				<div class="ui menu" th:object="${session.user_g}">
+					<div class="item" th:if="*{role == 1}">
+						<a th:href="@{/admin}">Administrator</a>
+					</div>
+					<div class="item">
+						<a th:href="@{/user/logout}">log out</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(".ui.dropdown")
+		.dropdown();
+</script>

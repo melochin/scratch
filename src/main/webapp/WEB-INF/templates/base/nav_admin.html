@@ -1,32 +1,52 @@
 <html xmlns:th="www.thymeleaf.org">
+<th:block th:remove="all">
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+	<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+</th:block>
 <body>
-	<ul class="collapsible collection" data-collapsible="accordion">
-		<li><a class="collection-item">首页</a></li>
-		<li>
-			<div class="collapsible-header collection-item">后台管理</div>
-			<div id="0" class="collapsible-body collection" style="padding: 0px;">
-				<a th:href="@{/admin/user}" class="collection-item" 
-					th:classappend="${module == 'user' ? 'active' : ''}">用户管理</a>
-				<a th:href="@{/admin/anime}" class="collection-item" 
-					th:classappend="${module == 'anime' ? 'active' : ''}">番剧管理</a>
+	<!-- 选中状态如何表现 -->
+	<!-- 去除超链接显示 -->
+	<div class="ui vertical accordion secondary pointing menu">
+		<div class="item">
+			<a class="title" th:href="@{/admin}">首页</a>
+		</div>
+		<div class="item">
+			<span class="title">
+				<i class="setting icon"></i>
+				数据维护
+				<i class="dropdown icon"></i>
+			</span>
+			<div class="content">
+				<div id="1" class="menu">
+					<a  class="item" th:classappend="${module == 'user' ? 'active' : ''}" 
+						th:href="@{/admin/user}">用户管理</a>
+					<a  class="item" th:classappend="${module == 'anime' ? 'active' : ''}"
+						th:href="@{/admin/anime}">番剧管理</a>
+					<a  class="item" th:classappend="${module == 'dic' ? 'active' : ''}"
+						th:href="@{/admin/anime}">字典管理</a>
+				</div>
 			</div>
-		</li>
-	</ul>
-
+		</div>
+	</div>
+	
 	<script>
-	$(document).ready(function() {
-		var $active = $("a.active");
-		var num = null;
-		console.debug($active.length);
-		if($active.length == 1) {
-			num = $active.parent().attr("id")
-			console.debug($active.parent());
+		$(".ui.accordion").accordion();
+		function getActiveIndex() {
+			var $active = $("a.active");
+			if($active.length == 1) {
+				return $active.parent().attr("id");
+			}
+			return -1;
+		}
+	
+		$(document).ready(function() {
+			var num = getActiveIndex();
 			console.debug(num);
 			if(num >= 0) {
-				$('.collapsible').collapsible('open', num);	
+				$(".ui.accordion").accordion('open', parseInt(num));
 			}
-		}
-	})
-</script>
+		});
+	</script>
 </body>
 </html>
