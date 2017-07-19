@@ -1,42 +1,76 @@
 <html xmlns:th="www.thymeleaf.org">
 
 <head>
+<th:block th:remove="all">
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.cookie.js"></script>
+	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+	<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+</th:block>
 <th:block th:replace="base/lib :: common"></th:block>
-<th:block th:replace="base/lib :: bootstrap"></th:block>
-<th:block th:replace="base/lib :: materialize"></th:block>
+<th:block th:replace="base/lib :: semantic"></th:block>
 <script type="text/javascript" th:src="@{/js/react-common.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
-	<div id="container"
-		th:insert="base/modal_form :: setting('用户', 'user/form', ~{::#content})">
-		<div id="content">
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th>用户名</th>
-						<th>邮箱</th>
-						<th>状态</th>
-						<th>操作</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="user : ${userList.data}">
-						<td th:text="${user.username}"></td>
-						<td th:text="${user.email }"></td>
-						<td th:text="${user.status == '1' ? '激活' : '未激活'}"></td>
-						<td><a class="btn btn-link btn-sm" data-toggle="modal"
-							data-target="#modal" th:href="'user/form/' + ${user.userId }">编辑</a>
-							<a class="btn btn-link btn-sm"
-							th:href="'user/delete?userId=' + ${user.userId }">删除</a></td>
-					</tr>
-				</tbody>
-			</table>
+	<div id="container">
+		<table class="ui celled table">
+			<thead>
+				<tr>
+					<th colspan="3">用户维护</th>
+					<th>
+						<button class="ui blue button add" th:data-href="@{/admin/user/form}">
+							新增</button>
+					</th>
+				</tr>
+				<tr>
+					<th>用户名</th>
+					<th>邮箱</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user : ${userList.data}">
+					<td th:text="${user.username}">username</td>
+					<td th:text="${user.email }">username@hotst.com</td>
+					<td th:text="${user.status == '1' ? '激活' : '未激活'}">null</td>
+					<td>
+						<a class="ui green button" data-toggle="modal"
+							data-target="#modal" th:data-href="'user/form/' + ${user.userId }">编辑</a>
+						<a class="ui red button" data-tooltip="确定删除用户信息？"
+							th:href="'user/delete?userId=' + ${user.userId }">删除</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-			<div id="page" th:data-page="${userList.page.curPage }"
-				th:data-total="${userList.page.totalPage }" data-url="user?p=">
-			</div>
+		<div id="page" th:data-page="${userList.page.curPage }"
+			th:data-total="${userList.page.totalPage }" data-url="user?p=">
 		</div>
+		
+		<div class="ui modal"></div>
+
+		<!-- <div class="fix-nag">
+			<div class="ui inline cookie nag left">
+					<label class="title">ahha</label>
+					<i class="close icon"></i>
+			</div>
+		</div> -->
+
+		<script type="text/javascript">
+	/* 		console.debug($.cookie);
+			$('.cookie.nag')
+			  .nag({
+			    key      : 'c-cookies',
+			    value    : true
+			  })
+			; */
+			$(".ui.modal")
+				.modal("attach events", ".ui.blue.button");
+			$(".ui.modal")
+				.modal("attach events", ".ui.green.button");
+		</script>
 	</div>
 </body>
 </html>
