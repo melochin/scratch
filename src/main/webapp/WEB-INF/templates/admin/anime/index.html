@@ -2,59 +2,89 @@
 <html xmlns:th="www.themeleaf.org">
 
 <head>
-<th:block th:replace="base/lib :: common"></th:block>
-<th:block th:replace="base/lib :: bootstrap"></th:block>
-<th:block th:replace="base/lib :: materialize"></th:block>
-<script type="text/babel" th:src="@{/js/react-common.js}"></script>
+	<th:block th:remove="all">
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.cookie.js"></script>
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+		<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+	</th:block>
+
+	<th:block th:replace="base/lib :: common"></th:block>
+	<th:block th:replace="base/lib :: semantic"></th:block>
+	<script type="text/babel" th:src="@{/js/react-common.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
-	<div id="container"
-		th:insert="base/modal_form :: setting('标题', 'anime/form', ~{::#content})">
-		<div id="content">
-			<table class="table table-hover">
-				<colgroup>
-					<col style="width: 10%">
-					<col style="width: 30%">
-					<col style="width: 10%">
-					<col style="width: 10%">
-					<col style="width: 10%">
-					<col style="width: 40%">
-				</colgroup>
-				<thead>
-					<tr>
-						<th>名称</th>
-						<th>描述</th>
-						<th>开始连载月份</th>
-						<th>是否完结</th>
-						<th>类型</th>
-						<th>操作</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="anime : ${animeList}">
-						<td th:text="${anime.name}"></td>
-						<td>
-							<div style="overflow: hidden; max-height: 50px;">
-								<span th:text="${anime.description }"></span>
+	<div id="container">
+		<table class="ui celled table">
+			<colgroup>
+				<col style="width: 10%">
+				<col style="width: 20%">
+				<col style="width: 10%">
+				<col style="width: 10%">
+				<col style="width: 20%">
+				<col style="width: 40%">
+			</colgroup>
+			<thead>
+				<tr>
+					<th colspan="5">影视维护</th>
+					<th>
+						<button class="ui blue button add"
+							th:data-href="@{/admin/anime/form}">新增</button>
+					</th>
+				</tr>
+				<tr>
+					<th>名称</th>
+					<th>描述</th>
+					<th>开始连载月份</th>
+					<th>是否完结</th>
+					<th>
+						<div class="ui floating dropdown labeled icon button">
+							<i class="filter icon"></i>
+							<span class="text">类型</span>
+							 <div class="menu">
+								<div class="scrolling menu">
+										<a class="item" th:each="anime : ${animeTypes}"
+											th:href="@{/admin/anime(type=${anime.code})}" th:text="${anime.value}"></a>
+								</div>
 							</div>
-						</td>
-						<td th:text="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"></td>
-						<td th:text="${anime.finished == false ? '否' : '是'}"></td>
-						<td th:text="${(animeTypes.asMap()).get(anime.type)}">
-						<td><a class="btn btn-link btn-sm" data-toggle="modal"
-							data-target="#modal"
+						</div>
+					</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="anime : ${animeList}">
+					<td th:text="${anime.name}"></td>
+					<td>
+						<div style="overflow: hidden; max-height: 50px;">
+							<span th:text="${anime.description }"></span>
+						</div>
+					</td>
+					<td th:text="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"></td>
+					<td th:text="${anime.finished == false ? '否' : '是'}"></td>
+					<td th:text="${(animeTypes.asMap()).get(anime.type)}">
+					<td>
+						<a class="ui green button"
 							th:href="@{anime/form/{animeId}(animeId=${anime.id})}">编辑</a>
-							<button data-target="modal-edit"
-								th:data-href="@{anime/link/{animeId}(animeId=${anime.id})}"
-								class="btn">关联</button> <a class="btn btn-link btn-sm"
-							th:href="@{anime/delete/{animeId}(animeId=${animeId})}">删除</a></td>
-					</tr>
-				</tbody>
-			</table>
-			<div id="page" th:data-page="${animeList.getPageNum() }"
-				th:data-total="${animeList.getPages() }" data-url="anime?p="></div>
-		</div>
+						<a class="ui orange button"
+							th:data-href="@{anime/link/{animeId}(animeId=${anime.id})}">关联</a>
+						<a class="ui red button"
+						th:href="@{anime/delete/{animeId}(animeId=${animeId})}">删除</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="page" th:data-page="${animeList.getPageNum() }"
+			th:data-total="${animeList.getPages() }" data-url="anime?p="></div>
+		<div class="ui modal"></div>
+		<script type="text/javascript">
+			$('.ui.dropdown')
+			  .dropdown()
+			;
+			$(".ui.modal")
+				.modal('attach events', '.ui.blue.button.add');
+		</script>
 	</div>
 </body>
 </html>
