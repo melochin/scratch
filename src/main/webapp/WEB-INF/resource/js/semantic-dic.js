@@ -6,48 +6,7 @@ $.fn.api.settings.api = {
 	'delete dictionary data' : 'dict/delete'
 };
 
-$.fn.form.settings.debug = true;
-$.fn.form.settings.verbose = true;
-$.fn.form.settings.performance = false;
 
-// 校验信息模板设置
-$.fn.form.settings.prompt.empty = '{name}不能为空';
-$.fn.form.settings.prompt.number = '{name}必须为数字';
-
-$.fn.form.settings.onSuccess = function() {
-	console.debug(this);
-	return true;
-}
-
-// 校验规则设置
-$.fn.form.settings.rules.ajax = function(value, ajaxValue) {
-	var
-		action = ajaxValue.action,
-		eles = ajaxValue.elements,
-		url = $.fn.api.settings.api[action],
-		keys = Object.keys(eles),
-		map = {};
-	
-	for(var i=0; i<keys.length; i++) {
-		var key = keys[i];
-		var value = $(eles[key]).val();
-		map[key] = value;
-	}
-	
-	var success = false;
-	
-	$.ajax({
-		url : url, 
-		data: map,
-		async : false ,
-		success: function(data) {
-			console.debug(data.validate);
-			success = data.validate;
-		}
-	});
-	
-	return success;
-};
 
 $(document).ready(function() {
 	$('.ui.dropdown').dropdown();
