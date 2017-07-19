@@ -14,12 +14,12 @@ public interface IAnimeDao {
 	List<Anime> findAll();
 	
 	List<Anime> findWithAlias();
+
+	List<Anime> findByType(@Param("type")String type);
 	
-	Page<Anime> find(PageRowBounds page);
+	Page<Anime> find(@Param("type") String type, PageRowBounds page);
 	
 	List<Anime> findByFinished(@Param("finished") Boolean finished);
-	
-	List<Anime> findByType(@Param("type")String type);
 	
 	Anime findById(@Param("id") Long id);
 	

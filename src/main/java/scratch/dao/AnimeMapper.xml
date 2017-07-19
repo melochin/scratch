@@ -39,6 +39,9 @@
 	
 	<select id="find" resultMap="AnimeMap">
 		select * from anime
+		<if test="type != null">
+			where type = #{type}
+		</if>
 	</select>	
 	
 	<select id="findByFinished" resultMap="AnimeMap">

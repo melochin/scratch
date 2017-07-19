@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -56,8 +55,9 @@ public class AnimeController {
 	 */
 	@UserRole(value=Role.Admin)
 	@RequestMapping(value="/anime")
-	public String index(Model model, @RequestParam(defaultValue="1", name="p") Integer page) {
-		model.addAttribute("animeList", service.find(page));
+	public String index(@RequestParam(defaultValue="1", name="p") Integer page, 
+			@RequestParam(value="type", required=false) String type, Model model) {
+		model.addAttribute("animeList", service.find(type, page));
 		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
 		return "/admin/anime/index";
 	}
