@@ -22,12 +22,24 @@ import scratch.support.PageFactory;
 public class AnimeService {
 
 	private static final String UPLOAD_ANIME = "/upload/anime";
+	
 	@Autowired
 	private IAnimeDao animeDao;
 	
-	public List<Anime> find(int page) {
-		PageRowBounds pageRowBounds = PageFactory.asList(page);  
-		return animeDao.find(pageRowBounds);
+	public List<Anime> find(String type, int page) {
+		if(StringUtils.isEmpty(type)) {
+			type = null;
+		}
+		PageRowBounds pageRowBounds = null;
+		if(page > 0) {
+			pageRowBounds = PageFactory.asList(page);
+			return animeDao.find(type, pageRowBounds);	
+		}
+		return animeDao.findByType(type);
+	}
+	
+	public Anime findById(Long animeId) {
+		return animeDao.findById(animeId);
 	}
 	
 	public List<Anime> findAll() {
@@ -36,6 +48,10 @@ public class AnimeService {
 	
 	public void save(Anime anime) {
 		animeDao.save(anime);
+	}
+	
+	public void update(Anime anime) {
+		animeDao.update(anime);
 	}
 	
 	/**
@@ -54,10 +70,6 @@ public class AnimeService {
 		multipartFile.transferTo(file);
 	}
 	
-	public void update(Anime anime) {
-		animeDao.update(anime);
-	}
-	
 	public void updateWithFile(Anime anime, MultipartFile multipartFile, String realPath) 
 			throws IllegalStateException, IOException  {
 		//删除老的文件
@@ -72,22 +84,14 @@ public class AnimeService {
 		//保存文件
 		multipartFile.transferTo(file);
 	}
-	
-	public void delete(Long animeId) {
-		animeDao.delete(animeId);
-	}
-
-	public Anime findById(Long animeId) {
-		return animeDao.findById(animeId);
-	}
 
 	public void deleteWithFile(Long animeId, String realPath) {
 		Anime anime = animeDao.findById(animeId);
 		deleteFile(anime.getPic(), realPath);
-		delete(animeId);
+		animeDao.delete(animeId);
 	}
 	
-	public File getFile(MultipartFile multipartFile, String realPath) {
+	private File getFile(MultipartFile multipartFile, String realPath) {
 		//获取表单上传文件的后缀名
 		String originFilename = multipartFile.getOriginalFilename();
 		String suffix = FileUtils.getSuffix(originFilename);
@@ -96,13 +100,10 @@ public class AnimeService {
 		return new File(FilenameUtils.concat(realPath + UPLOAD_ANIME, filename));
 	}
 	
-	
 	private void deleteFile(String filename, String realPath) {
 		if(!StringUtils.isEmpty(filename)) {
-			//获取完整路径
-			String path = FilenameUtils.concat(realPath + UPLOAD_ANIME, filename);
-			//删除文件
-			org.apache.commons.io.FileUtils.deleteQuietly(new File(path));
+			File file = new File(realPath + UPLOAD_ANIME, filename);
+			file.delete();
 		}
 	}
 
