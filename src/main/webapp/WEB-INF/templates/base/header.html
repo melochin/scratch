@@ -17,12 +17,11 @@
 			<!--没有用户时-->
 			<a class="ui inverted button" th:href="@{/user/login}" th:if="${session.user_g == null}">Login</a>
 			<!--存在用户时-->
-			<div class="ui inverted dropdown"
-				th:href="@{/user/login}" th:unless="${session.user_g == null}"
-				th:text="${session.user_g.username}">
-				username
+			<div class="ui dropdown"
+				th:href="@{/user/login}" th:unless="${session.user_g == null}">
+				<th:block th:text="${session.user_g.username}">username</th:block>
 				<i class="dropdown icon"></i>
-				<div class="ui menu" th:object="${session.user_g}">
+				<div class="ui inverted menu" th:object="${session.user_g}" style="background:grey;">
 					<div class="item" th:if="*{role == 1}">
 						<a th:href="@{/admin}">Administrator</a>
 					</div>
@@ -38,3 +37,4 @@
 	$(".ui.dropdown")
 		.dropdown();
 </script>
+</html>
