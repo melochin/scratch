@@ -1,83 +1,88 @@
 <html xmlns:th="www.thymeleaf.org">
 <head>
 <title>关注列表</title>
+
+<th:block th:remove="all">
+	<link rel="stylesheet"
+		href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+	<script type="text/javascript"
+		src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+	<script type="text/javascript"
+		src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+</th:block>
+
 <th:block th:replace="base/lib :: common" />
-<th:block th:replace="base/lib :: bootstrap" />
-<th:block th:replace="base/lib :: materialize" />
+<th:block th:replace="base/lib :: semantic" />
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
 	<div id="container">
-		<div class="row">
-			<div class="col-md-6">
-				<div class="row">
-					<input id="search" placeholder="search" />
-				</div>
-				<div class="row">
-					<label>过滤：</label>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							类型 <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a th:href="'focus?focus=' + ${focus}">全部</a></li>
-							<li role="separator" class="divider"></li>
-							<li th:each="animeType : ${animeTypes}"><a
-								th:href="'focus?type=' + ${animeType.code } + '&focus=' + ${focus}"
-								th:text="${animeType.value }"></a></li>
-						</ul>
+		<div class="ui six column grid container">
+			<div class="ui search">
+				<input class="prompt" type="text" placeholder="search" />
+				<i class="search icon"></i>
+			</div>
+			<div class="ui labeled icon top right pointing dropdown button">
+				<i class="filter icon"></i>
+				
+				<th:block th:if="${type != null}" 
+					th:text="${'类型：' + (animeTypes.asMap()).get(type)} + ' '"></th:block>
+				<th:block th:if="${focus != null}" 
+					th:text="${'订阅：' + (focus == 1 ? '订阅中' : '未订阅')}"></th:block>
+				<th:block th:if="${focus == null && type == null}">过滤</th:block>
+				<div class="menu">
+					<div class="header">
+						<i class="tags icon"></i>类型
 					</div>
+					<a class="item" th:href="@{/anime/focus(focus=${focus?:''})}">所有</a> 
+					<a class="item" th:each="animeType : ${animeTypes}"
+						th:href="@{/anime/focus(type=${animeType.code}, focus=${focus?:''})}"
+						th:text="${animeType.value }"></a>
 
-					<!-- 			<th:block th:text="${type == null ? '全部' : ${animeTypes[type] }}">
-			</th:block> -->
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							订阅 <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a th:href="'focus?type=' + ${type }">全部</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a th:href="'focus?type=' + ${type } + '&focus=1'">订阅中</a></li>
-							<li><a th:href="'focus?type=' + ${type } + '&focus=0'">未订阅</a></li>
-						</ul>
+					<div class="ui divider"></div>
+
+					<div class="header">
+						<i class="tags icon"></i>订阅状态
 					</div>
-
-					<th:block th:switch="${focus}">
-						<th:block th:case="null">全部</th:block>
-						<th:block th:case="1">订阅中</th:block>
-						<th:block th:case="*">未订阅</th:block>
-					</th:block>
+					<a class="item" th:href=" @{/anime/focus(type=${type ?: ''})}">所有</a> 
+					<a class="item" th:href="@{/anime/focus(focus='1', type=${type})}">订阅中</a>
+					<a class="item" th:href="@{/anime/focus(focus='0', type=${type})}">未订阅</a>
 				</div>
 			</div>
 		</div>
-		
+
 		<br />
-		
-		<!-- Anime Item -->
-		<div class="row anime-focus">
-			<div th:each="anime : ${animeList}" class="col-md-3 col-xs-4">
-				<div class="card">
-					<div class="card-image video-img">
-						<img th:src="${anime.key.pic }" class="img-rounded" />
-					</div>
-					<div class="card-content">
-						<p th:text="${anime.key.name }"></p>
-					</div>
-					<div class="card-action">
-						<form th:if="${anime.value == 0}" action="focus/add" method="post">
+
+		<div class="ui five doubling cards container">
+			<div th:each="anime : ${animeList}" class="ui card">
+				<div class="image">
+					<img src="https://semantic-ui.com/images/avatar2/large/kristy.png"
+						th:src="${anime.key.pic }" style="max-height: 290px;" />
+				</div>
+				<div class="content">
+					<!-- header -->
+					<div class="header" th:text="${anime.key.name}">animeName</div>
+					<div class="content">
+						<form class="ui form" style="margin: 0px;"
+							th:if="${anime.value == 0}" action="focus/add" method="post">
 							<input name="animeId" type="hidden" th:value="${anime.key.id }" />
-							<button class="btn btn-success orange">订阅</button>
-						</form>
-						<form th:unless="${anime.value == 0}" action="focus/delete" method="post">
-							<input name="animeId" type="hidden" th:value="${anime.key.id }" />
-							<button class="btn btn-success green">取消订阅</button>
+							<button class="ui basic orange button">订阅</button>
 						</form>
 					</div>
+
+					<form th:unless="${anime.value == 0}" action="focus/delete"
+						method="post">
+						<input name="animeId" type="hidden" th:value="${anime.key.id }" />
+						<button class="ui basic blue button">取消订阅</button>
+					</form>
 				</div>
 			</div>
 		</div>
+		<script type="text/javascript">
+			$('.ui.dropdown')
+			  .dropdown()
+		
+		</script>
 	</div>
 </body>
 </html>
