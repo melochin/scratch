@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @author melochin
  *
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordEncode {
 

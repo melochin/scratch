@@ -67,7 +67,7 @@ public class LoginController {
 			RedirectAttributes ra, SessionStatus status) {
 		String url = "redirect:/";
 		//校验用户身份
-		User curUser= service.verify(user);
+		User curUser= service.getByNameAndPwd(user.getUsername(), user.getPassword());
 		if(curUser == null) {
 			ra.addFlashAttribute(user)
 			  .addFlashAttribute("error", "账号密码错误");

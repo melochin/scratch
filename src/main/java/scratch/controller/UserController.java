@@ -54,7 +54,7 @@ public class UserController {
 	public String resetPasswordEmail(@RequestParam("username") String username, 
 			@RequestParam("email") String email, RedirectAttributes ra) {
 		//核对用户的邮箱信息
-		User user = userService.get(username, email);
+		User user = userService.getByNameAndEmail(username, email);
 		if(user == null){
 			ModelSupport.setError(ra, "用户的邮箱信息错误");
 			return "redirect:/user/reset";
@@ -82,19 +82,7 @@ public class UserController {
 	public String resetPasswordForm(@RequestParam("key") String key, 
 			@RequestParam("user") Long userId, Model model) {
 		
-		//判断缓存中是否存在值，若不存在直接返回错误页面
-		if(!redisTemplate.hasKey(key)) {
-			model.addAttribute("error", "无效页面");
-			return "common_message";
-		} else {
-			String value = redisTemplate.opsForValue().get(key);
-			if(value == null || value.isEmpty() || !value.equals(userId.toString())) {
-				model.addAttribute("error", "无效页面");
-				return "common_message";	
-			}
-		}
-		
-		if(!userService.decodeReset(key, userId)) {
+		if(!userService.canReset(userId, key)) {			
 			model.addAttribute("error", "无效页面");
 			return "common_message";
 		}
@@ -123,7 +111,7 @@ public class UserController {
 		User u = new User();
 		u.setPassword(password);
 		
-		userService.update(u);
+		userService.modify(u);
 		status.setComplete();
 		
 		//密码修改成功，移除缓存中的key，该key作废

@@ -23,6 +23,7 @@ public class UserDao extends BasicDao<User> {
 			+ "where userId = ?";
 	private static final String GET_USER_BY_NAME_AND_EMAIL = "from User "
 			+ "where username = ? and email = ?";
+	private static final String COUNT_BY_USERNAME = "select count(*) from User where username = ?";
 
 	public User getByName(User user) {
 		return getByHql(GET_USER_BY_NAME, user.getUsername());
@@ -32,8 +33,12 @@ public class UserDao extends BasicDao<User> {
 		return getByHql(GET_USER_BY_ID, userId);
 	}
 
-	public User getByNameAndPass(User user) {
-		return getByHql(GET_USER_BY_NAME_AND_PASS, user.getUsername(), user.getPassword());
+	public User getByNameAndPwd(String username, String password) {
+		return getByHql(GET_USER_BY_NAME_AND_PASS, username, password);
+	}
+	
+	public Long countByName(String username) {
+		return getByHql(COUNT_BY_USERNAME, username);
 	}
 
 	public int updateStatus(String username, String status) {

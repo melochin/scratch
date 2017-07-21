@@ -2,6 +2,7 @@ package scratch.aspect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -96,8 +97,19 @@ public class UserChecker {
 	 */
 	@Around("@annotation(scratch.aspect.PasswordEncode)")
 	public Object encodePswd(ProceedingJoinPoint pjp) throws Throwable {
-		System.out.println(pjp);
 		Object[] args = pjp.getArgs();
+		Parameter[] params = ((MethodSignature)pjp.getSignature())
+				.getMethod().getParameters();
+		// 查找参数是否标记了@PasswordEncode，并且参数数据类型是String，对参数值进行加密
+		for(int i=0; i<params.length; i++) {
+			Parameter p = params[i];
+			if(p.getAnnotation(PasswordEncode.class) != null && 
+					p.getType().equals(String.class) && 
+					args[i].getClass().equals(String.class)) {
+				args[i] = cipher.encode((String)args[i]);
+			}
+		}
+		
 		for(Object a : args) {
 			if(User.class.equals(a.getClass())) {
 				User u = (User)a;
@@ -107,6 +119,7 @@ public class UserChecker {
 				}
 			}
 		}
+		
 		return pjp.proceed(args);
 	}
 	

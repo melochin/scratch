@@ -72,7 +72,7 @@ public class RegisterController {
 			return "redirect:/user/register";
 		}
 		try{
-			service.add(user);
+			service.save(user);
 		} catch(MailException e) {
 			ra.addFlashAttribute("error", "账号注册成功:" + e.getMessage());
 			status.setComplete();
@@ -117,23 +117,23 @@ public class RegisterController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(path="/register/activiti/{actiCode}", method=RequestMethod.GET)
-	public String activiti(@PathVariable("actiCode") String actiCode, Model model) {
+	@RequestMapping(path="/register/activiti/{userId}/{actiCode}", method=RequestMethod.GET)
+	public String activiti(@PathVariable("userId") Long userId, 
+			@PathVariable("actiCode") String actiCode, Model model) {
 		
-		String userId = "";
-		
-		if(!redisTemplate.hasKey(actiCode)) {
-			model.addAttribute("error", "您所访问的页面不存在");
+		int result = service.activi(userId, actiCode);
+		switch (result) {
+		case -1:
+			model.addAttribute("error", "无效页面");
 			return "common_message";
-		}
-		userId = redisTemplate.opsForValue().get(actiCode);
-		
-		if(service.activi(Long.valueOf(userId))) {
+		case 1 :
 			model.addAttribute("success", "账号激活成功");
 			return "common_message";
+		default:
+			model.addAttribute("error", "账号激活失败");
+			return "common_message";
 		}
-		model.addAttribute("error", "账号激活失败");
-		return "common_message";
+
 	}
 	
 	@RequestMapping(path="/register/user", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -141,7 +141,7 @@ public class RegisterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = new User();
 		user.setUsername(username);
-		boolean exist = service.isExist(user);
+		boolean exist = service.isExistByUsername(username);
 		map.put("valid", !exist);
 		return map;
 	}

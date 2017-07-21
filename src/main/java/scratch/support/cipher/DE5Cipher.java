@@ -20,7 +20,9 @@ public class DE5Cipher implements CipherSupport {
 	private static final String KEY = "84129745";
 	
 	private static final String MODE = "DES";
-		
+	
+	private static final String DIVIDER = "&";		
+	
 	@Override
 	public String encode(String encodeStr) {
 		return encode(KEY, encodeStr);
@@ -101,6 +103,21 @@ public class DE5Cipher implements CipherSupport {
 			log.warn(e.getMessage());
 		}
 		return b;
+	}
+
+	@Override
+	public String encode(String key, String[] encodeStrs) {
+		StringBuilder encodeStr = new StringBuilder();
+		boolean first = true;
+		for(String s: encodeStrs) {
+			if(first) {
+				encodeStr.append(s);
+				first = false;
+			} else {
+				encodeStr.append(DIVIDER + s);
+			}
+		}
+		return encode(key, encodeStr.toString());
 	}
 	
 }

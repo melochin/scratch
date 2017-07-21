@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
+import scratch.model.JsonResult;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.Result;
@@ -47,7 +48,7 @@ public class UserController {
 	@UserRole(Role.Admin)
 	@RequestMapping("")
 	public String list(@RequestParam(value="p", defaultValue="1") int page, Model model) {
-		PageBean<User> userList = userService.findAll(page, PAGE_USER_SIZE);
+		PageBean<User> userList = userService.list(page, PAGE_USER_SIZE);
 		model.addAttribute("userList", userList);
 		return "/admin/user/index";
 	}
@@ -68,6 +69,16 @@ public class UserController {
 		} else {
 			result = new Result<User>("用户不存在");
 		}
+		return result;
+	}
+	
+	@UserRole(Role.Admin)
+	@RequestMapping(value="/validate", produces=MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody JsonResult validateUser(@RequestParam("username") String username) {
+		JsonResult result = new JsonResult();
+		boolean validate = false;
+		validate = !userService.isExistByUsername(username);
+		result.setValidate(validate);
 		return result;
 	}
 	
@@ -98,7 +109,7 @@ public class UserController {
 	public ModelAndView save(@Valid User user, 
 			@RequestHeader(value="referer", required=false) String referer) throws MailException {
 		ModelAndView view = new ModelAndView("redirect:/amin/user/index");
-		userService.add(user);
+		userService.save(user);
 		if(!StringUtils.isEmpty(referer)) {
 			view = new ModelAndView("redirect:" + referer);
 		}
@@ -119,7 +130,7 @@ public class UserController {
 			status = "0";
 		}
 		user.setStatus(status);
-		userService.update(user);
+		userService.modify(user);
 		return new ModelAndView("redirect:/admin/user/index");
 	}
 	
