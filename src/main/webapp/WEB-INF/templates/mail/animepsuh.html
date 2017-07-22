@@ -1,0 +1,9 @@
+<html xmlns:th="www.thymeleaf.org">
+	<body>
+	<ul>
+		<li th:each="episode : ${episodes}">
+			<a th:href="${episode.url}" th:text="${episode.anime.name + episode.number}"></a>
+		</li>
+	</ul>
+	</body>
+</html>

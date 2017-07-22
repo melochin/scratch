@@ -20,6 +20,7 @@ import scratch.controller.UserController;
 import scratch.dao.UserDao;
 import scratch.model.User;
 import scratch.support.cipher.CipherSupport;
+import scratch.support.service.MailContent;
 import scratch.support.service.MailException;
 import scratch.support.service.MailService;
 import scratch.support.service.PageBean;
@@ -135,7 +136,7 @@ public class UserService {
 	public void sendActiviMail(User user) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("url", getActiUrl(user.getUserId()));
-		mailService.sendMail(MailTemplate.REGISTER.toString(), user.getEmail(), map);
+		mailService.sendMail(new MailContent("用户注册", "/mail/register"), user.getEmail(), map);
 		return;
 	}
 	
@@ -184,7 +185,7 @@ public class UserService {
 	public void sendRestMail(User user) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("url", getRestUrl(user.getUserId()));
-		mailService.sendMail(MailTemplate.RESETPWD.toString(), user.getEmail(), map);
+		mailService.sendMail(new MailContent("密码重置", "/mail/resetpwd"), user.getEmail(), map);
 		return;
 	}
 	

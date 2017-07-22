@@ -21,6 +21,7 @@ import scratch.model.AnimeEpisode;
 import scratch.model.AnimeFocus;
 import scratch.model.User;
 import scratch.service.MailTemplate;
+import scratch.support.service.MailContent;
 import scratch.support.service.MailException;
 import scratch.support.service.MailService;
 
@@ -94,7 +95,7 @@ public class AnimePushService {
 				map.put("episodes", episodeList);
 				
 				try {
-					mailService.sendMail(MailTemplate.ANIMEPUSH.toString(), mail, map);
+					mailService.sendMail(new MailContent("番剧推送", "/mail/animepush"), mail, map);
 				} catch (MailException | MessagingException e) {
 					e.printStackTrace();
 				}

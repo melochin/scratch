@@ -1,0 +1,12 @@
+<html xmlns:th="www.thymeleaf.org">
+<head>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+</head>
+<div class="ui  text container">
+	<div class="ui green inverted segment">
+		<p>亲爱的用户，您好！</p>
+		<span>感谢您的注册，以下是您的账号验证链接：</span> <a th:href="@{${url}}"></a> <span>
+			(这是一封自动产生的email，请勿回复。) </span>
+	</div>
+</div>
+</html>
