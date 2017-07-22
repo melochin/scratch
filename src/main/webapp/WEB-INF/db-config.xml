@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 数据源 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property> 
+		<property name="url">
+			<value>jdbc:mysql://${jdbc.ip}/words?serverTimezone=UTC&amp;userUnicode=true&amp;characterEncoding=UTF-8</value>
+		</property> 
+		<property name="username">
+			<value>${jdbc.username}</value>
+		</property> 
+		<property name="password">
+			<value>${jdbc.password}</value>
+		</property> 
+	</bean> 
+
+	<!-- Hibernate SessionFactory -->
+	<bean id="hibernateSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="packagesToScan">
+			<list>
+				<value>scratch.model</value>
+				<value>scratch.bilibili.model</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<!-- <prop key="hibernate.use_sql_comments">true</prop> -->
+			</props>		
+		</property>
+	</bean>
+	
+	<!-- mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:scratch/dao/*.xml" />
+		<property name="typeAliasesPackage" value="scratch.model" />
+		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>
+	                    	helperDialect=mysql
+	                        reasonable=true
+	                        supportMethodsArguments=true
+	                        params=count=countSql
+	                        autoRuntimeDialect=true
+	                        rowBoundsWithCount = true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="scratch.dao.inter" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	
+	<!-- 事务管理 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="hibernateSessionFactory"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>

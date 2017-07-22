@@ -1,180 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
-	<context:property-placeholder location="classpath*:/jdbc-dev.properties,
-		classpath*:/mail.properties,
-		classpath*:/social.properties"/>
+	<!-- 导入properties -->
+	<context:property-placeholder location="classpath*:/jdbc-dev.properties, 
+		classpath*:/config.properties"/>
+		
+	<!-- 数据库 -->
+	<import resource="db-config.xml"/>
 	
-	<!-- 数据源 -->
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
-		<property name="driverClassName">
-			<value>com.mysql.jdbc.Driver</value>
-		</property> 
-		<property name="url">
-			<value>jdbc:mysql://${jdbc.ip}/words?serverTimezone=UTC&amp;userUnicode=true&amp;characterEncoding=UTF-8</value>
-		</property> 
-		<property name="username">
-			<value>${jdbc.username}</value>
-		</property> 
-		<property name="password">
-			<value>${jdbc.password}</value>
-		</property> 
-	</bean> 
+	<!-- redis -->
+	<import resource="redis-config.xml"/>
+	
+	<!-- RAMQ -->
+	<bean class="com.rabbitmq.client.ConnectionFactory">
+   		<property name="host" value="localhost"></property>
+   	</bean>	
 
-	<!-- Hibernate SessionFactory -->
-	<bean id="hibernateSessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"></property>
-		<property name="packagesToScan">
-			<list>
-				<value>scratch.model</value>
-				<value>scratch.bilibili.model</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
-				<!-- <prop key="hibernate.use_sql_comments">true</prop> -->
-			</props>		
-		</property>
-	</bean>
-	
-	<!-- mybatis配置 -->
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="mapperLocations" value="classpath*:scratch/dao/*.xml" />
-		<property name="typeAliasesPackage" value="scratch.model" />
-		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
-		<property name="plugins">
-			<array>
-				<bean class="com.github.pagehelper.PageInterceptor">
-					<property name="properties">
-						<value>
-	                    	helperDialect=mysql
-	                        reasonable=true
-	                        supportMethodsArguments=true
-	                        params=count=countSql
-	                        autoRuntimeDialect=true
-	                        rowBoundsWithCount = true
-						</value>
-					</property>
-				</bean>
-			</array>
-		</property>
-	</bean>
-
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="scratch.dao.inter" />
-		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
-	</bean>
-	
-	
-	<!-- 事务管理 -->
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="hibernateSessionFactory"></property>
-	</bean>
-	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
-	
-	<context:annotation-config />  
-	
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="${mail.host}" />
-		<property name="port" value="${mail.port}"/>
-		<property name="defaultEncoding" value="${mail.defaultEncoding}"/>
-		<property name="protocol" value="${mail.protocol}"/>
-		<property name="username" value="${mail.username}"/>
-		<property name="password" value="${mail.password}"/>
-		<property name="javaMailProperties">
-    	    <props>
-    	    	<prop key="mail.from">${mail.from}</prop>
-    	    	<prop key="mail.transport.protocol">${mail.protocol}</prop>
-    	        <prop key="mail.smtp.auth">true</prop>
-    	        <prop key="mail.smtp.starttls.enable">true</prop>
-    	        <prop key="mail.smtp.enableSSL.enable">true</prop>
-    	        <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
-				<prop key="mail.smtp.socketFactory.port">465</prop>
-    	        <prop key="mail.debug">true</prop>
-    	    </props>
-    	</property>
-	</bean>
-	
 	<bean id="page" class="scratch.support.service.Page">
 		<property name="perPageItem" value="20" />
 	</bean>
-	
-	<!-- 自动注册Bean-->
-	<context:component-scan base-package="scratch.dao" />			
-	<context:component-scan base-package="scratch.aspect" />
-	<context:component-scan base-package="scratch.service" />
-	<context:component-scan base-package="scratch.service.user" />	
-	<context:component-scan base-package="scratch.support" />
-	
-	<!-- 自动注册bilibili相关Bean -->
-	<context:component-scan base-package="scratch.bilibili.dao" />
-	<context:component-scan base-package="scratch.bilibili.service" />
-	
-	
-	<aop:aspectj-autoproxy/>
-	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">  
-        <property name="velocityProperties">     
-            <props>     
-                <prop key="resource.loader">class</prop>     
-                <prop key="class.resource.loader.class">     
-                    org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader     
-                </prop>     
-                <prop key="velocimacro.library"></prop>     
-            </props>     
-        </property>     
-   </bean>  
-   
-   <!-- 开启邮箱服务 -->
-   <bean class="scratch.support.service.MailService">
-		<property name="templates">
-			<list>
-				<bean class="scratch.support.service.MailTemplate">
-					<property name="name" value="register" />
-					<property name="path" value="mail_registert.html" />
-					<property name="subject" value="用户注册" />
-				</bean>
-				<bean class="scratch.support.service.MailTemplate">
-					<property name="name" value="resetpwd" />
-					<property name="path" value="mail_resetpwd.html" />
-					<property name="subject" value="密码重置" />
-				</bean>
-				<bean class="scratch.support.service.MailTemplate">
-					<property name="name" value="animepush" />
-					<property name="path" value="mail_anime_push.html" />
-					<property name="subject" value="新番更新" />
-				</bean>
-			</list>
-		</property>   		
-   </bean>
    
    <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
    
 <!--    <task:scheduler id="myScheduler" pool-size="5"/>
    <task:annotation-driven scheduler="myScheduler"/> -->
-	<import resource="redis-config.xml"/>
-   
-   <bean class="com.rabbitmq.client.ConnectionFactory">
-   		<property name="host" value="localhost"></property>
-   </bean>
-
 </beans>
-

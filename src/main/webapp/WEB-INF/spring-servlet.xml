@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:github="http://www.springframework.org/schema/social/github"
-	xmlns:social="http://www.springframework.org/schema/social"
-	xmlns:live="http://www.springframework.org/schema/social/live"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:github="http://www.springframework.org/schema/social/github"
+	xmlns:social="http://www.springframework.org/schema/social" xmlns:live="http://www.springframework.org/schema/social/live"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -14,27 +11,59 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social-1.1.xsd
 		http://www.springframework.org/schema/social/live http://www.springframework.org/schema/social/spring-social-live.xsd">
-	
+
+	<!-- 导入properties -->
+	<context:property-placeholder location="classpath*:/config.properties" />
+
+	<!-- 导入social相关bean -->
+	<import resource="social-config.xml" />
+
+	<context:annotation-config />
+
+	<!-- 开启AOP功能 -->
+	<aop:aspectj-autoproxy />
+
+	<context:component-scan base-package="scratch.dao" />
+	<context:component-scan base-package="scratch.aspect" />
+	<context:component-scan base-package="scratch.service" />
+	<context:component-scan base-package="scratch.service.user" />
+	<context:component-scan base-package="scratch.support" />
+	<context:component-scan base-package="scratch.bilibili.dao" />
+	<context:component-scan base-package="scratch.bilibili.service" />
+	<context:component-scan base-package="scratch.controller" />
+
+
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="scratch.interceptor.SessionInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
 	<mvc:annotation-driven>
 		<!-- 消息转换器 -->
 		<mvc:message-converters register-defaults="true">
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
-				<property name="supportedMediaTypes" value="text/html;charset=UTF-8"/>
+				<property name="supportedMediaTypes" value="text/html;charset=UTF-8" />
 			</bean>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
-	
-	<mvc:resources location="/WEB-INF//resource/" mapping="/**" /> 
-	
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+	<!-- 配置表单文件 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="defaultEncoding" value="utf-8"></property>
 	</bean>
-	
-	<!-- View -->
-		
+
+	<!-- 配置视图解析 -->
+
+	<!-- 配置静态资源 -->
+	<mvc:resources location="/WEB-INF//resource/" mapping="/**" />
 	<!-- thymeleaf -->
-	
-	<bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+
+	<bean id="templateResolver"
+		class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
 		<property name="prefix" value="/WEB-INF/templates/" />
 		<property name="suffix" value=".html" />
 		<property name="templateMode" value="HTML" />
@@ -43,43 +72,77 @@
 	</bean>
 
 	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-		<property name="templateResolver" ref="templateResolver"/>
+		<property name="templateResolver" ref="templateResolver" />
 	</bean>
-	
+
 	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
 		<property name="templateEngine" ref="templateEngine" />
 		<property name="order" value="1" />
 		<property name="characterEncoding" value="utf-8"></property>
 		<!-- <property name="cache" value="false"></property> -->
 	</bean>
-	
-<!-- 	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" />
-	
-	<bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
-		<property name="definitions">
-			<list>
-				<value>classpath:tiles.xml</value>
-			</list>
-		</property>
-	</bean> -->
-	
-	<!-- 视图解析器配置 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+
+	<!-- <bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" 
+		/> <bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer"> 
+		<property name="definitions"> <list> <value>classpath:tiles.xml</value> </list> 
+		</property> </bean> -->
+
+	<!-- jsp -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
-	
-	
-	<!-- 自动注册控制器 -->
-	<context:component-scan base-package="scratch.controller" />
-	<context:component-scan base-package="scratch.aspect" />
-	
-	<!-- 开启aop -->				
-	<aop:aspectj-autoproxy/>
-	
+
+	<!-- velocity -->
+	<bean id="velocityEngine"
+		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityProperties">
+			<props>
+				<prop key="resource.loader">class</prop>
+				<prop key="class.resource.loader.class">
+					org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+				</prop>
+				<prop key="velocimacro.library"></prop>
+			</props>
+		</property>
+	</bean>
+
+
 	<!-- 开启方法校验 -->
-	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
-	
-	<import resource="social-config.xml"/>
-	
+	<bean
+		class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
+
+
+
+	<!-- 开启邮箱服务 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.host}" />
+		<property name="port" value="${mail.port}" />
+		<property name="defaultEncoding" value="${mail.defaultEncoding}" />
+		<property name="protocol" value="${mail.protocol}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.from">${mail.from}</prop>
+				<prop key="mail.transport.protocol">${mail.protocol}</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.enableSSL.enable">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.smtp.socketFactory.port">465</prop>
+				<prop key="mail.debug">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mailTemplate" class="scratch.support.service.ThymeleafTempalte">
+		<property name="springTemplateEngine" ref="templateEngine"></property>
+	</bean>
+	<bean class="scratch.support.service.MailService">
+		<property name="mailSender" ref="mailSender"></property>
+		<property name="templateEngine" ref="mailTemplate"></property>
+	</bean>
+
 </beans>
