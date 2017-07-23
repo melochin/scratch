@@ -1,8 +1,6 @@
 package scratch.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -20,9 +18,7 @@ import scratch.controller.UserController;
 import scratch.dao.UserDao;
 import scratch.model.User;
 import scratch.support.cipher.CipherSupport;
-import scratch.support.service.MailContent;
 import scratch.support.service.MailException;
-import scratch.support.service.MailService;
 import scratch.support.service.PageBean;
 
 @Transactional
@@ -45,7 +41,7 @@ public class UserService {
 	private static final String RESET = "reset_";
 	
 	@Autowired
-	private MailService mailService;
+	private EmailService emailService;
 	
 	@Autowired
 	private CipherSupport cipher;
@@ -109,7 +105,7 @@ public class UserService {
 		if(user.getStatus().equals("1")) return;
 		//抛出checked异常，不影响事务
 		try{
-			sendActiviMail(user);	
+			sendActiveMail(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MailException(e.getMessage());
@@ -130,15 +126,16 @@ public class UserService {
 	
 	/**-----------------------------邮箱类服务------------------------------*/
 	
-	/**-------用户激活服务 ------------*/
-	
-	/** 发送激活邮件 */
-	public void sendActiviMail(User user) throws MailException, MessagingException {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("url", getActiUrl(user.getUserId()));
-		mailService.sendMail(new MailContent("用户注册", "/mail/register"), user.getEmail(), map);
-		return;
+	/**---------------------------
+	 * @throws MessagingException 
+	 * @throws MailException */
+	public void sendActiveMail(User user) throws MailException, MessagingException {
+		String activeUrl = getActiUrl(user.getUserId());
+		emailService.sendUserActiveCode(activeUrl, user.getEmail());
 	}
+	
+	
+	/**-------用户激活服务 ------------*/
 	
 	/**	生成激活用的URL */
 	public String getActiUrl(Long userId) {
@@ -183,9 +180,8 @@ public class UserService {
 	
 	/** 发送重置链接的邮箱 */
 	public void sendRestMail(User user) throws MailException, MessagingException {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("url", getRestUrl(user.getUserId()));
-		mailService.sendMail(new MailContent("密码重置", "/mail/resetpwd"), user.getEmail(), map);
+		String resetUrl = getRestUrl(user.getUserId());
+		emailService.sendUserResetPassword(resetUrl, user.getEmail());
 		return;
 	}
 	

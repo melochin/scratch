@@ -13,7 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  * @author melochin
  *
  */
-public class MailService {
+public class EmailSupport {
 
 	private JavaMailSender mailSender;
 	

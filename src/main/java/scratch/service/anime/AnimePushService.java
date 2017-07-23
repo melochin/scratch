@@ -1,9 +1,7 @@
 package scratch.service.anime;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,10 +18,8 @@ import scratch.dao.inter.IUserDao;
 import scratch.model.AnimeEpisode;
 import scratch.model.AnimeFocus;
 import scratch.model.User;
-import scratch.service.MailTemplate;
-import scratch.support.service.MailContent;
+import scratch.service.EmailService;
 import scratch.support.service.MailException;
-import scratch.support.service.MailService;
 
 @Service
 public class AnimePushService {
@@ -40,7 +36,7 @@ public class AnimePushService {
 	private IUserDao userDao;
 	
 	@Autowired
-	private MailService mailService;
+	private EmailService emailService;
 	
 	private static ExecutorService exec = Executors.newCachedThreadPool();
 	
@@ -90,15 +86,11 @@ public class AnimePushService {
 				//获取用户邮箱
 				String mail = u.getEmail();
 				
-				//构造发送内容
-				Map<String,Object> map = new HashMap<String, Object>();
-				map.put("episodes", episodeList);
-				
 				try {
-					mailService.sendMail(new MailContent("番剧推送", "/mail/animepush"), mail, map);
+					emailService.sendAnimeInfo(episodeList, mail);
 				} catch (MailException | MessagingException e) {
 					e.printStackTrace();
-				}
+				};
 				
 				for(AnimeFocus focus : focusList) {
 					focusDao.update(focus);
