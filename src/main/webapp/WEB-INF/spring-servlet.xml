@@ -12,9 +12,6 @@
 		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social-1.1.xsd
 		http://www.springframework.org/schema/social/live http://www.springframework.org/schema/social/spring-social-live.xsd">
 
-	<!-- 导入properties -->
-	<context:property-placeholder location="classpath*:/config.properties" />
-
 	<!-- 导入social相关bean -->
 	<import resource="social-config.xml" />
 
@@ -37,8 +34,10 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
-			<bean class="scratch.interceptor.SessionInterceptor" />
-		</mvc:interceptor>
+				<bean class="scratch.interceptor.SessionInterceptor">
+					<property name="autoLogin" value="true"></property>
+				</bean>
+			</mvc:interceptor>
 	</mvc:interceptors>
 
 	<mvc:annotation-driven>
@@ -140,9 +139,17 @@
 	<bean id="mailTemplate" class="scratch.support.service.ThymeleafTempalte">
 		<property name="springTemplateEngine" ref="templateEngine"></property>
 	</bean>
-	<bean class="scratch.support.service.MailService">
+	<bean class="scratch.support.service.EmailSupport">
 		<property name="mailSender" ref="mailSender"></property>
 		<property name="templateEngine" ref="mailTemplate"></property>
 	</bean>
 
+	<beans profile="develop">
+		<context:property-placeholder location="classpath*:/config-dev.properties"/>
+	</beans>
+	
+	<beans profile="product">
+		<context:property-placeholder location="classpath*:/config-pro.properties"/>
+	</beans>
+	
 </beans>
