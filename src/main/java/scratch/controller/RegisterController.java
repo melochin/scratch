@@ -1,6 +1,5 @@
 package scratch.controller;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,9 +34,6 @@ public class RegisterController {
 	
 	@Autowired
 	private UserService service;
-	
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
 	
 	@ModelAttribute
 	public void addUser(Model model) {
@@ -102,7 +97,7 @@ public class RegisterController {
 			return "common_message";
 		}
 		if(!"1".equals(user.getStatus())) {
-			service.sendActiviMail(user);
+			service.sendActiveMail(user);
 			model.addAttribute("success", "邮件已经发送");
 			return "common_message";
 		} 

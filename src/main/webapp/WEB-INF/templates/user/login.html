@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>user login</title>
+	<title>用户登录</title>
+	<th:block th:replace="~{base/lib :: common}"></th:block>
 	<th:block th:replace="~{base/lib :: semantic}"></th:block>
-	<th:block th:replace="~{base/lib :: customer}"></th:block>
 
 	<link th:remove="all" href="../resource/semantic/semantic.css" rel="stylesheet"></link>
 	<script th:remove="all" type="text/javascript" src="../resource/js/tools/jquery.js"></script>
 	<script th:remove="all" type="text/javascript" src="../resource/semantic/semantic.js"></script>
 </head>
 <body style="background:#ccc;background-size:cover;" >
-	<div class="ui doubling three column centered grid" style="padding-top:150px;">
+	<div class="ui doubling three column centered grid" style="padding-top:100px;">
 		<div class="column">
 			<div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
 				<form class="ui form" action="login" method="post" id="userLoginForm">
@@ -35,16 +35,16 @@
 							<input class="ui fluid green button" type="submit" value="登录" />
 						</div>
 						<div class="ui column">
-							<a class="ui fluid inverted white button" th:href="@{/user/register}">注册</a>
+							<a class="ui fluid button" th:href="@{/user/register}">注册</a>
 						</div>
 					</div>
 				</form>
 			</div>
 			
 			<div class="ui message">
-				忘记密码？<a th:href="@{/user/reset}"><span>找回账号</span></a>
+				忘记密码？<a th:href="@{/user/reset/password/apply}"><span>找回密码</span></a>
 				<br/>
-				如果账号还没有激活，请<a><span>激活账号</span></a>
+				如果账号还没有激活，请<a ><span>重新验证邮件</span></a>
 			</div>
 			
 			<div class="ui horizontal divider">
@@ -58,5 +58,8 @@
 			</form>
 		</div>
 	</div>
+	
+	<th:block th:replace="~{base/alert}"></th:block>
+	
 </body>
 </html>

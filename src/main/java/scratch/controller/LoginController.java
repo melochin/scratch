@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,6 +22,7 @@ import scratch.aspect.UserRole;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.web.CookieSupport;
+import scratch.support.web.GlobalSession;
 import scratch.support.web.SessionSupport;
 
 /** 在session中暂时存放request header referer */
@@ -50,6 +53,7 @@ public class LoginController {
 			log.debug("request referer:" + referer);
 		}
 		model.addAttribute("referer", referer);
+		
 		return "/user/login";
 	}
 	
@@ -70,7 +74,7 @@ public class LoginController {
 		User curUser= service.getByNameAndPwd(user.getUsername(), user.getPassword());
 		if(curUser == null) {
 			ra.addFlashAttribute(user)
-			  .addFlashAttribute("error", "账号密码错误");
+			  .addFlashAttribute("message", "账号密码错误");
 			return "redirect:/user/login";
 		}
 		if(remember) {
@@ -91,8 +95,8 @@ public class LoginController {
 	 * @return
 	 */
 	@UserRole(activi=false)
-	@RequestMapping(path="/logout", method=RequestMethod.GET)
-	public String logout() {
+	@GetMapping("/logout")
+	public String logout(@SessionAttribute(GlobalSession.USER) User user) {
 		SessionSupport.removeUser();
 		return "redirect:/";
 	}

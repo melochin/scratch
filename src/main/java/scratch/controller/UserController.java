@@ -3,13 +3,15 @@ package scratch.controller;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -20,45 +22,66 @@ import scratch.support.service.MailException;
 import scratch.support.web.ModelSupport;
 
 
-@SessionAttributes({"reset_key", "reset_userId"})	//多个request请求中需要使用
+@SessionAttributes({"reset_code", "reset_userId"})	//多个request请求中需要使用
+@RequestMapping("/user")
 @Controller
 public class UserController {
 	
 	@Autowired
 	private UserService userService;
 	
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+	/**
+	 * 用户基本信息
+	 * 需要存在user session，才能访问
+	 * 
+	 * model: user
+	 * view: "/user/info"
+	 * 
+	 * @param user
+	 * @param model
+	 * @return 
+	 */
+	@GetMapping("/info")
+	public String userInfo(@SessionAttribute(value="user_g", required=true) User user, Model model) {
+		model.addAttribute("user", user);
+		return "/user/info";
+	}
 	
-	@RequestMapping(value="/user/update/pwd", method=RequestMethod.POST)
+	/**
+	 * 等待开发
+	 */
+	@PostMapping("/update/pwd")
 	public void updatePassword() { }
 	
 	/**
-	 * 显示密码重置页面
+	 * 密码重置申请页面（需要填写邮箱信息）
 	 * @return
 	 */
-	@RequestMapping(value="/user/reset", method=RequestMethod.GET)
-	public String resetPasswordForm() {
+	@GetMapping("/reset/password/apply")
+	public String resetPasswordApplyForm() {
 		return "/user/reset";
 	}
 	
 	/**
-	 * 发送密码重置邮箱
+	 * 发送密码重置邮件(内含可以进行密码重置处理的链接)
 	 * PRG模式
 	 * @param username
 	 * @param email
 	 * @param ra
 	 * @return
 	 */
-	@RequestMapping(value="/user/resetmail", method=RequestMethod.POST)
+	@PostMapping("/reset/pwd/mail")
 	public String resetPasswordEmail(@RequestParam("username") String username, 
 			@RequestParam("email") String email, RedirectAttributes ra) {
+		String redirectUrl = "redirect:/user/reset/password/apply";
+		
 		//核对用户的邮箱信息
 		User user = userService.getByNameAndEmail(username, email);
 		if(user == null){
 			ModelSupport.setError(ra, "用户的邮箱信息错误");
-			return "redirect:/user/reset";
+			return redirectUrl;
 		}
+		
 		//发送邮件
 		try {
 			userService.sendRestMail(user);
@@ -66,59 +89,57 @@ public class UserController {
 		} catch (MailException | MessagingException e) {
 			e.printStackTrace();
 			ModelSupport.setError(ra, "发送邮件失败");
-			return "redirect:/common/message";
 		}
-		return "redirect:/common/message";
+		
+		return redirectUrl;
 	}
 	
 	/**
-	 * 根据KEY提供重设密码页面
+	 * 显示密码重置页面（需校验resetcode和userid是否符合条件）
 	 * @param key
 	 * @param userId
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value="/user/resetpwd", method=RequestMethod.GET)
-	public String resetPasswordForm(@RequestParam("key") String key, 
+	@RequestMapping(value="/reset/pwd", method=RequestMethod.GET)
+	public String resetPasswordForm(@RequestParam("resetcode") String resetCode, 
 			@RequestParam("user") Long userId, Model model) {
 		
-		if(!userService.canReset(userId, key)) {			
-			model.addAttribute("error", "无效页面");
-			return "common_message";
+		if(!userService.canReset(userId, resetCode)) {			
+			throw new RuntimeException();
 		}
 		
 		//添加到Session中
 		model.addAttribute("reset_userId", userId);	
-		model.addAttribute("reset_key", key);
+		model.addAttribute("reset_code", resetCode);
 		
-		return "user_reset_pwd";
+		return "/user/reset-pwd";
 	}
 	
 	/**
-	 * 密码重置
+	 * 密码重置处理（需要再次校验resetcode和userid，避免有人恶意发起POST请求）
 	 * @param password
 	 * @param userId
 	 * @param ra
 	 * @param status
 	 * @return
 	 */
-	@RequestMapping(value="/user/resetpwd", method=RequestMethod.POST)
+	@RequestMapping(value="/reset/pwd", method=RequestMethod.POST)
 	public String resetPassword(@RequestParam("password") String password,
 			@ModelAttribute("reset_userId") Long userId, 
-			@ModelAttribute("reset_key") String key,
-			RedirectAttributes ra, SessionStatus status) {
+			@ModelAttribute("reset_code") String resetCode,
+			RedirectAttributes ra, SessionStatus status, Model model) {
 		
-		User u = new User();
-		u.setPassword(password);
+		if(!userService.canReset(userId, resetCode)) {
+			throw new RuntimeException();
+		}
 		
-		userService.modify(u);
+		userService.modifyPasswordAndDeleteResetCode(userId, password);
 		status.setComplete();
 		
-		//密码修改成功，移除缓存中的key，该key作废
-		redisTemplate.delete(key);
-
 		ModelSupport.setSuccess(ra, "密码重置成功");
-		return "redirect:/common/message";
+		
+		return "redirect:/user/login";
 	}
 	
 }

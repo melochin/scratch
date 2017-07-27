@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>用户信息</title>
+<th:block th:replace="~{base/lib :: common}"></th:block>
+<th:block th:replace="~{base/lib :: semantic}"></th:block>
+
+</head>
+
+<body th:replace="base/layout/user :: layout(~{::.container})">
+	<div class="ui text container">
+		<div class="ui grey segment">
+			<div class="title">用户信息</div>
+			<div class="ui list">
+				<div class="item">
+					<label>用户账号：</label> <span th:text="${user.username}"></span>
+				</div>
+				<div class="item">
+					<label>邮箱地址：</label> <span th:text="${user.email}"></span> <a
+						th:if="${!'1'.equals(user.status)}" href="#">(认证邮箱)</a>
+				</div>
+			</div>
+		</div>
+		<div class="ui grey segment">
+			<div class="ui accordion">
+				<div class="title">
+					<div class="dropdown icon"></div>
+					密码修改
+				</div>
+				<div class="content">
+					<form class="ui form">
+						<div class="field">
+							<label>旧密码</label> <input type="password" />
+						</div>
+						<div class="field">
+							<label>新密码</label> <input type="password" />
+						</div>
+						<div class="field">
+							<label>新密码再次确认</label> <input type="password" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

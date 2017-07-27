@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -31,7 +30,7 @@ public class User {
 	
 	@Column(name="password", length=30)
 	@NotBlank(message="密码不能为空")
-	@Size(min=6, message="密码长度不能少于6位")
+	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="用户名只能以数字或字母组合，且长度不能少于6位超过18位")
 	private String password;
 	
 	@Column(name="status", length=1)
@@ -106,7 +105,8 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", email=" + email + ", password=" + password + ", status=" + status
-				+ "]" + super.toString();
+		return "User [userId=" + userId + ", username=" + username + ", email=" + email + ", password=" + password
+				+ ", status=" + status + ", role=" + role + "]";
 	}
+
 }
