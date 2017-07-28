@@ -30,7 +30,6 @@ public class User {
 	
 	@Column(name="password", length=30)
 	@NotBlank(message="密码不能为空")
-	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="用户名只能以数字或字母组合，且长度不能少于6位超过18位")
 	private String password;
 	
 	@Column(name="status", length=1)

@@ -1,6 +1,7 @@
 package scratch.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import scratch.aspect.PasswordEncode;
+import scratch.context.KeyContext;
 import scratch.controller.RegisterController;
 import scratch.controller.UserController;
 import scratch.dao.UserDao;
@@ -32,9 +34,6 @@ public class UserService {
 	private static Logger log = Logger.getLogger(UserService.class);
 	
 	private static long TIME_OUT = 10;	//有效期10分钟
-	
-	private static String[][] KEY = new String[][] {{"51748915", "87741296"}, 
-		{"12744597", "26741096"}};
 		
 	private static final String ACTIVE = "active_";
 	
@@ -113,8 +112,20 @@ public class UserService {
 		return;
 	}
 	
-	@Transactional
+	/**	更新密码，并且删除redis中缓存的resetCode*/
 	@PasswordEncode
+	public void modifyPasswordAndDeleteResetCode(Long userId, @PasswordEncode String password) {
+		User user = new User(userId);
+		user.setPassword(password);
+		// 注意：内部调用的方式是原生的，不是aop代理之后的modify
+		modify(user);
+		String redisKey = RESET + userId;
+		redisTemplate.opsForValue().getOperations().delete(redisKey);
+	}
+	
+	/** 更新用户信息，自动对user.password进行加密 */
+	@PasswordEncode
+	@Transactional
 	public void modify(User u) {
 		dao.update(u, u.getUserId());
 	}
@@ -139,7 +150,7 @@ public class UserService {
 	
 	/**	生成激活用的URL */
 	public String getActiUrl(Long userId) {
-		String encodeStr = encrypt(userId, KEY[0]);
+		String encodeStr = encrypt(userId, KeyContext.USER_ACTIVE);
 		//将加密后的字符串放入缓存
 		redisTemplate.opsForValue()
 			.set(ACTIVE + userId.toString(), encodeStr, TIME_OUT, TimeUnit.MINUTES);
@@ -187,7 +198,7 @@ public class UserService {
 	
 	/** 生成重置链接 */
 	private String getRestUrl(Long userId) {
-		String encodeStr = encrypt(userId, KEY[1]);
+		String encodeStr = encrypt(userId, KeyContext.USER_PWD_RESET);
 		//将加密后的字符串放入缓存
 		redisTemplate.opsForValue()
 			.set(RESET + userId.toString(), encodeStr, TIME_OUT, TimeUnit.MINUTES);
@@ -232,8 +243,8 @@ public class UserService {
 	 * @param key
 	 * @return
 	 */
-	private String encrypt(Long userId, String[] key) {
-		String encodes[] = {userId.toString(), String.valueOf(System.currentTimeMillis()), key[1]};
-		return cipher.encode(key[0], encodes);
+	public String encrypt(Long userId, String key) {
+		String encodes[] = {userId.toString(), String.valueOf(System.currentTimeMillis()), String.valueOf(UUID.randomUUID())};
+		return cipher.encode(key, encodes);
 	}
 }

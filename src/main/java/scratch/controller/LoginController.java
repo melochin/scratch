@@ -22,7 +22,7 @@ import scratch.aspect.UserRole;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.web.CookieSupport;
-import scratch.support.web.GlobalSession;
+import scratch.context.SessionContext;
 import scratch.support.web.SessionSupport;
 
 /** 在session中暂时存放request header referer */
@@ -74,7 +74,7 @@ public class LoginController {
 		User curUser= service.getByNameAndPwd(user.getUsername(), user.getPassword());
 		if(curUser == null) {
 			ra.addFlashAttribute(user)
-			  .addFlashAttribute("message", "账号密码错误");
+			  .addFlashAttribute("error", "账号密码错误");
 			return "redirect:/user/login";
 		}
 		if(remember) {
@@ -96,7 +96,7 @@ public class LoginController {
 	 */
 	@UserRole(activi=false)
 	@GetMapping("/logout")
-	public String logout(@SessionAttribute(GlobalSession.USER) User user) {
+	public String logout(@SessionAttribute(SessionContext.USER) User user) {
 		SessionSupport.removeUser();
 		return "redirect:/";
 	}
