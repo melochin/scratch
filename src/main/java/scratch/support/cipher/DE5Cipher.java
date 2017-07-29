@@ -5,14 +5,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-
-@SuppressWarnings("restriction")
-@Service
 public class DE5Cipher implements CipherSupport {
 
 	private static Logger log = Logger.getLogger(DE5Cipher.class);

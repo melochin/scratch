@@ -1,4 +1,4 @@
-package scratch.support.web;
+package scratch.support.web.spring;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-public class ModelSupport {
+public class ModelUtils {
 
 	private static final String ERROR = "error";
 	

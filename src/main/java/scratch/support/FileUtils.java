@@ -15,6 +15,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtils {
 	
+	public static String createDir(String path, String dirName){
+		
+		String regex = "[/\\:|\\*?\\.]";
+		dirName = dirName.replaceAll(regex, "");
+		
+		File dir = new File(path + dirName);
+
+		if (dir.exists())
+			return dir.getAbsolutePath();
+
+		if (dir.mkdirs())
+			return dir.getAbsolutePath();
+
+		return null;
+	}
+	
 	public static void downloadFile(String url) throws IOException {
 		String[] words = url.split("/");
 		String fileName = null;
@@ -74,8 +90,6 @@ public class FileUtils {
 			e.printStackTrace();
 		}		
 	}
-	
-
 	
 	public static String getSuffix(String fileName) {
 		String splits[] = fileName.split("\\.");
