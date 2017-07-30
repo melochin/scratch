@@ -9,16 +9,18 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageRowBounds;
 
+import scratch.context.SessionContext;
 import scratch.dao.SearchTagDao;
 import scratch.dao.inter.IVideoDao;
 import scratch.dao.inter.IVideoTypeDao;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
+import scratch.model.User;
 import scratch.model.Video;
 import scratch.model.VideoType;
 import scratch.support.service.Page;
 import scratch.support.service.PageBean;
-import scratch.support.web.SessionSupport;
+import scratch.support.web.spring.SessionUtils;
 
 @Service
 public class VideoService {
@@ -93,8 +95,9 @@ public class VideoService {
 			type = tag.getType().getCode();	
 			searchWords = tag.getSearchKeyWords();
 		} else {
-			if(SessionSupport.getUser() != null) {
-				Long userId = SessionSupport.getUser().getUserId();
+			User sessionUser = SessionUtils.getAttribute(SessionContext.USER, User.class); 
+			if(sessionUser != null) {
+				Long userId = sessionUser.getUserId();
 				List<SearchTag> tags = tagDao.listByUserId(userId);
 				for(SearchTag tag : tags) {
 					searchWords.addAll(tag.getSearchKeyWords());

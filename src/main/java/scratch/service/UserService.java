@@ -77,6 +77,11 @@ public class UserService {
 		return dao.getByNameAndPwd(username, password);
 	}
 	
+	public User getByName(String username) {
+		User user = new User(username);
+		return dao.getByName(user);
+	}
+	
 	/** 根据username与email查找User */
 	public User getByNameAndEmail(String username, String email) {
 		return dao.getByNameAndEmail(username, email);
