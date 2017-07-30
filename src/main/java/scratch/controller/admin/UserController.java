@@ -104,7 +104,7 @@ public class UserController {
 	 * @throws MailException
 	 */
 	@UserRole(Role.Admin)
-	@RequestMapping(value="save", method=RequestMethod.POST)
+	@RequestMapping(value="/save", method=RequestMethod.POST)
 	public ModelAndView save(@Valid User user, 
 			@RequestHeader(value="referer", required=false) String referer) throws MailException {
 		ModelAndView view = new ModelAndView("redirect:/amin/user/index");
@@ -123,14 +123,14 @@ public class UserController {
 	 * @return
 	 */
 	@UserRole(Role.Admin)
-	@RequestMapping(value="update", method=RequestMethod.POST)
+	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public ModelAndView update(User user, @RequestParam(required=false)String status) {
 		if(status == null) {
 			status = "0";
 		}
 		user.setStatus(status);
 		userService.modify(user);
-		return new ModelAndView("redirect:/admin/user/index");
+		return new ModelAndView("redirect:/admin/user");
 	}
 	
 	/**
@@ -140,7 +140,7 @@ public class UserController {
 	 * @return
 	 */
 	@UserRole(Role.Admin)
-	@RequestMapping(value="delete", method=RequestMethod.GET)
+	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public ModelAndView delete(@RequestParam("userId") Long userId, @RequestHeader("referer") String referer) {
 		ModelAndView view = new ModelAndView("redirect:/admin/user/index");
 		userService.deleteById(userId);

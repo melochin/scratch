@@ -30,7 +30,7 @@
 		</div>
 		<div class="field">
 			<div class="ui checkbox">
-				<input name="status" type="checkbox" value="1" checked="${user.status == 1} ? 'checked' : ''"/>
+				<input name="status" type="checkbox" value="1" th:checked="${user.status == '1'}"/>
 				<label>激活状态</label>
 			</div>
 		</div>
