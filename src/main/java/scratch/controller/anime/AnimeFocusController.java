@@ -12,12 +12,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
+import scratch.context.SessionContext;
 import scratch.model.Anime;
 import scratch.model.DictType;
 import scratch.model.User;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
-import scratch.support.web.SessionSupport;
 
 @RequestMapping("/anime")
 @Controller
@@ -33,14 +33,17 @@ public class AnimeFocusController {
 	@RequestMapping(value="/focus", method=RequestMethod.GET)
 	public String index(@RequestParam(value="type", required=false) String type,
 			@RequestParam(value="focus", required=false) Integer focus,
-			@SessionAttribute(value="user_g", required=false) User user,
+			@SessionAttribute(value=SessionContext.USER) User user,
 			Model model) {
+		
 		if(StringUtils.isEmpty(type)) {
 			type = null;
+			
 		}
 		Long userId = user.getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId, type, focus));
 		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		
 		model.addAttribute("type", type);
 		model.addAttribute("focus", focus);
 		return "/anime/focus";
@@ -48,15 +51,17 @@ public class AnimeFocusController {
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/add", method=RequestMethod.POST)
-	public ModelAndView add(@RequestParam("animeId") Long animeId) {
-		service.save(new Anime(animeId), SessionSupport.getUser());
+	public ModelAndView add(@RequestParam("animeId") Long animeId,
+			@SessionAttribute(SessionContext.USER) User user) {
+		service.save(new Anime(animeId), user);
 		return new ModelAndView("redirect:/anime/focus");
 	}
 	
 	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/delete", method=RequestMethod.POST)
-	public ModelAndView delete(@RequestParam("animeId") Long animeId) {
-		service.delete(new Anime(animeId), SessionSupport.getUser());
+	public ModelAndView delete(@RequestParam("animeId") Long animeId,
+			@SessionAttribute(SessionContext.USER) User user) {
+		service.delete(new Anime(animeId), user);
 		return new ModelAndView("redirect:/anime/focus");
 	}
 	

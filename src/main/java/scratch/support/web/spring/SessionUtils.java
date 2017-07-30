@@ -26,4 +26,8 @@ public class SessionUtils {
 		getSession().removeAttribute(name);
 	}
 	
+	public static boolean containAttribute(String name) {
+		return getSession().getAttribute(name) != null;
+	}
+	
 }

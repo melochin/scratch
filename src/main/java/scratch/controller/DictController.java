@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import scratch.model.Dict;
-import scratch.model.JsonResult;
 import scratch.service.DictService;
+import scratch.support.web.JsonResult;
 
 @Controller
 public class DictController {

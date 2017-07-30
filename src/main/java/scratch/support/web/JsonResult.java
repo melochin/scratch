@@ -1,4 +1,4 @@
-package scratch.model;
+package scratch.support.web;
 
 import java.util.HashMap;
 
@@ -17,6 +17,7 @@ public class JsonResult extends HashMap<String, Object>{
 	}
 	
 	public JsonResult setError(String error) {
+		this.put(SUCCESS, false);
 		this.put(ERROR, error);
 		return this;
 	}

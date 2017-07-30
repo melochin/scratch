@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.service.bilibili.VideoService;
+import scratch.context.SessionContext;
 import scratch.model.User;
 import scratch.model.Video;
 import scratch.service.SearchTagService;
 import scratch.support.service.PageBean;
-import scratch.support.web.SessionSupport;
+import scratch.support.web.spring.SessionUtils;
 
 @Controller
 public class BiliVideoController {
@@ -43,7 +44,7 @@ public class BiliVideoController {
 	
 	@RequestMapping(value="follow", method=RequestMethod.GET)
 	public ModelAndView followVideos(Model model) {
-		User user = SessionSupport.getUser();
+		User user = SessionUtils.getAttribute(SessionContext.USER, User.class);
 		model.addAttribute("tags", tagService.listByUserId(user.getUserId()));
 		return new ModelAndView("follow_video");
 	}
