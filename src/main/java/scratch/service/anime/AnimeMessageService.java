@@ -49,8 +49,12 @@ public class AnimeMessageService {
 	
 	@PostConstruct
 	private void init() throws IOException, TimeoutException {
-		connection = factory.newConnection();
-		startListener();
+		try{
+			connection = factory.newConnection();
+			startListener();	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@PreDestroy
@@ -102,7 +106,7 @@ public class AnimeMessageService {
 	private int saveList(List<AnimeEpisode> episodes) {
 		int saveCount = 0;
 		
-		for(AnimeEpisode episode : episodes) {
+		/*for(AnimeEpisode episode : episodes) {
 			if(episodeDao.findByUrl(episode.getUrl()) != null) continue;
 			
 			//根据别名查找番剧对象，为了将番剧与具体集建立关系
@@ -113,7 +117,20 @@ public class AnimeMessageService {
 			//保存数据
 			episodeDao.save(episode);
 			saveCount++;
-		}
+		}*/
+		
+		saveCount = episodes.stream()
+				.filter(episode -> episodeDao.findByUrl(episode.getUrl()) == null)
+				.mapToInt(episode -> {
+					Anime anime = animeDao.findByAlias(episode.getAnime().getName(), false);
+					if(anime == null) return 0;
+					episode.setAnime(anime);
+					episode.setScratchTime(new Date());
+					//保存数据
+					episodeDao.save(episode);
+					return 1;
+				})
+				.sum();
 		
 		return saveCount;
 	}

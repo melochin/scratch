@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -127,69 +126,52 @@ public class AnimeScratchService {
 		}
 		
 		// 遍历所有适配器，执行数据抓取线程任务
-		for(Entry<Long, Adapter> entry : adpaterMap.entrySet()) {
-			
+		adpaterMap.entrySet().forEach(entry -> {
 			// 获取HostId及对应的适配器
 			Long hostId = entry.getKey();
 			Adapter adapter = entry.getValue();
 			// 加载对应的ANIME数据
 			List<Anime> animes = getAnimeMap(hostId);
-			
 			// 网络访问任务可能超时，启用线程任务
-			exec.execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					int episodeCount = 0;
-					// 遍历Anime，执行数据抓取
-					for(Anime anime : animes) {
-						List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
-						
-						for(AnimeEpisode episode : episodes) {
-							episode.setHostId(hostId);
-						}
-						
-						try {
-							messsageService.push(episodes);
-						} catch (IOException | TimeoutException e) {
-							e.printStackTrace();
-						}
-						
-						episodeCount += episodes.size();
+			exec.execute(() -> {
+				int episodeCount = animes.stream().mapToInt(anime -> {
+					List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
+					episodes.forEach(e -> e.setHostId(hostId));
+					try {
+						messsageService.push(episodes);
+					} catch (IOException | TimeoutException e) {
+						e.printStackTrace();
 					}
-					// 保存抓取结果
-					resultMap.put(adapter.getClass().getName(), episodeCount);
-					countDownLatch.countDown();
-				}
+					return episodes.size();
+				}).sum();
 				
+				// 保存抓取结果
+				resultMap.put(adapter.getClass().getName(), episodeCount);
+				countDownLatch.countDown();
 			});
-		}
+		});
+			
 		// 结束线程，等待所有scratch任务完成
 		// 1.输出运行结果 2.重置运行状态
-		exec.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				// 等待所有scratch任务完成
-				try {
-					countDownLatch.await();
-				} catch (InterruptedException e) {
-				}
-				// 输出运行结果
-				if(log.isInfoEnabled()) {
-					// 计算总共抓取的数据个数
-					int count = 0;
-					for(Entry<String, Integer> entry : resultMap.entrySet()) {
-						count += entry.getValue();
-					}
-					log.info("end scratch service \n" + 
-							"get " + count + " episode \n" +
-							resultMap);
-				}
-				//重置运行状态
-				synchronized(isScratchRun) {
-					isScratchRun = false;	
-				}
+		exec.execute(() -> {
+			try {
+				countDownLatch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			if(log.isInfoEnabled()) {
+				int count = resultMap.entrySet()
+						.stream()
+						.mapToInt(e -> e.getValue())
+						.sum();
+				log.info("end scratch service \n" + 
+						"get " + count + " episode \n" +
+						resultMap);
+			}
+			//重置运行状态
+			synchronized(isScratchRun) {
+				isScratchRun = false;	
 			}
 			
 		});
