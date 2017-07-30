@@ -66,7 +66,7 @@
 					<td th:text="${(animeTypes.asMap()).get(anime.type)}">
 					<td>
 						<a class="ui green button"
-							th:href="@{anime/form/{animeId}(animeId=${anime.id})}">编辑</a>
+							th:data-href="@{anime/form/{animeId}(animeId=${anime.id})}">编辑</a>
 						<a class="ui orange button"
 							th:data-href="@{anime/link/{animeId}(animeId=${anime.id})}">关联</a>
 						<a class="ui red button"
@@ -78,13 +78,6 @@
 		<div id="page" th:data-page="${animeList.getPageNum() }"
 			th:data-total="${animeList.getPages() }" data-url="anime?p="></div>
 		<div class="ui modal"></div>
-		<script type="text/javascript">
-			$('.ui.dropdown')
-			  .dropdown()
-			;
-			$(".ui.modal")
-				.modal('attach events', '.ui.blue.button.add');
-		</script>
 	</div>
 </body>
 </html>

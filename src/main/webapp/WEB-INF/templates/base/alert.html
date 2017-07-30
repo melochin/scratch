@@ -1,0 +1,25 @@
+<html xmlns:th="www.thymeleaf.org">
+<!-- 存在错误信息时  -->
+<th:block th:if="${message != null or error != null or success != null}">
+	<!-- DOM -->
+	<div class="fix-nag">
+		<div class="ui inline cookie nag left">
+			<label class="title" th:text="${error}" th:if="${error != null}"></label>
+			<label class="title" th:text="${success}" th:if="${success != null}"></label>
+			<label class="title" th:text="${message}" th:if="${message != null}"></label>
+		</div>
+	</div>
+	<!-- 调用提示 -->
+	<script type="text/javascript">
+		$('body').click(function () {
+			$('.cookie.nag').nag('dismiss');
+			// 需要解绑事件
+		});
+		$('.cookie.nag')
+		  .nag({
+		    key      : 'c-cookies',
+		    value    : true
+		  })
+		; 
+	</script>
+</th:block>

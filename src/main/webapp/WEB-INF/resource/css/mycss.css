@@ -29,11 +29,16 @@ input[readonly=readonly] {
 }
 
 /*content container*/
-.content{
+/* .content{
 	background:#EDEFF0;
-	margin:0 -15px;		/*����col������15px*/
+	margin:0 -15px;		����col������15px
 }
-
+ */
+ /* .content {
+    margin-top: 70px;
+    padding: 0 30px;
+} */
+ 
 /*������*/
 .tool{
 	padding:5px 0;

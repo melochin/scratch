@@ -22,19 +22,18 @@
 				<th:block th:text="${session.user_g.username}">username</th:block>
 				<i class="dropdown icon"></i>
 				<div class="ui inverted menu" th:object="${session.user_g}" style="background:grey;">
-					<div class="item" th:if="*{role == 1}">
-						<a th:href="@{/admin}">Administrator</a>
-					</div>
-					<div class="item">
-						<a th:href="@{/user/logout}">log out</a>
-					</div>
+					<a class="item" th:href="@{/user/info}">Info</a>
+					<a class="item" 
+						th:if="*{role == 1}" th:href="@{/admin}">
+						Administrator
+					</a>
+					<a th:href="@{/user/logout}" class="item">
+						log out
+					</a>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<script type="text/javascript">
-	$(".ui.dropdown")
-		.dropdown();
-</script>
+
 </html>

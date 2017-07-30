@@ -2,72 +2,51 @@
 
 <script th:src="@{/js/validate.js}" type="text/javascript"></script>
 
-<form class="form-horizontal" action="anime/update"
-	id="editAnimeForm" method="post" enctype="multipart/form-data">
-	
-	<h4>编辑番剧信息</h4>
-	<input name="id" type="hidden" th:value="${anime.id }"/>
+<div class="header">影视编辑</div>
+<div class="scrolling content">
+	<div class="ui text container">
+		<form class="ui form" action="anime/update"
+			id="editAnimeForm" method="post" enctype="multipart/form-data">
+			<input name="id" type="hidden" th:value="${anime.id }"/>
+			
+			<div class="field">
+				<label>名称</label>
+				<input type="text" name="name" placeholder="请输入番剧名称" th:value="${anime.name }" />
+			</div>
+			
+			<div class="field">
+				<label>别名</label>
+				<input type="text" name="alias" placeholder="请输入番剧别名" th:value="${anime.alias }" />
+			</div>
+			<div class="field">
+				<label>上传图片</label>
+				<input type="file" name="picFile" />
+			</div>
 
-	<div class="form-group">
-		<label class="col-sm-3 control-label">名称</label>
-		<div class="col-sm-6">
-			<input class="form-control" name="name" placeholder="请输入番剧名称" 
-				th:value="${anime.name }"/>
-		</div>
-	</div>
+			<div class="field">
+				<label>描述</label>
+				<textarea name="description" rows="4" placeholder="请输入描述"
+					th:text="${anime.description }"></textarea>
+			</div>
 
-	<div class="form-group">
-		<label class="col-sm-3 control-label">别名</label>
-		<div class="col-sm-6">
-			<input class="form-control" name="alias" placeholder="请输入番剧别名" 
-				th:value="${anime.alias }"/>
-		</div>
-	</div>
+			<div class="field">
+				<label>类别</label>
+				<select name="type">
+					<option value=""></option>
+					<option th:each="animeType : ${animeTypes}"
+						th:value="${animeType.code}" th:text="${animeType.value}"
+						th:selected="${animeType.code == anime.type}"></option>
+				</select>
+			</div>
 
-	<div class="form-group">
-		<div class="file-field input-field">
-    		<div class="btn col-sm-offset-1 col-sm-2">
-        		<span>上传图片</span>
-   		     	<input type="file" name="picFile">
-  	    	</div>
-	   	   	<div class="file-path-wrapper col-sm-6">
-	      		<input class="file-path validate" type="text" name="picFileText"
-	      			th:value="${anime.pic }">
-	      	</div>
-    	</div>
+			<div class="field">
+				<label>发布日期</label>
+				<input type="date" name="publishMonth"
+					th:value="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"/>
+			</div>
+			<input class="ui green button" type="submit" value="保存" />
+			<button class="ui button">取消</button>
+		</form>
 	</div>
-
-	<div class="form-group">
-		<label class="col-sm-3 control-label">描述</label>
-		<div class="col-sm-6">
-			<textarea class="form-control" name="description"
-				placeholder="请输入描述" rows="4" th:text="${anime.description }"></textarea>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-3 control-label">类别</label>
-		<div class="col-sm-6">
-			<select class="form-control" name="type">
-				<th:block th:each="animeType : ${animeTypes}">
-					<option th:value="${animeType.code }" th:text="${animeType.value }"
-						th:selected="${animeType.code == anime.type ? 'selected' : ''}">						
-					</option>
-				</th:block>
-			</select>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-3 control-label">开始连载日期</label>
-		<div class="col-sm-6">
-			<input class="form-control" name="publishMonth" type="date"
-				th:value="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"/>
-		</div>
-	</div>
-
-	<div class="modal-footer">
-		<input type="submit" class="btn btn-primary" value="保存" />
-	</div>
-</form>
+</div>
 </html>

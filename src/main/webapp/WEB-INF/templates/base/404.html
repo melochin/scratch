@@ -1,0 +1,41 @@
+<html xmlns:th="www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>404</title>
+<th:block th:replace="~{base/lib :: common}"></th:block>
+<th:block th:replace="~{base/lib :: semantic}"></th:block>
+</head>
+<body>
+
+	
+	<div th:if="${error != null}">
+		<div class="ui text container" style="margin-top:5%">
+			<div class="ui two column stackable grid">
+				<div class="center aligned column">
+					<img class="ui image" alt="404" th:src="@{/pic/404.jpeg}">
+					<span class="">404</span>
+				</div>
+				<div class="top aligned column">
+					<h4>页面出错</h4>
+					<div class="ui divider"></div>
+					<div class="ui secondary inverted red segment" th:text="${error}">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div th:unless="${error != null}">
+		<div class="ui text container" style="margin-top:5%">
+			<div class="ui one column stackable grid">
+				<div class="center aligned column">
+					<h4>页面出错</h4>
+					<img class="ui image" alt="404" th:src="@{/pic/404.jpeg}">
+					<span class="">404</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

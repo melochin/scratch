@@ -173,3 +173,16 @@ var animeRule = {
 
 	}
 }
+
+/**
+ * 组件初始化
+ */
+$(document).ready(function() {
+	// 下拉表单初始化
+	$('.ui.dropdown')
+		.dropdown();	
+	// button click 触发modal
+	$(".ui.modal")
+		.modal('attach events', '.ui.button[data-href]');
+});
+

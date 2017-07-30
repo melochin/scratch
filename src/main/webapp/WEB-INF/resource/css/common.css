@@ -37,7 +37,6 @@
 	width: 100%;
     position: relative;
     padding-bottom:20px;
-    padding-top:50px;
 }
 
 .wrapper.toggled {
@@ -110,10 +109,6 @@ nav.subbar > ul.nav.nav-tabs > li.active > a {
     border-radius: 0px;
 }
 
-.content {
-    margin-top: 70px;
-    padding: 0 30px;
-}
 
 @media(min-width:768px){
 	.subbar li span {
@@ -249,4 +244,10 @@ nav.subbar > ul.nav.nav-tabs > li.active > a {
 
 .anime-focus .video-img {
 	height:250px;
+}
+
+.fix-nag {
+	position: fixed;
+	right: 45%;
+	top: 35%;	
 }

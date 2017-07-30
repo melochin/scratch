@@ -26,13 +26,14 @@
 		<th:block th:if="${success != null}">
 			<div id="messBox"
 				class="alert alert-success alert-autocloseable-info">
-				${success }</div>
+				<th:block th:text="${success }"/>
+			</div>
 		</th:block>
 		<th:block th:unless="${success != null}">
 			<div id="messBox" class="alert alert-danger alert-autocloseable-info">
-				${error }
+				<th:block th:text="${error}"/>
 				<ul th:if="${errors != null}">
-					<li th:each="e : ${errors}">${e }</li>
+					<li th:each="e : ${errors}" th:text="${e}"></li>
 				</ul>
 			</div>
 		</th:block>

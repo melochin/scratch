@@ -16,8 +16,10 @@
 					<label>用户账号：</label> <span th:text="${user.username}"></span>
 				</div>
 				<div class="item">
-					<label>邮箱地址：</label> <span th:text="${user.email}"></span> <a
-						th:if="${!'1'.equals(user.status)}" href="#">(认证邮箱)</a>
+					<label>邮箱地址：</label> <span th:text="${user.email}"></span> 
+					<a
+						th:if="${!'1'.equals(user.status)}" th:href="@{/user/register/sendMail}">(认证邮箱)</a>
+					<a th:unless="${!'1'.equals(user.status)}">(已认证)</a>
 				</div>
 			</div>
 		</div>
