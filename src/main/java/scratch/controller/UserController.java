@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
-import scratch.support.web.ModelSupport;
+import scratch.support.web.spring.ModelUtils;
 
 
 @SessionAttributes({"reset_code", "reset_userId"})	//多个request请求中需要使用
@@ -78,17 +78,17 @@ public class UserController {
 		//核对用户的邮箱信息
 		User user = userService.getByNameAndEmail(username, email);
 		if(user == null){
-			ModelSupport.setError(ra, "用户的邮箱信息错误");
+			ModelUtils.setError(ra, "用户的邮箱信息错误");
 			return redirectUrl;
 		}
 		
 		//发送邮件
 		try {
 			userService.sendRestMail(user);
-			ModelSupport.setSuccess(ra, "重置链接已经发送到邮箱，链接有效期为10分钟。");
+			ModelUtils.setSuccess(ra, "重置链接已经发送到邮箱，链接有效期为10分钟。");
 		} catch (MailException | MessagingException e) {
 			e.printStackTrace();
-			ModelSupport.setError(ra, "发送邮件失败");
+			ModelUtils.setError(ra, "发送邮件失败");
 		}
 		
 		return redirectUrl;
@@ -137,7 +137,7 @@ public class UserController {
 		userService.modifyPasswordAndDeleteResetCode(userId, password);
 		status.setComplete();
 		
-		ModelSupport.setSuccess(ra, "密码重置成功");
+		ModelUtils.setSuccess(ra, "密码重置成功");
 		
 		return "redirect:/user/login";
 	}

@@ -14,14 +14,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.UserRole;
+import scratch.context.SessionContext;
 import scratch.service.bilibili.VideoTypeService;
+import scratch.support.web.spring.SessionUtils;
 import scratch.model.SearchKeyword;
 import scratch.model.SearchTag;
 import scratch.model.User;
 import scratch.model.VideoType;
 import scratch.service.SearchKeywordService;
 import scratch.service.SearchTagService;
-import scratch.support.web.SessionSupport;
 
 @Controller
 @RequestMapping("/search")
@@ -39,7 +40,7 @@ public class SearchWordController {
 	@UserRole
 	@RequestMapping("/tag")
 	public ModelAndView tagForm(Model model, HttpSession session){
-		User user = SessionSupport.getUser();
+		User user = SessionUtils.getAttribute(SessionContext.USER, User.class);
 		List<SearchTag> list = tagService.listByUserId(user.getUserId());
 		List<VideoType> types = typeServce.list(1);
 		model.addAttribute("types", types);
@@ -49,7 +50,7 @@ public class SearchWordController {
 	@UserRole
 	@RequestMapping(value="/tag", method=RequestMethod.POST)
 	public @ResponseBody String updateTag(@ModelAttribute SearchTag tag, HttpSession session) {
-		User user = SessionSupport.getUser();
+		User user = SessionUtils.getAttribute(SessionContext.USER, User.class);
 		tag.setUser(user);		
 		tagService.update(tag);
 		return "redirect:/search/tag";

@@ -18,12 +18,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
-import scratch.model.JsonResult;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.Result;
 import scratch.support.service.MailException;
 import scratch.support.service.PageBean;
+import scratch.support.web.JsonResult;
 
 @Controller("AdminUserController")
 @RequestMapping("/admin/user")
@@ -61,13 +60,13 @@ public class UserController {
 	 */
 	@UserRole(Role.Admin)
 	@RequestMapping(value="/{userId}", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Result<User> getUserInfo(@PathVariable("userId") Long id) {
-		Result<User> result = null;
+	public @ResponseBody JsonResult getUserInfo(@PathVariable("userId") Long id) {
+		JsonResult result = new JsonResult();
 		User user = userService.getById(id);
 		if(user != null) {
-			result = new Result<User>(user);
+			result.put("user", user);
 		} else {
-			result = new Result<User>("用户不存在");
+			result.setError("用户不存在");
 		}
 		return result;
 	}

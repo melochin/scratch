@@ -21,9 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.aspect.UserRole;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.support.web.CookieSupport;
+import scratch.context.CookieSupport;
 import scratch.context.SessionContext;
-import scratch.support.web.SessionSupport;
+import scratch.support.web.spring.SessionUtils;
 
 /** 在session中暂时存放request header referer */
 @SessionAttributes("referer")
@@ -43,6 +43,11 @@ public class LoginController {
 	@RequestMapping(path="/login", method=RequestMethod.GET)
 	public String loginForm(@RequestHeader(name="referer", required=false, defaultValue="/") String referer, 
 			HttpServletRequest request, Model model) {
+		
+		if(SessionUtils.containAttribute(SessionContext.USER)) {
+			return "redirect:/";
+		}
+		
 		//判断referer是不是自身路径，防止重复定向
 		if(!StringUtils.isEmpty(referer)) {
 			if(referer.indexOf("/user") > 0 || referer.indexOf("/common") > 0) {
@@ -80,7 +85,7 @@ public class LoginController {
 		if(remember) {
 			CookieSupport.addUser(curUser);
 		}
-		SessionSupport.setUser(curUser);
+		SessionUtils.setAttribute(SessionContext.USER, curUser);
 		if(!StringUtils.isEmpty(referer)) {
 			url = "redirect:" + referer;
 			status.setComplete();
@@ -97,7 +102,7 @@ public class LoginController {
 	@UserRole(activi=false)
 	@GetMapping("/logout")
 	public String logout(@SessionAttribute(SessionContext.USER) User user) {
-		SessionSupport.removeUser();
+		SessionUtils.removeAttribute(SessionContext.USER);
 		return "redirect:/";
 	}
 	

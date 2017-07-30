@@ -21,11 +21,12 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.context.SessionContext;
-import scratch.model.JsonResult;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
+import scratch.support.web.JsonResult;
 import scratch.support.web.spring.ModelUtils;
+import scratch.support.web.spring.SessionUtils;
 
 @Controller
 @SessionAttributes("user")
@@ -125,6 +126,8 @@ public class RegisterController {
 				throw new RuntimeException();
 			case 1 :
 				ModelUtils.setSuccess(ra, "账号激活成功");
+				User user = service.getById(userId);
+				SessionUtils.setAttribute(SessionContext.USER, user);
 				break;
 			default:
 				ModelUtils.setError(ra, "账号激活失败");

@@ -13,13 +13,14 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import scratch.context.CookieSupport;
+import scratch.context.SessionContext;
 import scratch.exception.PrivilegeException;
 import static scratch.exception.PrivilegeException.*;
 import scratch.model.User;
 import scratch.service.UserService;
 import scratch.support.cipher.CipherSupport;
-import scratch.support.web.CookieSupport;
-import scratch.support.web.SessionSupport;
+import scratch.support.web.spring.SessionUtils;
 
 
 /**
@@ -53,13 +54,13 @@ public class UserChecker {
 		}
 		//从Session中读取用户信息
 		//读不取不到，则从Cookie中读取用户信息
-        User user = SessionSupport.getUser();
+        User user = SessionUtils.getAttribute(SessionContext.USER, User.class);
         if(user == null) {
         	user = CookieSupport.getUser();
         	if(user != null) {
         		user = userService.getById(Long.valueOf(user.getUserId()));
         		//Cookie中获取信息后，保存到Session中
-        		SessionSupport.setUser(user);
+        		SessionUtils.setAttribute(SessionContext.USER, user);
         	}
         }
         //核对用户是否存在
@@ -68,9 +69,9 @@ public class UserChecker {
         }
         //核对用户状态
         if(activi) {
-        	if(!"1".equals(user.getStatus())) {
+        	/*if(!"1".equals(user.getStatus())) {
         		throw new PrivilegeException(NOACTIVI);
-        	}
+        	}*/
         }
         //管理员才能使用的页面，核对用户账号
         if(role == Role.Admin && !user.getRole().equals(Role.Admin.ordinal())) {
