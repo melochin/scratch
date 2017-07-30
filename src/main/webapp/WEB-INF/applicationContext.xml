@@ -5,15 +5,33 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
-	<!-- 导入properties -->
-	<context:property-placeholder location="classpath*:/jdbc-dev.properties, 
-		classpath*:/config.properties"/>
-		
 	<!-- 数据库 -->
 	<import resource="db-config.xml"/>
 	
 	<!-- redis -->
 	<import resource="redis-config.xml"/>
+	
+	<!-- 开启邮箱服务 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.host}" />
+		<property name="port" value="${mail.port}" />
+		<property name="defaultEncoding" value="${mail.defaultEncoding}" />
+		<property name="protocol" value="${mail.protocol}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.from">${mail.from}</prop>
+				<prop key="mail.transport.protocol">${mail.protocol}</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.enableSSL.enable">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.smtp.socketFactory.port">465</prop>
+				<prop key="mail.debug">true</prop>
+			</props>
+		</property>
+	</bean>
 	
 	<!-- RAMQ -->
 	<bean class="com.rabbitmq.client.ConnectionFactory">
@@ -26,6 +44,18 @@
    
    <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
    
-<!--    <task:scheduler id="myScheduler" pool-size="5"/>
-   <task:annotation-driven scheduler="myScheduler"/> -->
+   	<bean class="scratch.support.cipher.DE5Cipher"></bean>
+   
+	<beans profile="develop">
+		<context:property-placeholder location="classpath:config-dev.properties"/>
+	</beans>
+	
+	<beans profile="product">
+		<context:property-placeholder location="classpath:config-pro.properties"/>
+<!-- 		<task:scheduler id="myScheduler" pool-size="5"/>
+ 		<task:annotation-driven scheduler="myScheduler"/> -->
+	</beans>
+	
+
+	
 </beans>
