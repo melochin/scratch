@@ -28,6 +28,7 @@
 	<context:component-scan base-package="scratch.bilibili.dao" />
 	<context:component-scan base-package="scratch.bilibili.service" />
 	<context:component-scan base-package="scratch.controller" />
+	<context:component-scan base-package="scratch.api" />
 
 
 	<!-- 配置拦截器 -->
@@ -35,7 +36,7 @@
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
 				<bean class="scratch.interceptor.SessionInterceptor">
-					<property name="autoLogin" value="true"></property>
+					<property name="autoLogin" value="${setting.autologin}"></property>
 				</bean>
 			</mvc:interceptor>
 	</mvc:interceptors>
@@ -109,47 +110,29 @@
 
 
 	<!-- 开启方法校验 -->
-	<bean
-		class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
-
-
-
-	<!-- 开启邮箱服务 -->
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="${mail.host}" />
-		<property name="port" value="${mail.port}" />
-		<property name="defaultEncoding" value="${mail.defaultEncoding}" />
-		<property name="protocol" value="${mail.protocol}" />
-		<property name="username" value="${mail.username}" />
-		<property name="password" value="${mail.password}" />
-		<property name="javaMailProperties">
-			<props>
-				<prop key="mail.from">${mail.from}</prop>
-				<prop key="mail.transport.protocol">${mail.protocol}</prop>
-				<prop key="mail.smtp.auth">true</prop>
-				<prop key="mail.smtp.starttls.enable">true</prop>
-				<prop key="mail.smtp.enableSSL.enable">true</prop>
-				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
-				<prop key="mail.smtp.socketFactory.port">465</prop>
-				<prop key="mail.debug">true</prop>
-			</props>
-		</property>
-	</bean>
+	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
 
 	<bean id="mailTemplate" class="scratch.support.service.ThymeleafTempalte">
 		<property name="springTemplateEngine" ref="templateEngine"></property>
 	</bean>
+	
 	<bean class="scratch.support.service.EmailSupport">
 		<property name="mailSender" ref="mailSender"></property>
 		<property name="templateEngine" ref="mailTemplate"></property>
 	</bean>
+	
+	<bean class="scratch.config.AppConfig"></bean>
+	
 
 	<beans profile="develop">
-		<context:property-placeholder location="classpath*:/config-dev.properties"/>
+		<context:property-placeholder location="classpath:config-dev.properties"/>
 	</beans>
 	
 	<beans profile="product">
-		<context:property-placeholder location="classpath*:/config-pro.properties"/>
+		<context:property-placeholder location="classpath:config-pro.properties"/>
+<!-- 		<task:scheduler id="myScheduler" pool-size="5"/>
+ 		<task:annotation-driven scheduler="myScheduler"/> -->
 	</beans>
+
 	
 </beans>
