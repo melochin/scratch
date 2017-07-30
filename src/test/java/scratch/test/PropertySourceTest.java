@@ -27,6 +27,7 @@ public class PropertySourceTest extends ContextTest{
 		//�жϻ�ȡ��Property�Ƿ���ȷ
 		Assert.state(env.getProperty("foo").equals("lish"));
 		System.out.println(env.getProperty("jdbc.password"));
+		
 	}
 	
 	
