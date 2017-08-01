@@ -13,7 +13,7 @@
 	<div class="ui doubling three column centered grid" style="padding-top:100px;">
 		<div class="column">
 			<div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
-				<form class="ui form" action="login" method="post" id="userLoginForm">
+				<form class="ui form" method="post" id="userLoginForm">
 					<div class="ui field fluid input left icon">
 						<input class="form-control" type="text" name="username"
 							placeholder="用户名" />
@@ -30,6 +30,9 @@
 					<div class="ui field checkbox">
 						<input type="checkbox" /> <label>记住我</label>
 					</div>
+					
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					
 					<div class="ui doubling two column grid">
 						<div class="ui column">
 							<input class="ui fluid green button" type="submit" value="登录" />
