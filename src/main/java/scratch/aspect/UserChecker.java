@@ -39,7 +39,7 @@ public class UserChecker {
 	@Autowired
 	private UserService userService;
 	
-	@Before("@annotation(scratch.aspect.UserRole)")
+//	@Before("@annotation(scratch.aspect.UserRole)")
 	public void checkUser(JoinPoint pjp) throws Throwable{
 		//读取注解，通过注解判断相应的用户权限
 		Annotation[] annotations = getAnnotations(pjp);

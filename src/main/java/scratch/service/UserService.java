@@ -9,6 +9,11 @@ import javax.mail.MessagingException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -29,6 +34,9 @@ public class UserService {
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
+	
+	@Autowired
+	private DaoAuthenticationProvider provider;
 	
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(UserService.class);
@@ -75,6 +83,12 @@ public class UserService {
 	@PasswordEncode
 	public User getByNameAndPwd(String username, @PasswordEncode String password) {
 		return dao.getByNameAndPwd(username, password);
+	}
+	
+	@PasswordEncode
+	public Authentication authen(String username, @PasswordEncode String password) {
+		Authentication authentication =  provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		return authentication;
 	}
 	
 	public User getByName(String username) {

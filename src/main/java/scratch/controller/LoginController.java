@@ -1,9 +1,13 @@
 package scratch.controller;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,10 +23,11 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.aspect.UserRole;
+import scratch.config.UserAdapter;
+import scratch.context.SessionContext;
 import scratch.model.User;
 import scratch.service.UserService;
-import scratch.context.CookieSupport;
-import scratch.context.SessionContext;
+import scratch.support.web.spring.ModelUtils;
 import scratch.support.web.spring.SessionUtils;
 
 /** 在session中暂时存放request header referer */
@@ -36,6 +41,7 @@ public class LoginController {
 	@Autowired
 	private UserService service;
 	
+
 	/**
 	 * 显示登录界面
 	 * @return
@@ -75,17 +81,23 @@ public class LoginController {
 			@RequestParam(required=false) boolean remember, 
 			RedirectAttributes ra, SessionStatus status) {
 		String url = "redirect:/";
-		//校验用户身份
-		User curUser= service.getByNameAndPwd(user.getUsername(), user.getPassword());
-		if(curUser == null) {
-			ra.addFlashAttribute(user)
-			  .addFlashAttribute("error", "账号密码错误");
-			return "redirect:/user/login";
+		
+		Authentication authentication = service.authen(user.getUsername(), user.getPassword());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		System.out.println(SessionUtils.getSession());
+		
+		Enumeration<String> attributes = SessionUtils.getSession().getAttributeNames();
+		while(attributes.hasMoreElements()) {
+			System.out.println(attributes.nextElement());
+			
 		}
-		if(remember) {
+		// 记住我的功能待更改
+		/*if(remember) {
 			CookieSupport.addUser(curUser);
-		}
-		SessionUtils.setAttribute(SessionContext.USER, curUser);
+		}*/
+		
+		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()).getUser());
 		if(!StringUtils.isEmpty(referer)) {
 			url = "redirect:" + referer;
 			status.setComplete();
@@ -101,9 +113,11 @@ public class LoginController {
 	 */
 	@UserRole(activi=false)
 	@GetMapping("/logout")
-	public String logout(@SessionAttribute(SessionContext.USER) User user) {
+	public String logout(@SessionAttribute(SessionContext.USER) User user, RedirectAttributes ra) {
 		SessionUtils.removeAttribute(SessionContext.USER);
-		return "redirect:/";
+		SecurityContextHolder.getContext().setAuthentication(null);
+		ModelUtils.setSuccess(ra, "登出成功");
+		return "redirect:/user/login";
 	}
 	
 }

@@ -2,14 +2,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
 
 	<!-- 数据库 -->
 	<import resource="db-config.xml"/>
 	
 	<!-- redis -->
 	<import resource="redis-config.xml"/>
+	
+	<context:component-scan base-package="scratch.dao" />
+	<context:component-scan base-package="scratch.aspect" />
+	<context:component-scan base-package="scratch.service" />
+	<context:component-scan base-package="scratch.service.user" />
+	<context:component-scan base-package="scratch.support" />
+	<context:component-scan base-package="scratch.bilibili.dao" />
+	<context:component-scan base-package="scratch.bilibili.service" />
+	<context:component-scan base-package="scratch.api" />
 	
 	<!-- 开启邮箱服务 -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -33,6 +46,28 @@
 		</property>
 	</bean>
 	
+	<bean id="templateResolver"
+		class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+		<property name="prefix" value="/WEB-INF/templates/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML" />
+		<property name="characterEncoding" value="utf-8" />
+		<property name="cacheable" value="false"></property>
+	</bean>
+	
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+
+	<bean id="mailTemplate" class="scratch.support.service.ThymeleafTempalte">
+		<property name="springTemplateEngine" ref="templateEngine"></property>
+	</bean>
+	
+	<bean class="scratch.support.service.EmailSupport">
+		<property name="mailSender" ref="mailSender"></property>
+		<property name="templateEngine" ref="mailTemplate"></property>
+	</bean>
+	
 	<!-- RAMQ -->
 	<bean class="com.rabbitmq.client.ConnectionFactory">
    		<property name="host" value="localhost"></property>
@@ -45,6 +80,13 @@
    <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
    
    	<bean class="scratch.support.cipher.DE5Cipher"></bean>
+   	
+   		<bean class="scratch.config.AppConfig"></bean>
+	
+	<import resource="security-config.xml"/>
+   
+   <!-- 开启AOP功能 -->
+	<aop:aspectj-autoproxy />
    
 	<beans profile="develop">
 		<context:property-placeholder location="classpath:config-dev.properties"/>

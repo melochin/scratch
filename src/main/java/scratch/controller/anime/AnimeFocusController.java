@@ -1,6 +1,7 @@
 package scratch.controller.anime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
+import scratch.config.UserAdapter;
 import scratch.context.SessionContext;
 import scratch.model.Anime;
 import scratch.model.DictType;
@@ -29,18 +31,17 @@ public class AnimeFocusController {
 	@Autowired
 	private DictService dictService;
 	
-	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus", method=RequestMethod.GET)
 	public String index(@RequestParam(value="type", required=false) String type,
 			@RequestParam(value="focus", required=false) Integer focus,
-			@SessionAttribute(value=SessionContext.USER) User user,
+			@AuthenticationPrincipal UserAdapter userAdapter,
 			Model model) {
 		
 		if(StringUtils.isEmpty(type)) {
 			type = null;
-			
 		}
-		Long userId = user.getUserId();
+		
+		Long userId = userAdapter.getUser().getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId, type, focus));
 		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
 		

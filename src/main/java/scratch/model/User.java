@@ -1,5 +1,7 @@
 package scratch.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +14,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name="user")
-public class User {
+public class User implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
