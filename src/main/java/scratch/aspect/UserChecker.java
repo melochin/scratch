@@ -3,6 +3,7 @@ package scratch.aspect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,6 +13,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import scratch.context.CookieSupport;
 import scratch.context.SessionContext;
@@ -98,28 +100,39 @@ public class UserChecker {
 	 */
 	@Around("@annotation(scratch.aspect.PasswordEncode)")
 	public Object encodePswd(ProceedingJoinPoint pjp) throws Throwable {
+		
 		Object[] args = pjp.getArgs();
 		Parameter[] params = ((MethodSignature)pjp.getSignature())
 				.getMethod().getParameters();
-		// 查找参数是否标记了@PasswordEncode，并且参数数据类型是String，对参数值进行加密
+		
+		// 对需要加密的两种情况进行判断(前提需要加密的字段不能为空)
+		
+		// 1.判断是否标记了@PasswordEncode的String参数
 		for(int i=0; i<params.length; i++) {
 			Parameter p = params[i];
 			if(p.getAnnotation(PasswordEncode.class) != null && 
-					p.getType().equals(String.class) && 
-					args[i].getClass().equals(String.class)) {
-				args[i] = cipher.encode((String)args[i]);
-			}
-		}
-		
-		for(Object a : args) {
-			if(User.class.equals(a.getClass())) {
-				User u = (User)a;
-				String psdw = u.getPassword();
-				if(u.getPassword() != null) {
-					u.setPassword(cipher.encode(psdw));
+					String.class.equals(p.getType()) && 
+					String.class.equals(args[i].getClass())) {
+				String pswd = (String)args[i];
+				if(!StringUtils.isEmpty(pswd)) {
+					args[i] = cipher.encode(pswd);	
 				}
 			}
 		}
+		
+		// 2.判断是否含有User类型的参数且存在password字段
+		Arrays.asList(args).stream()
+		.filter(arg -> {
+			return User.class.equals(arg.getClass());
+		})
+		.forEach(arg -> {
+			User u = (User)arg;
+			String psdw = u.getPassword();
+			if(!StringUtils.isEmpty(psdw)) {
+				u.setPassword(cipher.encode(psdw));
+			}
+			
+		});
 		
 		return pjp.proceed(args);
 	}
