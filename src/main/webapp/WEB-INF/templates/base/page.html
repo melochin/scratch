@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="www.thymeleaf.org">
 
-<div th:fragment="page(page, url)">
+<div th:fragment="page(page, url)" class="ui pagination menu">
 	<!-- pre page -->
-	<a th:if="${page.curePage - 1 > 0}" 
-		th:href="@{${url}(page=${page.curePage - 1})}" ></a>
-	<a th:href="@{${url}(page=${page.curePage)}"></a>	
+	<a th:if="${page.curPage - 1 > 0}" 
+		th:href="@{${url}(p=${page.curPage - 1})}" th:text="'<'" class="item"></a>
+		
+	<a th:href="@{${url}(p=${page.curPage})}" th:text="${page.curPage}" class="disabled item"></a>	
+	
 	<!-- next page -->	
-	<a th:if="${page.curePage + 1 <= page.totalPage}"
-		th:href="@{${url}(page=${page.curePage + 1})}"></a>
+	<a th:if="${page.curPage + 1 <= page.totalPage}" 
+		th:href="@{${url}(p=${page.curPage + 1})}" th:text="'>'" class="item"></a>
 </div>
 </html>

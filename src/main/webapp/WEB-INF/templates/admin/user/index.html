@@ -13,6 +13,7 @@
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
+
 	<div id="container">
 		<table class="ui celled table">
 			<thead>
@@ -45,6 +46,10 @@
 			</tbody>
 		</table>
 
+
+		<th:div th:replace="base/page :: page(${userList.page}, 'user?p={p}')">
+		
+		</th:div>
 		<div id="page" th:data-page="${userList.page.curPage }"
 			th:data-total="${userList.page.totalPage }" data-url="user?p=">
 		</div>
