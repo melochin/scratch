@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import scratch.model.AnimeEpisode;
+import scratch.model.AnimeEpisodeScratch;
 import scratch.model.User;
 import scratch.model.UserForm;
 import scratch.service.UserService;
@@ -38,6 +40,37 @@ public class AppConfig {
 		@SuppressWarnings("rawtypes")
 		Set<Converter> converts = new HashSet<Converter>();
 		converts.add(convert);
+		
+		converts.add(new Converter<AnimeEpisodeScratch, AnimeEpisode>() {
+
+			@Override
+			public AnimeEpisode convert(AnimeEpisodeScratch episodeScratch) {
+				AnimeEpisode animeEpisode = new AnimeEpisode();
+				animeEpisode.setHostId(episodeScratch.getHostId());
+				animeEpisode.setAnime(episodeScratch.getAnime());
+				animeEpisode.setNumber(episodeScratch.getNumber());
+				animeEpisode.setUrl(episodeScratch.getUrl());
+				animeEpisode.setScratchTime(episodeScratch.getScratchTime());
+				return animeEpisode;
+			}
+			
+		});
+		
+		converts.add(new Converter<AnimeEpisode,AnimeEpisodeScratch>() {
+
+			@Override
+			public AnimeEpisodeScratch convert(AnimeEpisode episode) {
+				AnimeEpisodeScratch scratch = new AnimeEpisodeScratch();
+				scratch.setHostId(episode.getHostId());
+				scratch.setAnime(episode.getAnime());
+				scratch.setNumber(episode.getNumber());
+				scratch.setUrl(episode.getUrl());
+				scratch.setScratchTime(episode.getScratchTime());
+				scratch.setStatus(0);
+				return scratch;
+			}
+			
+		});
 		
 		conversionServiceFactoryBean.setConverters(converts);
 		return conversionServiceFactoryBean;
