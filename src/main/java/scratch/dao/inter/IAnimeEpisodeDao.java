@@ -27,4 +27,6 @@ public interface IAnimeEpisodeDao {
 	
 	void save(@Param("episode") AnimeEpisode episode);
 	
+	int deleteByUrl(@Param("url") String url);
+	
 }

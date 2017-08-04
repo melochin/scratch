@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IAnimeEpisodeScratchDao">
+	
+	<resultMap type="AnimeEpisodeScratch" id="AnimeEpisodeMap">
+		<id property="id" column="id"/>
+		<result property="number" column="no"/>
+		<result property="url" column="url"/>
+		<result property="scratchTime" column="scratch_time"/>
+		<result property="status" column="status" />
+		<result property="hostId" column="host_id"/>
+		<association property="anime" javaType="Anime">
+			<id property="id" column="anime_id"/>
+			<result property="name" column="anime_name"/>
+		</association>
+	</resultMap>
+	
+	<select id="getById" resultMap="AnimeEpisodeMap">
+		select * from anime_episode_scratch where id = #{id};
+	</select>
+	
+	<select id="findByUrl" resultMap="AnimeEpisodeMap">
+		select * from anime_episode_scratch where url = #{url};
+	</select>
+	
+	<select id="findByAnimeAndTime" resultMap="AnimeEpisodeMap">
+		select 
+		 	e.id as id,
+		 	e.no as no,
+		 	e.host_id as host_id,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	e.status as status, 
+		 	a.id as anime_id,
+		 	a.name as anime_name
+			from anime_episode_scratch e, anime a 
+			where e.anime_id = #{anime.id} 
+				and e.scratch_time > #{time}
+				and e.anime_id = a.id;
+	</select>
+	
+		<select id="listByStatus" resultMap="AnimeEpisodeMap">
+			select 
+		 	e.id as id,
+		 	e.no as no,
+		 	e.host_id as host_id,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+			from anime_episode_scratch e, anime a 
+			where  
+				e.anime_id = a.id
+				<if test="status != null">
+					and e.status = #{status}
+				</if>
+				;
+	</select>
+	
+	<insert id="save">
+		insert into anime_episode_scratch (
+			anime_id, no, url, scratch_time, host_id
+		) 
+		values(
+			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}, #{episode.hostId}
+		)
+	</insert>
+	
+	<select id="countByStatus" resultType="java.lang.Integer" >
+		select count(*) from anime_episode_scratch where status = #{status}
+	</select>
+
+
+	<update id="modifyStatus">
+		update anime_episode_scratch
+			set status = #{status} 
+			where id = #{id}
+	</update>
+
+</mapper>  

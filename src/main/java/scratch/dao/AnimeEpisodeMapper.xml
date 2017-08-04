@@ -4,6 +4,7 @@
 
 <mapper namespace="scratch.dao.inter.IAnimeEpisodeDao">
 	
+	<!-- map -->
 	<resultMap type="AnimeEpisode" id="AnimeEpisodeMap">
 		<id property="id" column="id"/>
 		<result property="number" column="no"/>
@@ -36,11 +37,15 @@
 	
 	<insert id="save">
 		insert into anime_episode (
-			anime_id, no, url, scratch_time, host_id
+			anime_id, no, url, scratch_time, host_id, save_time
 		) 
 		values(
-			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}, #{episode.hostId}
+			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}, #{episode.hostId}, #{episode.saveTime}
 		)
 	</insert>
+	
+	<delete id="deleteByUrl">
+		delete from anime_episode where url = #{url};
+	</delete>
 
 </mapper>  
