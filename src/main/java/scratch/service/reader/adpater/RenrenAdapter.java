@@ -3,6 +3,7 @@ package scratch.service.reader.adpater;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import scratch.api.renren.Renren;
@@ -27,7 +28,9 @@ public class RenrenAdapter implements Adapter{
 		List<VideoEpisode> episodes = new ArrayList<VideoEpisode>();
 		
 		if(videos.size() > 0) {
-			episodes = renren.getEpisodeList(videos.get(0).getDownloadListUrl());
+			episodes = Optional.ofNullable(videos.get(0).getDownloadListUrl())
+					.map(url -> renren.getEpisodeList(url))
+					.orElse(episodes);
 		}
 		
 		return episodes.stream()

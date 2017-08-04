@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,10 @@ import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 import scratch.dao.inter.IAnimeDao;
-import scratch.dao.inter.IAnimeEpisodeDao;
+import scratch.dao.inter.IAnimeEpisodeScratchDao;
 import scratch.model.Anime;
 import scratch.model.AnimeEpisode;
+import scratch.model.AnimeEpisodeScratch;
 
 @Service
 public class AnimeMessageService {
@@ -34,8 +36,11 @@ public class AnimeMessageService {
 	private IAnimeDao animeDao;
 	
 	@Autowired
-	private IAnimeEpisodeDao episodeDao;
-
+	private IAnimeEpisodeScratchDao episodeDao;
+	
+	@Autowired
+	private ConversionService conversionService;
+	
 	@Autowired
 	private ConnectionFactory factory;
 	
@@ -59,7 +64,9 @@ public class AnimeMessageService {
 	
 	@PreDestroy
 	public void destroy() throws IOException {
-		connection.close();
+		if(connection!= null && connection.isOpen()) {
+			connection.close();	
+		}
 	}
 	
 	private void startListener() throws IOException, TimeoutException {
@@ -90,7 +97,6 @@ public class AnimeMessageService {
 		});
 	}
 	
-	
 	public void push(List<AnimeEpisode> animeEpisodes) throws IOException, TimeoutException {
 		ObjectMapper mapper = new ObjectMapper();
 		// create channel
@@ -106,19 +112,6 @@ public class AnimeMessageService {
 	private int saveList(List<AnimeEpisode> episodes) {
 		int saveCount = 0;
 		
-		/*for(AnimeEpisode episode : episodes) {
-			if(episodeDao.findByUrl(episode.getUrl()) != null) continue;
-			
-			//根据别名查找番剧对象，为了将番剧与具体集建立关系
-			Anime anime = animeDao.findByAlias(episode.getAnime().getName(), false);
-			if(anime == null) continue;
-			episode.setAnime(anime);
-			episode.setScratchTime(new Date());
-			//保存数据
-			episodeDao.save(episode);
-			saveCount++;
-		}*/
-		
 		saveCount = episodes.stream()
 				.filter(episode -> episodeDao.findByUrl(episode.getUrl()) == null)
 				.mapToInt(episode -> {
@@ -127,7 +120,9 @@ public class AnimeMessageService {
 					episode.setAnime(anime);
 					episode.setScratchTime(new Date());
 					//保存数据
-					episodeDao.save(episode);
+					AnimeEpisodeScratch episodeScratch = conversionService.convert(
+							episode, AnimeEpisodeScratch.class);
+					episodeDao.save(episodeScratch);
 					return 1;
 				})
 				.sum();

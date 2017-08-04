@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -24,7 +25,6 @@ import scratch.api.fix.FixImpl;
 import scratch.api.renren.RenrenImpl;
 import scratch.dao.inter.IAnimeDao;
 import scratch.model.Anime;
-import scratch.model.AnimeAlias;
 import scratch.model.AnimeEpisode;
 import scratch.service.reader.adpater.Adapter;
 import scratch.service.reader.adpater.DilidiliAdapter;
@@ -61,22 +61,21 @@ public class AnimeScratchService {
 	}
 	
 	/** init AnimeAliasMap */
-	private synchronized void init() {
+	private synchronized void initAnimeAliasMap() {
 		// 获取未完结的番剧，且含有别名
 		List<Anime> animes = animeDao.findWithAlias();
-		for(Anime anime : animes) {
+		animes.forEach(anime -> {
 			// 没有维护别名的，hostId全部默认为0，别名即为Anime name
 			if(CollectionUtils.isEmpty(anime.getAliass())) {
 				fillAnimeAliasMap(new Long(0), anime.getName(), anime);
-			} 
+			}
 			// 有别名的，存放对应hostId的AnimeList中
 			else {
-				
-				for(AnimeAlias alias : anime.getAliass()) {
+				anime.getAliass().forEach(alias -> {
 					fillAnimeAliasMap(alias.getHostId(), alias.getAlias(), anime);
-				}
+				});
 			}
-		}
+		});
 	}
 	
 	/** 填充AnimeAliasMap，为每个站点生成对应的Anime List  */
@@ -90,32 +89,24 @@ public class AnimeScratchService {
 	
 	
 	private synchronized List<Anime> getAnimeMap(Long hostId) {
-		
-		List<Anime> animes = animeAliasMap.get(hostId);
-		if(animes == null) {
-			animes = new ArrayList<Anime>();
-		}
-		
-		return animes;
+		return Optional.ofNullable(animeAliasMap.get(hostId)).orElse(new ArrayList<Anime>());
 	}
 	
 	
 	@Scheduled(fixedRate=60*60*1000)
 	public void run() {
 		
-		// 运行状态判断
+		// 运行状态判断，防止多个任务在执行
 		synchronized (isScratchRun) {
-			if(isScratchRun) {
-				if(log.isDebugEnabled()) {
-					log.debug("scratch service is running, waiting for next time");				
-				}
+			if(isScratchRun && log.isInfoEnabled()) {
+				log.debug("scratch service is running, waiting for next time");				
 				return;
 			}
 			isScratchRun = true;
 		}
 		
 		// 初始化
-		init();
+		initAnimeAliasMap();
 		
 		ExecutorService exec = Executors.newCachedThreadPool();
 		CountDownLatch countDownLatch = new CountDownLatch(adpaterMap.size());
@@ -137,6 +128,7 @@ public class AnimeScratchService {
 				int episodeCount = animes.stream().mapToInt(anime -> {
 					List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
 					episodes.forEach(e -> e.setHostId(hostId));
+					// 需要过滤掉无用的数据
 					try {
 						messsageService.push(episodes);
 					} catch (IOException | TimeoutException e) {
@@ -158,16 +150,13 @@ public class AnimeScratchService {
 				countDownLatch.await();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			} 
 			
 			if(log.isInfoEnabled()) {
-				int count = resultMap.entrySet()
-						.stream()
-						.mapToInt(e -> e.getValue())
-						.sum();
-				log.info("end scratch service \n" + 
-						"get " + count + " episode \n" +
-						resultMap);
+				int count = resultMap.entrySet().stream()
+						.mapToInt(e -> e.getValue()).sum();
+				log.info("end scratch service : get " + count + " episode \n" 
+						+ resultMap);
 			}
 			//重置运行状态
 			synchronized(isScratchRun) {
