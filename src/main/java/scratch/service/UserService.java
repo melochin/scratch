@@ -12,10 +12,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import scratch.aspect.PasswordEncode;
@@ -87,7 +86,8 @@ public class UserService {
 	
 	@PasswordEncode
 	public Authentication authen(String username, @PasswordEncode String password) {
-		Authentication authentication =  provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		Authentication authentication =  provider.authenticate(
+				new UsernamePasswordAuthenticationToken(username, password));
 		return authentication;
 	}
 	
@@ -146,6 +146,9 @@ public class UserService {
 	@PasswordEncode
 	@Transactional
 	public void modify(User u) {
+		if(StringUtils.isEmpty(u.getPassword())) {
+			u.setPassword(null);
+		}
 		dao.update(u, u.getUserId());
 	}
 	
