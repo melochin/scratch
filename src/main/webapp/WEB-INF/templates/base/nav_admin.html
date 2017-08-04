@@ -7,18 +7,33 @@
 <body>
 	<!-- 选中状态如何表现 -->
 	<!-- 去除超链接显示 -->
-	<div class="ui vertical accordion secondary pointing menu">
+	<div id="nav-menu" class="ui vertical accordion secondary pointing menu">
 		<div class="item">
 			<a class="title" th:href="@{/admin}">首页</a>
 		</div>
 		<div class="item">
 			<span class="title">
 				<i class="setting icon"></i>
-				数据维护
+				数据抓取管理
 				<i class="dropdown icon"></i>
 			</span>
 			<div class="content">
 				<div id="1" class="menu">
+					<a  class="item" 
+						th:href="@{/admin/user}">运行状态</a>
+					<a  class="item" th:classappend="${module == 'episode' ? 'active' : ''}"
+						th:href="@{/admin/episode/scratch}">数据审核</a>
+				</div>
+			</div>
+		</div>
+		<div class="item">
+			<span class="title">
+				<i class="setting icon"></i>
+				基础数据维护
+				<i class="dropdown icon"></i>
+			</span>
+			<div class="content">
+				<div id="2" class="menu">
 					<a  class="item" th:classappend="${module == 'user' ? 'active' : ''}" 
 						th:href="@{/admin/user}">用户管理</a>
 					<a  class="item" th:classappend="${module == 'anime' ? 'active' : ''}"
@@ -33,7 +48,7 @@
 	<script>
 		$(".ui.accordion").accordion();
 		function getActiveIndex() {
-			var $active = $("a.active");
+			var $active = $("#nav-menu a.active");
 			if($active.length == 1) {
 				return $active.parent().attr("id");
 			}

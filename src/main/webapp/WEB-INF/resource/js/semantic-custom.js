@@ -183,6 +183,7 @@ $(document).ready(function() {
 		.dropdown();	
 	// button click 触发modal
 	$(".ui.modal")
-		.modal('attach events', '.ui.button[data-href]');
+		.modal('attach events', '.ui.button[data-href]')
+		.modal('attach events', 'a[data-href]');
 });
 
