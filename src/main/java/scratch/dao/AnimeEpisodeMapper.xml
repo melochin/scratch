@@ -10,6 +10,8 @@
 		<result property="number" column="no"/>
 		<result property="url" column="url"/>
 		<result property="scratchTime" column="scratch_time"/>
+		<result property="saveTime" column="save_time"/>
+		<result property="pushTime" column="push_time"/>
 		<association property="anime" javaType="Anime">
 			<id property="id" column="anime_id"/>
 			<result property="name" column="anime_name"/>
@@ -33,6 +35,37 @@
 			where e.anime_id = #{anime.id} 
 				and e.scratch_time > #{time}
 				and e.anime_id = a.id;
+	</select>
+	
+	<select id="findByTime" resultMap="AnimeEpisodeMap">
+			select 
+		 	e.id as id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	e.save_time as save_time,
+		 	e.push_time as push_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+			from anime_episode e, anime a 
+			where e.anime_id = a.id  
+				and e.save_time &gt;=#{beginTime}  and e.save_time &lt;=#{endTime}
+	</select>
+	
+	
+	<select id="list" resultMap="AnimeEpisodeMap">
+		select 
+		 	e.id as id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	e.save_time as save_time,
+		 	e.push_time as push_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+		from anime_episode e, anime a 
+		where e.anime_id = a.id  
+		order by e.anime_id desc, e.save_time desc 
 	</select>
 	
 	<insert id="save">

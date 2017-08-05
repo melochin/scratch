@@ -25,6 +25,8 @@ public class AnimeEpisode {
 	// 保存事件
 	private Date saveTime; 
 	
+	private Date pushTime;
+	
 	public Long getId() {
 		return id;
 	}
@@ -81,10 +83,18 @@ public class AnimeEpisode {
 		this.saveTime = saveTime;
 	}
 
+	public Date getPushTime() {
+		return pushTime;
+	}
+
+	public void setPushTime(Date pushTime) {
+		this.pushTime = pushTime;
+	}
+
 	@Override
 	public String toString() {
 		return "AnimeEpisode [id=" + id + ", hostId=" + hostId + ", anime=" + anime + ", number=" + number + ", url="
-				+ url + ", scratchTime=" + scratchTime + ", saveTime=" + saveTime + "]";
+				+ url + ", scratchTime=" + scratchTime + ", saveTime=" + saveTime + ", pushTime=" + pushTime + "]";
 	}
 
 }

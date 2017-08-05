@@ -1,5 +1,7 @@
 package scratch.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,18 @@ public class AnimeEpisodeService {
 	
 	@Autowired
 	private ConversionService conversionService;
+	
+	public List<AnimeEpisode> listTodayPass() {
+		LocalDateTime nowTime = LocalDateTime.now(); 
+		ZoneId zone = ZoneId.systemDefault();
+		Date beginTime = Date.from(nowTime.withHour(0).withMinute(0).withSecond(0).atZone(zone).toInstant());
+		Date endTime = Date.from(nowTime.withHour(23).withMinute(59).withSecond(59).atZone(zone).toInstant());
+		return episodeDao.findByTime(beginTime, endTime);
+	}
+	
+	public List<AnimeEpisode> list() {
+		return episodeDao.list();
+	}
 	
 	public List<AnimeEpisodeScratch> listScratch(Integer status) {
 		return episodeScratchDao.listByStatus(status);

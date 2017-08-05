@@ -25,6 +25,10 @@ public interface IAnimeEpisodeDao {
 	 */
 	List<AnimeEpisode> findByAnimeAndTime(@Param("anime") Anime anime, @Param("time") Date time);
 	
+	List<AnimeEpisode> findByTime(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+	
+	List<AnimeEpisode> list();
+	
 	void save(@Param("episode") AnimeEpisode episode);
 	
 	int deleteByUrl(@Param("url") String url);

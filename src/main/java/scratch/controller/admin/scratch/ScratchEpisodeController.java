@@ -1,4 +1,4 @@
-package scratch.controller.admin;
+package scratch.controller.admin.scratch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,9 +17,9 @@ import scratch.service.DictService;
 import scratch.support.web.spring.ModelUtils;
 
 @SessionAttributes({"waitCount", "passCount", "rejectCount"})
-@RequestMapping("/admin/episode")
+@RequestMapping("/admin/scratch/temp")
 @Controller
-public class EpisodeController {
+public class ScratchEpisodeController {
 	
 	@Autowired
 	private AnimeEpisodeService episodeService;
@@ -31,7 +31,9 @@ public class EpisodeController {
 	
 	@ModelAttribute
 	private void setModel(Model model) {
+		// 数据发生变化时，才会触发重新查询
 		if(needQueryCount) {
+			// 获取待审核、通过审核、失败审核的记录总数
 			Integer waitCount = episodeService.countByScratchStatus(new Integer(0));
 			Integer passCount = episodeService.countByScratchStatus(new Integer(1));
 			Integer rejectCount = episodeService.countByScratchStatus(new Integer(-1));
@@ -40,19 +42,22 @@ public class EpisodeController {
 			model.addAttribute("rejectCount", rejectCount);
 			needQueryCount = false;
 		}
-		model.addAttribute("module", "episode");
+		// nav menu active item
+		model.addAttribute("module", "temp");
 	}
 	
-	@GetMapping("/scratch")
+	// 显示各个状态的抓取数据
+	@GetMapping("")
 	public String showEpisodeScratch(@RequestParam(value="status", required=false, defaultValue="0") 
 	Integer status, Model model) {
 		model.addAttribute("episodeScratchs", episodeService.listScratch(status));
 		model.addAttribute("status", status);
 		model.addAttribute("hostMap", dictService.findByType(DictType.HOST).asMap());
-		return "/admin/episode/scratch";
+		return "/admin/scratch/temp";
 	}
 
-	@GetMapping("/scratch/pass")
+	/** 审核通过 **/
+	@GetMapping("/pass")
 	public String pass(@RequestParam(value="id") Long id, 
 			@RequestHeader("Referer") String referer,
 			RedirectAttributes ra) {
@@ -62,7 +67,8 @@ public class EpisodeController {
 		return redirect(referer);
 	}
 	
-	@GetMapping("/scratch/reject")
+	/** 拒绝通过 **/
+	@GetMapping("/reject")
 	public String reject(@RequestParam(value="id") Long id, 
 			@RequestHeader("Referer") String referer,
 			RedirectAttributes ra) {
@@ -72,11 +78,13 @@ public class EpisodeController {
 		return redirect(referer);
 	}
 	
+	/** 重定向判断，如果referer含有关联链接，则重定向referer，否则按默认的链接走  **/
 	private String redirect(String referer) {
-		if(referer.indexOf("/admin/episode/scratch") > 0) {
+		String defaultRedirect = "/admin/scratch/temp";
+		if(referer.indexOf(defaultRedirect) > 0) {
 			return "redirect:" + referer;
 		}
-		return "redirect:/admin/episode/scratch";
+		return defaultRedirect;
 	}
 	
 }
