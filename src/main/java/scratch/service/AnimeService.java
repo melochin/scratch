@@ -26,6 +26,11 @@ public class AnimeService {
 	@Autowired
 	private IAnimeDao animeDao;
 	
+	public List<Anime> findMostFocus() {
+		return animeDao.findMostFocused();
+	}
+	
+	
 	public List<Anime> find(String type, int page) {
 		if(StringUtils.isEmpty(type)) {
 			type = null;

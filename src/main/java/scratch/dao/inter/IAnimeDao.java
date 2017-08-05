@@ -21,6 +21,8 @@ public interface IAnimeDao {
 	
 	List<Anime> findByFinished(@Param("finished") Boolean finished);
 	
+	List<Anime> findMostFocused();
+	
 	Anime findById(@Param("id") Long id);
 	
 	Anime findByAlias(@Param("alias") String alias, Boolean finished);

@@ -55,6 +55,22 @@
 	<select id="findByAlias" resultMap="AnimeMap">
 		select * from anime where alias = #{alias} or name = #{alias}
 	</select>
+	
+	<select id="findMostFocused" resultMap="AnimeMap">
+		select
+			a.*
+		from
+			anime a,
+			(
+				select anime_id, count(*) count
+				from anime_focus
+				group by anime_id
+			) b
+		where 
+			a.id = b.anime_id
+		order by
+			b.count desc;
+	</select>
 
 	<insert id="save">
 		insert into anime (
