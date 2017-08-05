@@ -1,6 +1,7 @@
 package scratch.service.anime;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,8 +26,10 @@ import scratch.api.dilidili.DilidiliImpl;
 import scratch.api.fix.FixImpl;
 import scratch.api.renren.RenrenImpl;
 import scratch.dao.inter.IAnimeDao;
+import scratch.dao.inter.IScratchRecord;
 import scratch.model.Anime;
 import scratch.model.AnimeEpisode;
+import scratch.model.ScratchRecord;
 import scratch.service.reader.adpater.Adapter;
 import scratch.service.reader.adpater.DilidiliAdapter;
 import scratch.service.reader.adpater.FixAdapter;
@@ -38,6 +42,9 @@ public class AnimeScratchService {
 	
 	@Autowired
 	private IAnimeDao animeDao;
+	
+	@Autowired
+	private IScratchRecord recordDao;
 	
 	@Autowired
 	private AnimeMessageService messsageService;
@@ -168,4 +175,22 @@ public class AnimeScratchService {
 		exec.shutdown();
 	}
 	
+	// 运行状态
+	public boolean isRun() {
+		return isScratchRun;
+	}
+	
+	// 运行记录
+	public Map<String, Integer> getRecordMap() {
+		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
+		List<ScratchRecord> records = recordDao.list();
+		for(ScratchRecord record : records) {
+			long plus = (record.getEndTime().getTime() - record.getStartTime().getTime()) / 1000;
+			plus = plus == 0 ? 1 : plus;
+			long unit = record.getCount() / plus;
+			String endTime = DateFormatUtils.format(record.getEndTime(), DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern());
+			map.put(endTime, new Integer((int) unit));	
+		}
+		return map;
+	}
 }
