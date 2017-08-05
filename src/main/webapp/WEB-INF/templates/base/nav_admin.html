@@ -19,10 +19,12 @@
 			</span>
 			<div class="content">
 				<div id="1" class="menu">
-					<a  class="item" 
-						th:href="@{/admin/user}">运行状态</a>
+					<a  class="item" th:classappend="${module == 'scratch' ? 'active' : ''}"
+						th:href="@{/admin/scratch}">运行状态</a>
+					<a  class="item" th:classappend="${module == 'temp' ? 'active' : ''}"
+						th:href="@{/admin/scratch/temp}">临时数据审核</a>
 					<a  class="item" th:classappend="${module == 'episode' ? 'active' : ''}"
-						th:href="@{/admin/episode/scratch}">数据审核</a>
+						th:href="@{/admin/scratch/episode}">剧集管理</a>
 				</div>
 			</div>
 		</div>

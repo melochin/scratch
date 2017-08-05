@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+	<title>后台管理</title>
+	<th:block th:replace="base/lib :: common" />
+	<th:block th:replace="base/lib :: semantic" />
+	<!-- <th:block th:replace="base/lib :: bootstrap" /> -->
+	<!-- <th:block th:replace="base/lib :: materialize" /> -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+</head>
+<body th:replace="base/layout/admin :: layout(~{::.container})">
+	<div class="ui aligned container">
+		<div class="ui two column grid">
+			<div class="row" style="min-height:200px">
+				<div class="column">
+					<label>运行状态</label>
+				</div>
+				<div class="column">
+					developing
+				</div>
+			</div>
+			<div class="row" style="min-height:200px">
+				<div class="column">
+					<div class="ui segment">
+						<canvas id="myChart"></canvas>
+					</div>
+				</div>
+				<div class="column">
+					developing
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" th:inline="javascript">
+			var ctx = document.getElementById('myChart').getContext('2d');
+			var myBarChart = new Chart(ctx, {
+			    type: 'bar',
+			    data: {
+			    	labels: /*[[${times}]]*/ null,
+			    	datasets: [{
+			            label: "单位时间抓取量",
+			            backgroundColor: 'rgb(255, 99, 132)',
+			            borderColor: 'rgb(255, 99, 132)',
+			            data: /*[[${counts}]]*/ null
+			    	}]
+			    },
+			    options: {}
+			});
+		</script>
+	</div>
+</body>
+</html>
