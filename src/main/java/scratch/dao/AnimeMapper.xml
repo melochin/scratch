@@ -17,46 +17,62 @@
 	</resultMap>
 	
 	<resultMap id="AnimeTypeWithAlias" type="Anime" extends="AnimeMap">
-		<collection property="aliass" ofType="AnimeAlias">
+		<collection property="aliass" ofType="AnimeAlias" >
 			<result property="hostId" column="host_id"/>
 			<result property="alias" column="host_alias"/>
 		</collection>
 	</resultMap>
 	
-	<select id="findWithAlias" resultMap="AnimeTypeWithAlias">
+	<sql id="selectFocusCount">
+		SELECT anime_id, count(*) count
+			FROM anime_focus
+			GROUP BY anime_id
+	</sql>
+	
+	<sql id="selectWithFocusCount">
+		SELECT a.*, IFNULL(b.count, 0) FROM anime a
+			LEFT JOIN 
+				(<include refid="selectFocusCount"></include>) b
+			ON a.id = b.anime_id
+	</sql>
+	
+	<select id="getById" resultMap="AnimeMap">
+		select * from anime where id = #{id}
+	</select>
+	
+	<select id="getByAlias" resultMap="AnimeMap">
+		select * from anime where alias = #{alias} or name = #{alias}
+	</select>
+	
+	<select id="getByIdWithAlias" resultMap="AnimeTypeWithAlias">
+		select a.*, b.host_id as host_id, b.alias as host_alias 
+				from anime a left JOIN anime_alias b 
+				on a.id = b.anime_id  where a.id = #{id}
+	</select>
+	
+	<select id="list" resultMap="AnimeMap">
+		select * from anime
+	</select>
+	
+	<select id="listIf" resultMap="AnimeMap">
+		select * from anime 
+		<where>
+			<if test="type != null">
+				type = #{type}
+			</if>
+			<if test="finished != null">
+				and finished = #{finished}
+			</if>
+		</where>
+	</select>
+	
+	<select id="listWithAlias" resultMap="AnimeTypeWithAlias">
 		select a.*, b.host_id as host_id, b.alias as host_alias 
 			from anime a, anime_alias b 
 			where a.id = b.anime_id and a.finished = '0';
 	</select>
 	
-	<select id="findById" resultMap="AnimeMap">
-		select * from anime where id = #{id}
-	</select>
-	
-	<select id="findAll" resultMap="AnimeMap">
-		select * from anime
-	</select>
-	
-	<select id="find" resultMap="AnimeMap">
-		select * from anime
-		<if test="type != null">
-			where type = #{type}
-		</if>
-	</select>	
-	
-	<select id="findByFinished" resultMap="AnimeMap">
-		select * from anime where finished = #{finished}
-	</select>
-	
-	<select id="findByType" resultMap="AnimeMap">
-		select * from anime where type = #{type}
-	</select>
-	
-	<select id="findByAlias" resultMap="AnimeMap">
-		select * from anime where alias = #{alias} or name = #{alias}
-	</select>
-	
-	<select id="findMostFocused" resultMap="AnimeMap">
+	<select id="listMostFocused" resultMap="AnimeMap">
 		select
 			a.*
 		from
@@ -71,6 +87,41 @@
 		order by
 			b.count desc;
 	</select>
+	
+	<select id="listByTypeLeftJointFocus" resultMap="AnimeMap">
+		<include refid="selectWithFocusCount"></include>
+		WHERE a.type = #{type} 
+		ORDER BY a.update_time desc, b.count desc;
+	</select>
+	
+	<select id="listByNameLeftJoinFocus" resultMap="AnimeMap">
+		<include refid="selectWithFocusCount"></include>
+		WHERE a.name like concat('%',#{name},'%')  
+		ORDER BY a.update_time desc, b.count desc;
+	</select>
+
+	<select id="pageByType" resultMap="AnimeMap">
+		select * from anime
+		<if test="type != null">
+			where type = #{type}
+		</if>
+	</select>	
+	
+	<insert id="saveAlias">
+		insert into 
+			anime_alias(anime_id, host_id, alias) 
+			values(#{alias.animeId},#{alias.hostId}, #{alias.alias});
+	</insert>
+	
+	<update id="modifyAlias">
+		update anime_alias set alias = #{alias.alias} 
+			where anime_id = #{alias.animeId} and host_id = #{alias.hostId}
+	</update>
+	
+	<delete id="deleteAlias">
+		delete from anime_alias 
+			where anime_id = #{alias.animeId} and host_id = #{alias.hostId}
+	</delete>
 
 	<insert id="save">
 		insert into anime (
