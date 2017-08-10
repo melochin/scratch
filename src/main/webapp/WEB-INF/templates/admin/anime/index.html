@@ -2,16 +2,8 @@
 <html xmlns:th="www.themeleaf.org">
 
 <head>
-	<th:block th:remove="all">
-		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
-		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.cookie.js"></script>
-		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
-		<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
-	</th:block>
-
 	<th:block th:replace="base/lib :: common"></th:block>
 	<th:block th:replace="base/lib :: semantic"></th:block>
-	<script type="text/babel" th:src="@{/js/react-common.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
@@ -70,16 +62,12 @@
 						<a class="ui orange button"
 							th:data-href="@{anime/link/{animeId}(animeId=${anime.id})}">关联</a>
 						<a class="ui red button"
-						th:href="@{anime/delete/{animeId}(animeId=${animeId})}">删除</a>
+							th:href="@{anime/delete/{animeId}(animeId=${anime.id})}">删除</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		
-		
-		<!-- <div id="page" th:data-page="${animeList.getPageNum() }"
-			th:data-total="${animeList.getPages() }" data-url="anime?p="></div> -->
-			
 		<div class="ui modal"></div>
 	</div>
 </body>

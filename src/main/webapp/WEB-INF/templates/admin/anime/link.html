@@ -1,0 +1,123 @@
+<html xmlns:th="www.thymeleaf.org">
+
+<div class="header">站点关联</div>
+<div class="scrolling content">
+	<div class="ui text container">
+		<form class="ui form" th:action="@{/admin/anime/link}" id="editAnimeForm"
+			method="post">
+
+			<input type="hidden" name="id" th:value="${anime.id }" />
+			<div class="field">
+				<label th:text="${anime.name}"></label>
+			</div>
+
+			<div th:each="alias,iterStat : ${anime.aliass}">
+				<input type="hidden" th:name="'aliass[' + ${iterStat.index} + '].hostId'" th:value="${alias.hostId }" />
+				<div class="field">
+					<label th:text="${hosts.get(#strings.toString(alias.hostId)) }"></label> 
+					<input type="text" th:name="'aliass[' + ${iterStat.index} + '].alias'" th:value="${alias.alias }"/>
+				</div>
+			</div>
+			
+			<div class="actions">
+				<button class="ui green button">保存</button>
+				<a class="ui cancel button">取消</a>
+			</div>
+			
+		</form>
+	</div>
+</div>
+<!-- 
+<form class="form-horizontal" action="anime/link"
+	id="editAnimeAliasForm" method="post" onsubmit="return false;">
+	<div class="modal-body">
+		
+		<div class="col-sm-offset-1">
+		
+		<input name="id" type="hidden" value="${anime.id }"/>
+
+		<div class="form-group">
+			<label class="control-label">${anime.name }</label>
+		</div>
+		
+		<c:forEach var="host" items="${animeHosts.entrySet() }">
+			<div class="form-group">
+				<div class="col-sm-2">
+					<input type="checkbox" name="checks"/>
+					<label class="control-label">${host.value }</label>
+					<input type="hidden" name="hostId" value="${host.key }"/>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control anime-alias" disabled="disabled" name="alias"/>
+				</div>
+			</div>
+		</c:forEach>
+		</div>
+	</div>
+	
+	<div class="modal-footer">
+		<input type="submit" class="btn btn-primary btn-link" value="保存" />
+	</div>
+	
+</form>
+ -->
+<!-- 
+<script type="text/javascript">
+var $alias = $("input[type='checkbox'");
+$alias.click(function() {
+
+	var $input = $(this).parent().parent().find("input[name='alias']");
+	
+	if(this.checked) {
+		$input.attr("disabled", null);
+	} else {
+		$input.attr("disabled", "disabled");
+	}
+})
+
+
+$("#editAnimeAliasForm").submit(function() {
+	
+	var array = [];
+	var $input = $(".anime-alias");
+	
+	$input.map(function (index) {
+		
+		var $item = $($input.get(index));
+		
+		console.debug($item);
+		
+		var hostId = $item.parent().parent().find("input[name='hostId']").val();
+		var val = $item.val();
+		
+		console.debug(hostId);
+		
+		//准备数据		
+		if($item.attr("disabled") == "disabled" || val.trim() == "") {
+			return null;
+		} else {
+			array.push({"animeId" : 1, "hostId" :hostId , "alias" : val});
+		}
+		return null;
+	});
+
+	console.debug(array);
+	console.debug(JSON.stringify(array));
+	
+    $.ajax({ 
+        type:"POST", 
+        url:"anime/link", 
+        dataType:"json",      
+        contentType:"application/json",               
+        data:JSON.stringify(array), 
+        success:function(data){ 
+        } 
+     }); 
+	
+	return false;
+}) 
+	
+
+	
+</script>
+ -->

@@ -8,20 +8,47 @@
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
 	<div id="container">
-		<div class="ui five doubling cards container">
-			<div th:each="anime : ${mostFocusAnimes}" class="ui card">
-				<div class="image">
-					<img src="https://semantic-ui.com/images/avatar2/large/kristy.png"
-						th:src="${anime.pic }" style="max-height: 290px;" />
-				</div>
-				<div class="content">
-					<!-- header -->
-					<div class="header" th:text="${anime.name}">animeName</div>
-					<div class="content">
+		<div class="ui secondary pointing menu">
+			<div class="ui container">
+			<a class="item" th:classappend="${module == 'home' ? 'active' : ''}"  
+				th:href="@{/}">首页 </a> 
+			<a class="item" th:classappend="${module == type.code ? 'active' : ''}" 
+				th:each="type : ${types}" th:href="@{${type.code}}"th:text="${type.value}"></a>
+			<div class="right menu">
+				<div class="item">
+					<div class="ui icon input">
+						<input id="search" type="text" placeholder="Search..."> <i
+							class="search link icon"></i>
 					</div>
 				</div>
 			</div>
+			</div>
 		</div>
+
+		<div id="content" class="ui container">
+			<th:block th:if="${module == 'home'}">
+				<h3 class="ui header" th:text="'热门'"></h3>
+				<div th:replace="anime/animes :: cards(${mostFocusAnimes})"></div>
+				<th:block th:each="animeEntry : ${typeAndAnimes}">
+					<h3 class="ui header" th:text="${types.get(animeEntry.getKey())}"></h3>
+					<div
+						th:replace="anime/animes :: cards(${animeEntry.value})"></div>
+				</th:block>
+			</th:block>
+			<th:block th:unless="${module == 'home'}">
+				<div th:replace="anime/animes :: cards(${animes})"></div>
+			</th:block>
+		</div>
+
+		<div class="ui modal"></div>
+		
+		<script type="text/javascript">
+			$('#search').bind('keypress',function(event){  
+	            if(event.keyCode == "13") {  
+	                window.location.href = encodeURI("search?word=" + $(this).val()); 
+	            }  
+	        });
+		</script>
 	</div>
 </body>
 </html>

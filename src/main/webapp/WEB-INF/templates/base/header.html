@@ -22,13 +22,13 @@
 				<th:block th:text="${session.user_g.username}">username</th:block>
 				<i class="dropdown icon"></i>
 				<div class="ui inverted menu" th:object="${session.user_g}" style="background:grey;">
-					<a class="item" th:href="@{/user/info}">Info</a>
+					<a class="item" th:href="@{/user/info}">账号信息</a>
 					<a class="item" 
 						th:if="*{role == 1}" th:href="@{/admin}">
-						Administrator
+						管理员后台
 					</a>
 					<a th:href="@{/user/logout}" class="item">
-						log out
+						登出
 					</a>
 				</div>
 			</div>

@@ -1,0 +1,47 @@
+<html xmlns:th="www.thymeleaf.org">
+<th:block th:replace="base/lib :: common" />
+<th:block th:replace="base/lib :: semantic" />
+
+<div class="ui container" th:fragment="cards(animes)"
+	style="padding: 10px 0 20px 0">
+	
+	<div class="ui five doubling special cards">
+		<div th:each="anime : ${animes}" class="ui card">
+			<div class="blurring dimmable image">
+				<div class="ui dimmer">
+					<div class="content">
+						<div class="center">
+							<button class="ui inverted button"
+								th:data-href="@{'/anime/episodes/' + ${anime.id}}">查看</button>
+						</div>
+					</div>
+				</div>
+				<img
+					src="https://semantic-ui.com/images/avatar2/large/kristy.png"
+					th:src="${anime.pic }" style="max-height: 290px;" />
+			</div>
+			<div class="content">
+				<!-- header -->
+				<div class="header" th:text="${anime.name}">animeName</div>
+				<div th:if="${session.user_g != null and module != 'home'}">
+				
+					<form th:if="${anime.focus == false}" 
+						th:action="@{/anime/focus/add}" method="post">
+						<input name="animeId" type="hidden" th:value="${anime.id}" />
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<button class="ui basic orange button">订阅</button>
+					</form>
+
+					<form th:unless="${anime.focus == false}" 
+						th:action="@{/anime/focus/delete}" method="post">
+						<input name="animeId" type="hidden" th:value="${anime.id}" />
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<button class="ui basic blue button">取消订阅</button>
+					</form>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</html>
