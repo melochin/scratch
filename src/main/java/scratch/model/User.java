@@ -30,12 +30,19 @@ public class User implements Serializable {
 	@Pattern(regexp="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message="请输入正确的邮箱")
 	private String email;
 	
-	@Column(name="password", length=30)
 	@NotBlank(message="密码不能为空")
+	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="密码只能以数字或字母组合，且长度不能少于6位超过18位")
+	@Column(insertable=false, updatable=false)
 	private String password;
+	
+	@Column(name="password")
+	private String hashedPassword;
 	
 	@Column(name="status", length=1)
 	private String status;
+	
+	@Column(name="salt")
+	private String salt;
 	
 	@Column(name="role")
 	private Integer role;
@@ -102,6 +109,22 @@ public class User implements Serializable {
 
 	public void setRole(Integer role) {
 		this.role = role;
+	}
+	
+	public String getHashedPassword() {
+		return hashedPassword;
+	}
+
+	public void setHashedPassword(String hashedPassword) {
+		this.hashedPassword = hashedPassword;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 	@Override

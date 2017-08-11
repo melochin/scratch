@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -78,16 +80,18 @@ public class UserService {
 		return dao.countByName(username) > 0;
 	}
 	
-	/** 根据username与password查找User */
+/*	*//** 根据username与password查找User *//*
 	@PasswordEncode
 	public User getByNameAndPwd(String username, @PasswordEncode String password) {
 		return dao.getByNameAndPwd(username, password);
-	}
+	}*/
 	
-	@PasswordEncode
-	public Authentication authen(String username, @PasswordEncode String password) {
+	public Authentication authen(String username, String password) {
+		User user = getByName(username);
+		String salt = user.getSalt(); 
+		String hashedPassword = BCrypt.hashpw(password, salt);
 		Authentication authentication =  provider.authenticate(
-				new UsernamePasswordAuthenticationToken(username, password));
+				new UsernamePasswordAuthenticationToken(username, hashedPassword));
 		return authentication;
 	}
 	
@@ -104,11 +108,11 @@ public class UserService {
 	/**------------------------------修改类服务--------------------------------*/
 	
 	/** 用户注册（注意事务）*/
-	@PasswordEncode
 	@Transactional
 	public void save(User user) throws MailException {
 		
 		if(isExistByUsername(user.getUsername())) throw new RuntimeException("账号已经存在");
+		encodePassword(user);
 		// 设置默认值
 		if(user.getStatus() == null) {
 			user.setStatus("0");
@@ -132,10 +136,10 @@ public class UserService {
 	}
 	
 	/**	更新密码，并且删除redis中缓存的resetCode*/
-	@PasswordEncode
 	public void modifyPasswordAndDeleteResetCode(Long userId, @PasswordEncode String password) {
 		User user = new User(userId);
 		user.setPassword(password);
+		encodePassword(user);
 		// 注意：内部调用的方式是原生的，不是aop代理之后的modify
 		modify(user);
 		String redisKey = RESET + userId;
@@ -143,11 +147,12 @@ public class UserService {
 	}
 	
 	/** 更新用户信息，自动对user.password进行加密 */
-	@PasswordEncode
 	@Transactional
 	public void modify(User u) {
 		if(StringUtils.isEmpty(u.getPassword())) {
-			u.setPassword(null);
+			u.setHashedPassword(null);
+		} else {
+			encodePassword(u);
 		}
 		dao.update(u, u.getUserId());
 	}
@@ -269,4 +274,23 @@ public class UserService {
 		String encodes[] = {userId.toString(), String.valueOf(System.currentTimeMillis()), String.valueOf(UUID.randomUUID())};
 		return cipher.encode(key, encodes);
 	}
+	
+	/**
+	 * 生成加密密码和盐
+	 * @param user
+	 * @param hasSalt 
+	 */
+	public void encodePassword(User user) {
+		String password = user.getPassword();
+		if(StringUtils.isEmpty(password)) {
+			throw new RuntimeException("user's password cant be empty");
+		}
+		
+		String salt = BCrypt.gensalt();
+		String hashedPassword = BCrypt.hashpw(password, salt);
+		
+		user.setSalt(salt);
+		user.setHashedPassword(hashedPassword);
+	}
+	
 }
