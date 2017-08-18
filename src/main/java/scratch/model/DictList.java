@@ -17,4 +17,12 @@ public class DictList extends ArrayList<Dict>{
 		return hashMap;
 	}
 	
+	public String get(String key) {
+		return asMap().get(key);
+	}
+	
+	public String get(Long key) {
+		return asMap().get(String.valueOf(key));
+	}
+	
 }

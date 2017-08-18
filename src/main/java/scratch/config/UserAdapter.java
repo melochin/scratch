@@ -10,8 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import scratch.model.User;
 
+/**
+ * 将系统的用户对象适配至UserDetails
+ * 便于直接从Controller中获取对象
+ * @author melochin
+ * @since 2017.08.18
+ */
 public class UserAdapter implements UserDetails {
 
+	private static final long serialVersionUID = -1567656133401391472L;
+	
 	private User user;
 	
 	public UserAdapter() {}

@@ -2,6 +2,8 @@ package scratch.model;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class AnimeEpisodeScratch {
 
 	// 自增ID
@@ -14,7 +16,7 @@ public class AnimeEpisodeScratch {
 	private Anime anime;
 	
 	//集号
-	private Integer number;
+	private String number;
 	
 	//链接
 	private String url;
@@ -41,11 +43,11 @@ public class AnimeEpisodeScratch {
 		this.anime = anime;
 	}
 
-	public Integer getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 

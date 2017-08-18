@@ -1,36 +1,29 @@
 package scratch.dao.inter;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import scratch.support.PageFactory;
 import scratch.test.ContextTest;
 
 public class IAnimeDaoTest extends ContextTest {
 
-	@Test
-	public void testFindAll() {
-		fail("Not yet implemented");
+	@Autowired
+	private IAnimeDao dao;
+	
+	//@Test
+	public void queryTest() {
+		dao.listIf(null, null);
+		dao.listIf("1", null);
+		dao.listIf("1", false);
+		dao.listIf(null, true);
+		dao.listIf(null, false);
 	}
-
+	
 	@Test
-	public void testFindByAlias() {
-		fail("Not yet implemented");
+	public void pageByTypeTest() {
+		dao.pageByType(new String("11"), PageFactory.asList(1));
 	}
-
-	@Test
-	public void testSave() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testUpdate() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDelete() {
-		fail("Not yet implemented");
-	}
+	
 
 }

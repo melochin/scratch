@@ -14,7 +14,7 @@ public class AnimeEpisode {
 	private Anime anime;
 	
 	//集号
-	private Integer number;
+	private String number;
 	
 	//链接
 	private String url;
@@ -22,9 +22,10 @@ public class AnimeEpisode {
 	// 抓取时间
 	private Date scratchTime;
 	
-	// 保存事件
+	// 保存时间
 	private Date saveTime; 
 	
+	// 最近一次推送时间
 	private Date pushTime;
 	
 	public Long getId() {
@@ -43,11 +44,11 @@ public class AnimeEpisode {
 		this.anime = anime;
 	}
 
-	public Integer getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 
