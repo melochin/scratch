@@ -17,6 +17,8 @@ public interface IAnimeEpisodeDao {
 	 */
 	AnimeEpisode findByUrl(@Param("url") String url);
 	
+	List<AnimeEpisode> listByAnimeId(@Param("animeId") Long animeId);
+	
 	/**
 	 * 以Anime id 和抓取时间>time为条件，检索对象
 	 * @param anime
@@ -29,8 +31,22 @@ public interface IAnimeEpisodeDao {
 	
 	List<AnimeEpisode> list();
 	
-	void save(@Param("episode") AnimeEpisode episode);
+	AnimeEpisode getById(@Param("id") Long id);
+	
+	int save(@Param("episode") AnimeEpisode episode);
+	
+	/**
+	 * 
+	 * @param episode
+	 * anime, hostId 不能变更
+	 * @return
+	 */
+	int modify(@Param("episode") AnimeEpisode episode);
+	
+	int delete(@Param("id") Long id);
 	
 	int deleteByUrl(@Param("url") String url);
+
+
 	
 }

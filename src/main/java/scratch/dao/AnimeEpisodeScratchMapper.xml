@@ -56,7 +56,8 @@
 				<if test="status != null">
 					and e.status = #{status}
 				</if>
-				;
+			order by
+				e.scratch_time desc, e.anime_id desc ;
 	</select>
 	
 	<insert id="save">

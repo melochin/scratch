@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 
 import scratch.model.Anime;
 import scratch.model.AnimeAlias;
-import scratch.support.service.PageBean;
 
 public interface IAnimeDao {
 	
@@ -39,7 +39,7 @@ public interface IAnimeDao {
 	List<Anime> listByNameLeftJoinFocus(@Param("name") String name);
 	
 	/**分页查询：根据类型，查询anime**/
-	PageBean<Anime> pageByType(@Param("type") String type, PageRowBounds page);
+	Page<Anime> pageByType(@Param("type") String type, @Param("page") PageRowBounds page);
 	
 	/**--------------------------更新--------------------------------------**/
 	

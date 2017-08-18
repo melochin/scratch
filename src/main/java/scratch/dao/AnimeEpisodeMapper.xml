@@ -7,6 +7,7 @@
 	<!-- map -->
 	<resultMap type="AnimeEpisode" id="AnimeEpisodeMap">
 		<id property="id" column="id"/>
+		<id property="hostId" column="host_id"></id>
 		<result property="number" column="no"/>
 		<result property="url" column="url"/>
 		<result property="scratchTime" column="scratch_time"/>
@@ -18,6 +19,9 @@
 		</association>
 	</resultMap>
 	
+	<select id="listByAnimeId" resultMap="AnimeEpisodeMap">
+		select * from anime_episode where anime_id = #{animeId};
+	</select>
 	
 	<select id="findByUrl" resultMap="AnimeEpisodeMap">
 		select * from anime_episode where url = #{url};
@@ -40,6 +44,7 @@
 	<select id="findByTime" resultMap="AnimeEpisodeMap">
 			select 
 		 	e.id as id,
+		 	e.host_id as host_id,
 		 	e.no as no,
 		 	e.url as url,
 		 	e.scratch_time as scratch_time,
@@ -56,6 +61,7 @@
 	<select id="list" resultMap="AnimeEpisodeMap">
 		select 
 		 	e.id as id,
+		 	e.host_id as host_id,
 		 	e.no as no,
 		 	e.url as url,
 		 	e.scratch_time as scratch_time,
@@ -66,6 +72,22 @@
 		from anime_episode e, anime a 
 		where e.anime_id = a.id  
 		order by e.anime_id desc, e.save_time desc 
+	</select>
+	
+	<select id="getById" resultMap="AnimeEpisodeMap">
+		select 
+		 	e.id as id,
+		 	e.host_id as host_id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	e.save_time as save_time,
+		 	e.push_time as push_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+		from anime_episode e, anime a 
+		where e.anime_id = a.id
+			and e.id = #{id}  
 	</select>
 	
 	<insert id="save">
@@ -80,5 +102,18 @@
 	<delete id="deleteByUrl">
 		delete from anime_episode where url = #{url};
 	</delete>
+	
+	<delete id="delete">
+		delete from anime_episode where id = #{id};
+	</delete>
+	
+	<update id="modify">
+		update anime_episode
+		 set no = #{episode.number},
+		 	url = #{episode.url},
+		 	scratch_time = #{episode.scratchTime},
+		 	save_time = #{episode.saveTime}
+		 where id = #{episode.id}
+	</update>
 
 </mapper>  
