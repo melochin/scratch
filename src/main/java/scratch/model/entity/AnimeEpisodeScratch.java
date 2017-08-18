@@ -1,8 +1,8 @@
-package scratch.model;
+package scratch.model.entity;
 
 import java.util.Date;
 
-public class AnimeEpisode {
+public class AnimeEpisodeScratch {
 
 	// 自增ID
 	private Long id;
@@ -22,11 +22,8 @@ public class AnimeEpisode {
 	// 抓取时间
 	private Date scratchTime;
 	
-	// 保存时间
-	private Date saveTime; 
-	
-	// 最近一次推送时间
-	private Date pushTime;
+	// 状态
+	private Integer status;
 	
 	public Long getId() {
 		return id;
@@ -76,26 +73,18 @@ public class AnimeEpisode {
 		this.hostId = hostId;
 	}
 	
-	public Date getSaveTime() {
-		return saveTime;
+	public Integer getStatus() {
+		return status;
 	}
 
-	public void setSaveTime(Date saveTime) {
-		this.saveTime = saveTime;
-	}
-
-	public Date getPushTime() {
-		return pushTime;
-	}
-
-	public void setPushTime(Date pushTime) {
-		this.pushTime = pushTime;
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	@Override
 	public String toString() {
-		return "AnimeEpisode [id=" + id + ", hostId=" + hostId + ", anime=" + anime + ", number=" + number + ", url="
-				+ url + ", scratchTime=" + scratchTime + ", saveTime=" + saveTime + ", pushTime=" + pushTime + "]";
+		return "AnimeEpisodeScratch [id=" + id + ", hostId=" + hostId + ", anime=" + anime + ", number=" + number
+				+ ", url=" + url + ", scratchTime=" + scratchTime + ", status=" + status + "]";
 	}
 
 }

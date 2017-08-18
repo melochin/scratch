@@ -2,7 +2,7 @@ package scratch.dao.inter;
 
 import java.util.List;
 
-import scratch.model.ScratchRecord;
+import scratch.model.entity.ScratchRecord;
 
 public interface IScratchRecord {
 

@@ -1,4 +1,4 @@
-package scratch.model;
+package scratch.model.entity;
 
 import java.io.Serializable;
 
@@ -15,6 +15,8 @@ import org.hibernate.validator.constraints.NotBlank;
 @Entity
 @Table(name="user")
 public class User implements Serializable {
+
+	private static final long serialVersionUID = -3192842924146787219L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

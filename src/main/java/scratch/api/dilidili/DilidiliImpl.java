@@ -8,11 +8,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import scratch.model.AnimeAlias;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.AnimeEpisode;
 import scratch.support.NumberUtils;
 import scratch.support.web.HttpConnection;
 

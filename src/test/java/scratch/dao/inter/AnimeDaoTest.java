@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.Anime;
+import scratch.model.entity.Anime;
 import scratch.test.ContextTest;
 
 public class AnimeDaoTest extends ContextTest {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import scratch.model.AnimeFocus;
+import scratch.model.entity.AnimeFocus;
 
 public interface IAnimeFocusDao {
 

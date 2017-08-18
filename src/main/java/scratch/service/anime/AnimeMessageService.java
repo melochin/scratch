@@ -25,9 +25,9 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeEpisodeScratchDao;
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
-import scratch.model.AnimeEpisodeScratch;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
+import scratch.model.entity.AnimeEpisodeScratch;
 
 @Service
 public class AnimeMessageService {

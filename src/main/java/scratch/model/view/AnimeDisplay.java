@@ -1,7 +1,10 @@
-package scratch.model;
+package scratch.model.view;
 
 import java.util.Date;
 import java.util.List;
+
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeAlias;
 
 public class AnimeDisplay {
 

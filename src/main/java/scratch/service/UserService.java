@@ -24,7 +24,7 @@ import scratch.context.KeyContext;
 import scratch.controller.RegisterController;
 import scratch.controller.UserController;
 import scratch.dao.UserDao;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.service.MailException;
 import scratch.support.service.PageBean;

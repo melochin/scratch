@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
 import scratch.support.service.PageBean;

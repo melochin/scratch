@@ -1,4 +1,4 @@
-package scratch.model;
+package scratch.model.entity;
 
 public class AnimePush {
 

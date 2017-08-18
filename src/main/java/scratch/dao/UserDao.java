@@ -6,7 +6,7 @@ import org.hibernate.Criteria;
 import org.springframework.stereotype.Repository;
 
 import scratch.dao.inter.IUserDao;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.support.service.Page;
 import scratch.support.service.PageBean;
 

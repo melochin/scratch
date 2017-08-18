@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import scratch.dao.inter.IAnimeDao;
-import scratch.model.Anime;
+import scratch.model.entity.Anime;
 
 public class AnimeServiceTest {
 

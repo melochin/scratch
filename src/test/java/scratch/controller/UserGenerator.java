@@ -1,6 +1,6 @@
 package scratch.controller;
 
-import scratch.model.User;
+import scratch.model.entity.User;
 
 public class UserGenerator {
 

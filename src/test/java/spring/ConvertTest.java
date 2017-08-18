@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
-import scratch.model.User;
-import scratch.model.UserForm;
+import scratch.model.entity.User;
+import scratch.model.view.UserForm;
 import scratch.test.ContextTest;
 
 public class ConvertTest extends ContextTest{

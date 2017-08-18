@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import scratch.dao.inter.IDictDao;
-import scratch.model.Dict;
-import scratch.model.DictList;
+import scratch.model.entity.Dict;
+import scratch.model.ohter.DictList;
 
 @Service
 public class DictService {

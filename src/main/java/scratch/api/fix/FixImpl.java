@@ -11,8 +11,8 @@ import org.jsoup.select.Elements;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 import scratch.support.web.HttpConnection;
 
 public class FixImpl implements Fix {

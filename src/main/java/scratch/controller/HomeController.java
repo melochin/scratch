@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.config.UserAdapter;
-import scratch.model.Anime;
-import scratch.model.DictList;
-import scratch.model.DictType;
+import scratch.context.DictTypeContext;
+import scratch.model.entity.Anime;
+import scratch.model.ohter.DictList;
+import scratch.model.ohter.UserAdapter;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
@@ -52,7 +52,7 @@ public class HomeController {
 	public ModelAndView mainPage(Model model){
 		model.addAttribute("mostFocusAnimes", animeService.listMostFocused(10));
 		model.addAttribute("typeAndAnimes", animeService.listMostFcousedGroupByType(10));
-		model.addAttribute("types", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("types", dictService.findByType(DictTypeContext.ANIMETYPE));
 		model.addAttribute("module", "home");
 		return new ModelAndView("index");
 	}
@@ -62,7 +62,7 @@ public class HomeController {
 			Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
 
 		// 校验类型是否正确
-		DictList dictList = dictService.findByType(DictType.ANIMETYPE);
+		DictList dictList = dictService.findByType(DictTypeContext.ANIMETYPE);
 		if(dictList.get(code) == null) {
 			throw new RuntimeException();
 		}
@@ -77,7 +77,7 @@ public class HomeController {
 			Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
 		word = word.trim(); 		
 		model.addAttribute("animes", wrapAnimes(animeService.listByName(word), userAdapter));
-		model.addAttribute("types", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("types", dictService.findByType(DictTypeContext.ANIMETYPE));
 		return "index";
 	}
 	

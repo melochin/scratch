@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeFocusDao;
-import scratch.model.Anime;
-import scratch.model.AnimeDisplay;
-import scratch.model.AnimeFocus;
-import scratch.model.User;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeFocus;
+import scratch.model.entity.User;
+import scratch.model.view.AnimeDisplay;
 
 @Service
 public class AnimeFocusService {

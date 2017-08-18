@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import scratch.api.renren.RenrenImpl;
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 import scratch.service.reader.adpater.RenrenAdapter;
 
 public class RenrenAdapterTest {

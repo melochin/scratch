@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.context.SessionContext;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.support.web.spring.SessionUtils;
 
 public class SocialInterceptor implements HandlerInterceptor{

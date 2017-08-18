@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import scratch.api.fix.Fix;
 import scratch.api.fix.FixImpl;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.AnimeEpisode;
 
 public class FixImplTest {
 

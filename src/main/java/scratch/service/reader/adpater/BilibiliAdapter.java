@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import scratch.api.bilibili.Bilibili;
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
-import scratch.model.Video;
+import scratch.api.bilibili.Video;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 
 public class BilibiliAdapter implements Adapter {
 

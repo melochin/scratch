@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.dao.inter.IAnimeEpisodeScratchDao;
-import scratch.model.AnimeEpisode;
-import scratch.model.AnimeEpisodeScratch;
+import scratch.model.entity.AnimeEpisode;
+import scratch.model.entity.AnimeEpisodeScratch;
 
 @Service
 public class AnimeEpisodeService {

@@ -8,8 +8,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import scratch.dao.inter.IAnimeEpisodeDao;
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 import scratch.test.ContextTest;
 
 public class AnimeEpisodeDaoTest extends ContextTest{

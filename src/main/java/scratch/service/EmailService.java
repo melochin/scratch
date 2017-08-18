@@ -9,7 +9,7 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.AnimeEpisode;
 import scratch.support.service.EmailSupport;
 import scratch.support.service.MailContent;
 import scratch.support.service.MailException;

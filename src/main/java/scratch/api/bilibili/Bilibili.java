@@ -3,7 +3,7 @@ package scratch.api.bilibili;
 import java.util.List;
 import java.util.Map;
 
-import scratch.model.Video;
+import scratch.api.bilibili.Video;
 
 public interface Bilibili {
 	

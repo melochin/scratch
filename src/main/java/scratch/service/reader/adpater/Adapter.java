@@ -2,8 +2,8 @@ package scratch.service.reader.adpater;
 
 import java.util.List;
 
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 
 public interface Adapter {
 	

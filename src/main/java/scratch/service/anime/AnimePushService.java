@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.dao.inter.IAnimeFocusDao;
 import scratch.dao.inter.IUserDao;
-import scratch.model.AnimeEpisode;
-import scratch.model.AnimeFocus;
-import scratch.model.User;
+import scratch.model.entity.AnimeEpisode;
+import scratch.model.entity.AnimeFocus;
+import scratch.model.entity.User;
 import scratch.service.EmailService;
 import scratch.support.service.MailException;
 

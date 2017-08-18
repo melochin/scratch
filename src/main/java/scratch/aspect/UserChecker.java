@@ -18,8 +18,10 @@ import org.springframework.util.StringUtils;
 import scratch.context.CookieSupport;
 import scratch.context.SessionContext;
 import scratch.exception.PrivilegeException;
+import scratch.model.entity.User;
+
 import static scratch.exception.PrivilegeException.*;
-import scratch.model.User;
+
 import scratch.service.UserService;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.web.spring.SessionUtils;

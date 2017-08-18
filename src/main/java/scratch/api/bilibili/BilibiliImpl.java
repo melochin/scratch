@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import scratch.model.Video;
 import scratch.support.web.HttpConnection;
 
 public class BilibiliImpl implements Bilibili{
@@ -115,7 +114,7 @@ public class BilibiliImpl implements Bilibili{
 		Video video = new Video();
 		video.setAvid(avid);
 		video.setUrl(avUrl);
-		video.setType(new scratch.model.VideoType(tid));
+		video.setType(tid);
 		video.setTitle(title);
 		video.setPicUrl(pic);
 		video.setUploader(uploader);

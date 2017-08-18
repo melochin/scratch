@@ -7,7 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.Dict;
+import scratch.model.entity.Dict;
 import scratch.test.ContextTest;
 
 @Rollback

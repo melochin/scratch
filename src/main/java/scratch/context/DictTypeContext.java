@@ -1,6 +1,6 @@
-package scratch.model;
+package scratch.context;
 
-public class DictType {
+public class DictTypeContext {
 
 	public static final String HOST = "01";
 	

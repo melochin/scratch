@@ -8,7 +8,7 @@ import javax.servlet.http.Cookie;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.web.spring.CookieUtils;
 

@@ -14,11 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.aspect.Role;
 import scratch.aspect.UserRole;
-import scratch.config.UserAdapter;
+import scratch.context.DictTypeContext;
 import scratch.context.SessionContext;
-import scratch.model.Anime;
-import scratch.model.DictType;
-import scratch.model.User;
+import scratch.model.entity.Anime;
+import scratch.model.entity.User;
+import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
 
@@ -44,7 +44,7 @@ public class AnimeFocusController {
 		
 		Long userId = userAdapter.getUser().getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId, type, focus));
-		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 		
 		model.addAttribute("type", type);
 		model.addAttribute("focus", focus);

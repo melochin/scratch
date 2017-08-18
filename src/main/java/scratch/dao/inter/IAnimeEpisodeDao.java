@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 
 public interface IAnimeEpisodeDao {
 

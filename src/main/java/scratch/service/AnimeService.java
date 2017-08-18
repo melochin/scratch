@@ -19,8 +19,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 
 import scratch.dao.inter.IAnimeDao;
-import scratch.model.Anime;
-import scratch.model.AnimeAlias;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeAlias;
 import scratch.support.FileUtils;
 import scratch.support.PageFactory;
 import scratch.support.service.PageBean;

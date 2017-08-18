@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.model.Anime;
-import scratch.model.AnimeAlias;
-import scratch.model.Dict;
-import scratch.model.DictList;
-import scratch.model.DictType;
+import scratch.context.DictTypeContext;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeAlias;
+import scratch.model.entity.Dict;
+import scratch.model.ohter.DictList;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
 
@@ -52,13 +52,13 @@ public class AnimeController {
 	public String index(@RequestParam(value="p", defaultValue="1") Integer page, 
 			@RequestParam(value="type", required=false) String type, Model model) {
 		model.addAttribute("animeList", service.pageByType(type, page));
-		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 		return "/admin/anime/index";
 	}
 	
 	@GetMapping(value={"/anime/form","/anime/form/{animeId}"})
 	public String animeForm(@PathVariable(required=false) Long animeId, Model model) {
-		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 		
 		if(animeId != null) {
 			Anime anime = service.getById(animeId);
@@ -115,7 +115,7 @@ public class AnimeController {
 		if(aliass == null) {
 			aliass = new ArrayList<AnimeAlias>();
 		}
-		DictList dictList = dictService.findByType(DictType.HOST);
+		DictList dictList = dictService.findByType(DictTypeContext.HOST);
 		for(Dict dict : dictList) {
 			boolean find = false;
 			for(AnimeAlias a : aliass) {
@@ -132,7 +132,7 @@ public class AnimeController {
 			}
 		}
 		model.addAttribute("anime", anime);
-		model.addAttribute("hosts", dictService.findByType(DictType.HOST));
+		model.addAttribute("hosts", dictService.findByType(DictTypeContext.HOST));
 		return new ModelAndView("/admin/anime/link");
 	}
 	
@@ -175,7 +175,7 @@ public class AnimeController {
 		@UserRole(value=Role.Admin)
 		@GetMapping(value="/anime/form")
 		public String animeFormForNew(Model model) {
-			model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+			model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 			return "/admin/anime/save";
 		}*/
 		
@@ -186,7 +186,7 @@ public class AnimeController {
 	public ModelAndView animeForm(@PathVariable("animeId") Long animeId, Model model) {
 		Anime anime = service.findById(animeId);
 		model.addAttribute("anime", anime);
-		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 		return new ModelAndView("/admin/anime/edit");
 	}*/
 	

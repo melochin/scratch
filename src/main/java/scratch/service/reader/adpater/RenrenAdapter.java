@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import scratch.api.renren.Renren;
 import scratch.api.renren.Video;
 import scratch.api.renren.VideoEpisode;
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 
 public class RenrenAdapter implements Adapter{
 

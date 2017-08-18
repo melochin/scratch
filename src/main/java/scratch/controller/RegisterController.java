@@ -21,7 +21,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.context.SessionContext;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
 import scratch.support.web.JsonResult;

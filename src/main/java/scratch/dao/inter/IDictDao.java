@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
-import scratch.model.Dict;
-import scratch.model.DictList;
+import scratch.model.entity.Dict;
+import scratch.model.ohter.DictList;
 
 public interface IDictDao {
 

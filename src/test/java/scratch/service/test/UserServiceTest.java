@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.service.UserService;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.service.MailException;

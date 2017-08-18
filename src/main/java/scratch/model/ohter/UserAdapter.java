@@ -1,4 +1,4 @@
-package scratch.config;
+package scratch.model.ohter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import scratch.model.User;
+import scratch.model.entity.User;
 
 /**
  * 将系统的用户对象适配至UserDetails

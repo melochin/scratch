@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
-import scratch.model.DictList;
-import scratch.model.DictType;
+import scratch.context.DictTypeContext;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
+import scratch.model.ohter.DictList;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
@@ -53,7 +53,7 @@ public class EpisodeController {
 	
 	@GetMapping("/save")
 	public String saveForm(Model model) {
-		DictList hosts = dictService.findByType(DictType.HOST);
+		DictList hosts = dictService.findByType(DictTypeContext.HOST);
 		List<Anime> animes = animeService.list();
 		
 		model.addAttribute("hosts", hosts);
@@ -76,7 +76,7 @@ public class EpisodeController {
 			throw new RuntimeException("错误：找不到影视数据");
 		}
 		
-		DictList hosts = dictService.findByType(DictType.HOST);
+		DictList hosts = dictService.findByType(DictTypeContext.HOST);
 		model.addAttribute("episode", episode);
 		model.addAttribute("hosts", hosts);
 		return "/admin/scratch/edit";

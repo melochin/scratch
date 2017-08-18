@@ -11,10 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import scratch.model.AnimeEpisode;
-import scratch.model.AnimeEpisodeScratch;
-import scratch.model.User;
-import scratch.model.UserForm;
+import scratch.model.entity.AnimeEpisode;
+import scratch.model.entity.AnimeEpisodeScratch;
+import scratch.model.entity.User;
+import scratch.model.ohter.UserAdapter;
+import scratch.model.view.UserForm;
 import scratch.service.UserService;
 
 public class AppConfig {

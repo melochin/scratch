@@ -1,4 +1,4 @@
-package scratch.model;
+package scratch.model.entity;
 
 import java.util.Date;
 import java.util.List;

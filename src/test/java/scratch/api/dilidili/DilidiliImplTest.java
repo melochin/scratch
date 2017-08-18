@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import scratch.api.dilidili.Dilidili;
 import scratch.api.dilidili.DilidiliImpl;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.AnimeEpisode;
 
 public class DilidiliImplTest {
 

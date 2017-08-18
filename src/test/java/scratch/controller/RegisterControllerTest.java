@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import scratch.context.SessionContext;
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.test.ContextTest;
 
 public class RegisterControllerTest extends ContextTest {

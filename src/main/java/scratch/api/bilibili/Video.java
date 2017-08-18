@@ -1,59 +1,31 @@
-package scratch.model;
+package scratch.api.bilibili;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@Entity
-@Table(name="bili_video")
 public class Video {
-
-	@Id
+	// av id
 	private Long avid;
+	// 视频类型
+	private Integer type;
 	
-	@ManyToOne
-	@JoinColumn(name="tid")
-	@JsonIgnoreProperties("childTypes")
-	private VideoType type;
-	
-	@Column
 	private String title;
 	
-	@Column
 	private String url;
 	
-	@Column(name="pic_url")
 	private String picUrl;
 	
-	@Column
 	private String uploader;
 	
-	@Column(name="uploader_id")
 	private Long uploaderId;
 	
-	@Column(name="create_date")
 	private Date createDate;
 	
-	@Column(name="update_date")
 	private Date updateDate;
 	
-	//ʱ������λ��
-	@Column
 	private Integer duration;
 	
-	//���Ŵ���
-	@Column
 	private Integer play;
 	
-	//��Ƶ����
-	@Column
 	private String description;
 	
 	public Video() {}
@@ -70,11 +42,11 @@ public class Video {
 		this.avid = avid;
 	}
 
-	public VideoType getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(VideoType type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
@@ -162,7 +134,8 @@ public class Video {
 	public String toString() {
 		return "Video [avid=" + avid + ", type=" + type + ", title=" + title + ", url=" + url + ", picUrl=" + picUrl
 				+ ", uploader=" + uploader + ", uploaderId=" + uploaderId + ", createDate=" + createDate
-				+ ", updateDate=" + updateDate + "]";
+				+ ", updateDate=" + updateDate + ", duration=" + duration + ", play=" + play + ", description="
+				+ description + "]";
 	}
 	
 }

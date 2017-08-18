@@ -8,8 +8,8 @@ import javax.mail.MessagingException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import scratch.model.Anime;
-import scratch.model.AnimeEpisode;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeEpisode;
 import scratch.support.service.MailException;
 import scratch.test.ContextTest;
 

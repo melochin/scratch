@@ -2,7 +2,7 @@ package scratch.dao.inter;
 
 import java.util.List;
 
-import scratch.model.User;
+import scratch.model.entity.User;
 import scratch.support.service.PageBean;
 
 public interface IUserDao {

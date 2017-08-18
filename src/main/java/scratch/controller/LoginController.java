@@ -23,9 +23,9 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.aspect.UserRole;
-import scratch.config.UserAdapter;
 import scratch.context.SessionContext;
-import scratch.model.User;
+import scratch.model.entity.User;
+import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
 import scratch.support.web.spring.ModelUtils;
 import scratch.support.web.spring.SessionUtils;

@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 
-import scratch.model.Anime;
-import scratch.model.AnimeAlias;
+import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeAlias;
 
 public interface IAnimeDao {
 	

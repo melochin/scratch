@@ -10,8 +10,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.User;
 import scratch.context.SessionContext;
+import scratch.model.entity.User;
 import scratch.test.ContextTest;
 
 public class UserControllerTest extends ContextTest{

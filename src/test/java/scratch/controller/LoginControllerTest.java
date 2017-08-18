@@ -2,8 +2,8 @@ package scratch.controller;
 
 import org.junit.Test;
 
-import scratch.model.User;
 import scratch.context.SessionContext;
+import scratch.model.entity.User;
 import scratch.test.ContextTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

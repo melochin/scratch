@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +18,7 @@ public class HttpConnection {
 	
 	private Map<String, String> headers = new HashMap<String, String>();
 	
-	private static String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0";
+	private static String USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36";
 	
 	private String json = "";
 	
@@ -97,7 +98,7 @@ public class HttpConnection {
 		if(json.isEmpty()) {
 			StringBuilder param = new StringBuilder("");
 			for(Entry<String, String> entry : params.entrySet()) {
-				param.append(entry.getKey() + "=" + entry.getValue() + "&");
+				param.append(entry.getKey() + "=" + URLEncoder.encode(entry.getValue()) + "&");
 			}
 			result = param.substring(0, param.length()-1).toString();	
 		} else {
