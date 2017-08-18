@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 
 import scratch.dao.inter.IAnimeDao;
@@ -85,7 +86,7 @@ public class AnimeService {
 		return map;
 	}
 	
-	public PageBean<Anime> pageByType(String type, Integer page) {
+	public Page<Anime> pageByType(String type, Integer page) {
 		// type 空字串 当 null处理
 		type = Optional.ofNullable(type)
 				.filter(s -> !StringUtils.isEmpty(s))

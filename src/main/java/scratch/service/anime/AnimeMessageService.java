@@ -115,7 +115,7 @@ public class AnimeMessageService {
 		saveCount = episodes.stream()
 				.filter(episode -> episodeDao.findByUrl(episode.getUrl()) == null)
 				.mapToInt(episode -> {
-					Anime anime = animeDao.findByAlias(episode.getAnime().getName(), false);
+					Anime anime = animeDao.getByAlias(episode.getAnime().getName(), false);
 					if(anime == null) return 0;
 					episode.setAnime(anime);
 					episode.setScratchTime(new Date());

@@ -27,6 +27,10 @@ public class AnimeEpisodeService {
 	@Autowired
 	private ConversionService conversionService;
 	
+	public AnimeEpisode getById(Long id) {
+		return episodeDao.getById(id);
+	}
+	
 	public List<AnimeEpisode> listTodayPass() {
 		LocalDateTime nowTime = LocalDateTime.now(); 
 		ZoneId zone = ZoneId.systemDefault();
@@ -39,10 +43,18 @@ public class AnimeEpisodeService {
 		return episodeDao.list();
 	}
 	
+	public List<AnimeEpisode> listByAnimeId(Long animeId) {
+		return episodeDao.listByAnimeId(animeId);
+	}
+	
 	public List<AnimeEpisodeScratch> listScratch(Integer status) {
 		return episodeScratchDao.listByStatus(status);
 	}
 	
+	/**
+	 * saveTime 自动设置为当前时间
+	 * @param episode
+	 */
 	@Transactional
 	public void save(AnimeEpisode episode) {
 		episode.setSaveTime(new Date());
@@ -57,6 +69,13 @@ public class AnimeEpisodeService {
 	@Transactional
 	public void passScratch(Long scratchId) {
 		AnimeEpisodeScratch episodeScratch = episodeScratchDao.getById(scratchId);
+		AnimeEpisode episode = conversionService.convert(episodeScratch, AnimeEpisode.class);
+		modifyScratchStatus(episodeScratch.getId(), new Integer(1));
+		save(episode);
+	}
+	
+	@Transactional
+	public void passScratch(AnimeEpisodeScratch episodeScratch) {
 		AnimeEpisode episode = conversionService.convert(episodeScratch, AnimeEpisode.class);
 		modifyScratchStatus(episodeScratch.getId(), new Integer(1));
 		save(episode);
@@ -80,8 +99,29 @@ public class AnimeEpisodeService {
 		episodeScratchDao.modifyStatus(id, status);
 	}
 	
+	/**
+	 * 
+	 * @param status
+	 * 0 待审核
+	 * 1 通过审核
+	 * -1 审核失败
+	 * @return
+	 */
 	public Integer countByScratchStatus(Integer status) {
 		return episodeScratchDao.countByStatus(status);
 	}
+	
+	@Transactional
+	public void delete(Long id) {
+		if(episodeDao.delete(id) != 1) {
+			throw new RuntimeException("删除失败");
+		}
+	}
+
+	@Transactional
+	public boolean modify(AnimeEpisode episode) {
+		return episodeDao.modify(episode) == 1;
+	}
+
 	
 }

@@ -45,7 +45,7 @@ public class RenrenAdapter implements Adapter{
 		animeEpisode.setAnime(anime);
 		animeEpisode.setScratchTime(new Date());
 		animeEpisode.setUrl(episode.getDownloadUrl());
-		animeEpisode.setNumber(Integer.parseInt(episode.getNum()));
+		animeEpisode.setNumber(episode.getNum());
 		return animeEpisode;
 	}
 	

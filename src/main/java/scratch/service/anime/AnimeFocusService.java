@@ -1,5 +1,6 @@
 package scratch.service.anime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeFocusDao;
 import scratch.model.Anime;
+import scratch.model.AnimeDisplay;
 import scratch.model.AnimeFocus;
 import scratch.model.User;
 
@@ -32,13 +34,7 @@ public class AnimeFocusService {
 		Map<Anime, Integer> map = new LinkedHashMap<Anime, Integer>();
 		List<AnimeFocus> focusList = focusDao.findByUserId(userId);
 		List<Anime> animeList = null;
-	
-		if(type == null) {
-			animeList = animeDao.findAll();
-		} else {
-			animeList = animeDao.findByType(type);
-		}
-		
+		animeList = animeDao.listIf(type, null);
 		for(Anime anime : animeList) {
 			Integer focused = 0;
 			for(AnimeFocus animeFocus : focusList) {
@@ -55,6 +51,25 @@ public class AnimeFocusService {
 		}
 		return map;
 	}
+	
+	public List<AnimeDisplay> getAnimeFocus(List<Anime> animes, Long userId) {
+		List<AnimeDisplay> animeDisplays = new ArrayList<AnimeDisplay>();
+		List<AnimeFocus> focuss = focusDao.findByUserId(userId);
+		for(Anime anime : animes) {
+			AnimeDisplay animeDisplay = new AnimeDisplay(anime);
+			boolean focus = false;
+			for(AnimeFocus animeFocus : focuss) {
+				if(animeFocus.getAnime().getId().equals(anime.getId())) {
+					focus = true;
+					break;
+				}
+			}
+			animeDisplay.setFocus(focus);
+			animeDisplays.add(animeDisplay);
+		}
+		return animeDisplays;
+	}
+	
 	
 	public void save(Anime anime, User user) {
 		AnimeFocus animeFocus = new AnimeFocus(anime, user);

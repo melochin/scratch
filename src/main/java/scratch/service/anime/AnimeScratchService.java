@@ -1,7 +1,6 @@
 package scratch.service.anime;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import scratch.api.bilibili.BilibiliImpl;
 import scratch.api.dilidili.DilidiliImpl;
 import scratch.api.fix.FixImpl;
 import scratch.api.renren.RenrenImpl;
@@ -31,6 +31,7 @@ import scratch.model.Anime;
 import scratch.model.AnimeEpisode;
 import scratch.model.ScratchRecord;
 import scratch.service.reader.adpater.Adapter;
+import scratch.service.reader.adpater.BilibiliAdapter;
 import scratch.service.reader.adpater.DilidiliAdapter;
 import scratch.service.reader.adpater.FixAdapter;
 import scratch.service.reader.adpater.RenrenAdapter;
@@ -65,12 +66,13 @@ public class AnimeScratchService {
 		this.adpaterMap.put(new Long(1), new DilidiliAdapter(new DilidiliImpl()));
 		this.adpaterMap.put(new Long(2), new FixAdapter(new FixImpl()));
 		this.adpaterMap.put(new Long(3), new RenrenAdapter(new RenrenImpl()));
+		this.adpaterMap.put(new Long(4), new BilibiliAdapter(new BilibiliImpl()));
 	}
 	
 	/** init AnimeAliasMap */
 	private synchronized void initAnimeAliasMap() {
 		// 获取未完结的番剧，且含有别名
-		List<Anime> animes = animeDao.findWithAlias();
+		List<Anime> animes = animeDao.listWithAlias();
 		animes.forEach(anime -> {
 			// 没有维护别名的，hostId全部默认为0，别名即为Anime name
 			if(CollectionUtils.isEmpty(anime.getAliass())) {
@@ -100,7 +102,7 @@ public class AnimeScratchService {
 	}
 	
 	
-	@Scheduled(fixedRate=60*60*1000)
+	@Scheduled(fixedRate=360*60*1000)
 	public void run() {
 		
 		// 运行状态判断，防止多个任务在执行

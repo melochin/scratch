@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,7 @@ public class FileUtils {
 		return null;
 	}
 	
-	public static void downloadFile(String url) throws IOException {
+	public static void downloadFile(String url, Map<String, String> config) throws IOException {
 		String[] words = url.split("/");
 		String fileName = null;
 		if(words.length > 1) {
@@ -46,7 +48,7 @@ public class FileUtils {
 		}
 		
 		File file = new File(fileName);
-		downloadFile(url, file);
+		downloadFile(url,config, file);
 	}
 	
 	/**
@@ -55,9 +57,16 @@ public class FileUtils {
 	 * @param file
 	 * @throws IOException 
 	 */
-	public static void downloadFile(String url, File file) throws IOException {
+	public static void downloadFile(String url, Map<String,String> config, File file) throws IOException {
 		// 建立Connection
 		HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
+		con.setRequestProperty("User-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36");
+		if(config != null) {
+			for(Entry<String,String> entry : config.entrySet()) {
+				con.setRequestProperty(entry.getKey(), entry.getValue());
+			}
+		}
+		
 		// 获取输入流
 		BufferedInputStream inputStream = new BufferedInputStream(con.getInputStream());
 		// 获取输出流

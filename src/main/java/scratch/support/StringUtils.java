@@ -17,13 +17,11 @@ public class StringUtils {
 	public static String toString(InputStream in, String charset) throws IOException {
 		
 		StringBuilder sb = new StringBuilder();
-		
+		// 直接用BuffredReader readLine为什么乱码？
 		InputStreamReader input = new InputStreamReader(in, charset);
-		BufferedReader reader = new BufferedReader(input);
-		
-		String temp = "";
-		while((temp = reader.readLine()) != null ){
-			sb.append(temp);
+		int cha = 0;
+		while((cha = input.read()) != -1){
+			sb.append((char)cha);
 		}
 		
 		return sb.toString();
