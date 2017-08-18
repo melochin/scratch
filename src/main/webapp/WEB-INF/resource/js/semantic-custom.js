@@ -20,6 +20,10 @@ $.fn.form.settings.performance = false;
 // 校验信息模板设置
 $.fn.form.settings.prompt.empty = '{name}不能为空';
 $.fn.form.settings.prompt.number = '{name}必须为数字';
+$.fn.form.settings.prompt.email = '{name}不符合邮箱地址规则';
+$.fn.form.settings.prompt.url = '{name}不符合链接规则';
+
+
 // 新增ajax规则
 $.fn.form.settings.rules.ajax = function(value, ajaxValue) {
 	console.debug(event);
@@ -92,87 +96,6 @@ $.fn.modal.settings.onShow = function() {
 		$modal.modal("refresh");
 	})
 }
-/**
-*	具体表单规则的定义
-*/
-var userRule = {
-	on : 'blur',
-	inline : true,
-	fields : {
-
-		username : {
-			rules: [
-				{
-					type : 'empty'
-				},
-				{
-					type : 'regExp',
-					value : '^[a-zA-Z0-9_]{6,18}$',
-					prompt : '用户名只能以数字或字母组合，且长度不能少于6位超过18位'
-				},
-				{
-				  type : 'ajax',
-				  value : {
-					  action : 'validate user data'
-				  	},
-			  	prompt : '用户名已经存在'
-			  }
-			]
-		},
-
-		email : {
-			rules: [{
-				type : 'email'
-			}]
-		},
-
-		password : {
-			rules: [
-					{
-						type : 'empty'
-					},
-	        {
-						type : 'regExp',
-						value : '^[a-zA-Z0-9_]{6,18}$',
-						prompt : '密码只能以数字或字母组合，且长度不能少于6位超过18位'
-	        }
-			]
-		}
-
-	}
-};
-
-
-var animeRule = {
-	on : 'blur',
-	inline : true,
-	fields : {
-
-		name : {
-			rules: [
-				{
-					type : 'empty'
-				}
-			]
-		},
-
-		type : {
-			rules: [{
-				type : 'empty'
-			}]
-		},
-
-		picFile : {
-			rules: [{
-				type : 'regExp',
-				// 条件表达
-				value : '\w*(png|jpg)$',
-				prompt : '请用.png结尾的图片上传'
-			}]
-		}
-
-	}
-}
 
 /**
  * 组件初始化
@@ -182,8 +105,18 @@ $(document).ready(function() {
 	$('.ui.dropdown')
 		.dropdown();	
 	// button click 触发modal
-	$(".ui.modal")
-		.modal('attach events', '.ui.button[data-href]')
-		.modal('attach events', 'a[data-href]');
+	if($(".ui.button[data-href]").length > 0) {
+		$(".ui.modal").modal('attach events', '.ui.button[data-href]');
+	}
+	if($("img[data-href]").length > 0) {
+		$(".ui.modal").modal('attach events', 'img[data-href]');
+	}
+	if($("a[data-href]").length > 0) {
+		$(".ui.modal").modal('attach events', 'a[data-href]');
+	}
+	$('.special.cards .image').dimmer({
+		  on: 'hover'
+	});
+	
 });
 

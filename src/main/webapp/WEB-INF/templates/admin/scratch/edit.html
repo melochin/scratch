@@ -1,0 +1,32 @@
+<html xmlns:th="www.thymeleaf.org">
+
+<th:block th:replace="base/lib :: semantic" />
+
+<div class="ui text container scrolling content">
+	<form class="ui form" id="animeEpisode" 
+		method="post" th:action="@{/admin/scratch/episode/modify}" >
+		<input type="hidden" name="id" th:value="${episode.id}">
+		<div class="field">
+			<input type="text" readonly="readonly" th:value="${episode.anime.name}">
+		</div>
+		<div class="field">
+			<label>资源站点</label>
+			<!-- search selectbox -->
+			<label th:value="${episode.hostId}"></label>
+			<input type="text" readonly="readonly" th:value="${hosts.asMap().get(#strings.toString(episode.hostId))}">
+		</div>
+		<div class="field">
+			<label>集名</label>
+			<input type="text" name="number" placeholder="请输入集名" th:value="${episode.number}"/>
+		</div>
+		<div class="field">
+			<label>链接</label>
+			<input type="text" name="url" placeholder="请输入资源链接" th:value="${episode.url}"/>
+		</div>
+		<div class="ui divider"></div>
+		<div class="actions">
+			<input type="submit"  class="ui green button" value="保存"/>
+			<a type="button" class="ui cancel button" data-dismiss="modal">关闭</a>
+		</div>
+	</form>
+</div>

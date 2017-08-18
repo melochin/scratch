@@ -3,13 +3,13 @@
 
 <div th:fragment="page(page, url)" class="ui pagination menu">
 	<!-- pre page -->
-	<a th:if="${page.curPage - 1 > 0}" 
-		th:href="@{${url}(p=${page.curPage - 1})}" th:text="'<'" class="item"></a>
+	<a th:if="${page.pageNum - 1 > 0}" 
+		th:href="@{${url}(p=${page.pageNum - 1})}" th:text="'<'" class="item"></a>
 		
-	<a th:href="@{${url}(p=${page.curPage})}" th:text="${page.curPage}" class="disabled item"></a>	
+	<a th:href="@{${url}(p=${page.pageNum})}" th:text="${page.pageNum}" class="disabled item"></a>	
 	
 	<!-- next page -->	
-	<a th:if="${page.curPage + 1 <= page.totalPage}" 
-		th:href="@{${url}(p=${page.curPage + 1})}" th:text="'>'" class="item"></a>
+	<a th:if="${page.pageNum + 1 <= page.total}" 
+		th:href="@{${url}(p=${page.pageNum + 1})}" th:text="'>'" class="item"></a>
 </div>
 </html>

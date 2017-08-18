@@ -38,6 +38,7 @@
 								<div class="scrolling menu">
 										<a class="item" th:each="anime : ${animeTypes}"
 											th:href="@{/admin/anime(type=${anime.code})}" th:text="${anime.value}"></a>
+										<a class="item" th:href="@{/admin/anime}">全部</a>
 								</div>
 							</div>
 						</div>
@@ -67,8 +68,8 @@
 				</tr>
 			</tbody>
 		</table>
-		
 		<div class="ui modal"></div>
+		<th:div th:replace="base/page :: page(${animeList}, 'anime?p={p}')">
 	</div>
 </body>
 </html>

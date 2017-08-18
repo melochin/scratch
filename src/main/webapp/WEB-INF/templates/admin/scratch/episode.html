@@ -1,9 +1,10 @@
 <html xmlns:th="www.thymeleaf.org">
 
 <head>
-<th:block th:replace="base/lib :: common"></th:block>
-<th:block th:replace="base/lib :: semantic"></th:block>
-<script type="text/javascript" th:src="@{/js/react-common.js}"></script>
+	<title>剧集管理</title>
+	<th:block th:replace="base/lib :: common"></th:block>
+	<th:block th:replace="base/lib :: semantic"></th:block>
+	<script type="text/javascript" th:src="@{/js/react-common.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
@@ -24,7 +25,7 @@
 				</tr>
 				<tr>
 					<th>
-						<button class="ui green button">一键推送</button>					
+						<button class="ui green button">一键推送</button>
 					</th>
 				</tr>
 				<tr>
@@ -41,9 +42,13 @@
 					<td th:text="${episode.anime.name}"></td>
 					<td th:text="${episode.number}"></td>
 					<td>
-						<a th:href="${episode.url}" th:text="${episode.url}"></a>
+						<a th:href="${episode.url}" 
+							th:text="${#strings.length(episode.url) > 50 ? 
+								#strings.substring(episode.url,0,50) + '...' : 
+								episode.url}"></a>
 					</td>
-					<td th:text="${#dates.format(episode.saveTime, 'yyyy-MM-dd HH:mm')}"></td>
+					<td
+						th:text="${#dates.format(episode.saveTime, 'yyyy-MM-dd HH:mm')}"></td>
 					<td></td>
 				</tr>
 			</tbody>
@@ -62,6 +67,10 @@
 					<th colspan="1">所有剧集</th>
 				</tr>
 				<tr>
+					<td><a class="ui blue button" 
+						th:data-href="@{/admin/scratch/episode/save}">新增</a></td>
+				</tr>
+				<tr>
 					<th>名称</th>
 					<th>集号</th>
 					<th>链接</th>
@@ -75,17 +84,24 @@
 					<td th:text="${episode.anime.name}"></td>
 					<td th:text="${episode.number}"></td>
 					<td>
-						<a th:href="${episode.url}" th:text="${episode.url}"></a>
+						<a th:href="${episode.url}" 
+								th:text="${#strings.length(episode.url) > 50 ? 
+									#strings.substring(episode.url,0,50) + '...' : 
+									episode.url}"></a>
 					</td>
-					<td th:text="${#dates.format(episode.saveTime, 'yyyy-MM-dd HH:mm')}"></td>
+					<td
+						th:text="${#dates.format(episode.saveTime, 'yyyy-MM-dd HH:mm')}"></td>
 					<td></td>
 					<td>
-						<button class="ui green button">编辑</button>
-						<button class="ui red button">删除</button>
+						<a class="ui green button" 
+							th:data-href="@{/admin/scratch/episode/modify/{id}(id=${episode.id})}">编辑</a> 
+						<a class="ui red button"
+							th:href="@{/admin/scratch/episode/delete/{id}(id=${episode.id})}">删除</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		<div class="ui modal"></div>
 	</div>
 </body>
 </html>

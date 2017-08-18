@@ -33,6 +33,7 @@
 						<input class="form-control" name="rePassword" type="password" 
 							placeholder="确认密码" />
 					</div>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 					<div class="row">
 						<input class="btn btn-primary col-md-11" type="submit" value="注册" />
 					</div>
