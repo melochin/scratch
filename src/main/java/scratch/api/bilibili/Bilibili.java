@@ -14,6 +14,11 @@ public interface Bilibili {
 	Map<String, Integer> getVideoPageAndCount(VideoType videoType);
 	
 	Map<String, Integer> getVideoPageAndCount(int videoType);
+	
+	List<Video> search(String keyword);
+	
+	List<Video> search(String keyword, int page);
+	
 
 	boolean isLogin();
 	

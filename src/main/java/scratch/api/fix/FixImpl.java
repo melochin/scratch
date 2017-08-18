@@ -113,7 +113,7 @@ public class FixImpl implements Fix {
 		}
 		//episode数据填充
 		episode.setUrl(ele.attr(HREF));
-		episode.setNumber(num);
+		episode.setNumber(num.toString());
 		return episode;
 	}
 	

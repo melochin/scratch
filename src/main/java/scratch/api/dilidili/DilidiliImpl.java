@@ -58,7 +58,7 @@ public class DilidiliImpl implements Dilidili {
 		String no = ele.select("span").text();
 		
 		episode.setUrl(url);
-		episode.setNumber(NumberUtils.toInteger(no));
+		episode.setNumber(NumberUtils.toInteger(no).toString());
 		
 		return episode;
 	}
