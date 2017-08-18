@@ -43,7 +43,6 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	
-	
 	<!-- 该过滤器是为了让Transaction在JSP页面仍存在，这样使用了LAZY加载方式的MODEL，在展现层仍可以读取数据 -->
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
@@ -77,7 +76,6 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
 	
 	<jsp-config>  
 	  <jsp-property-group>  

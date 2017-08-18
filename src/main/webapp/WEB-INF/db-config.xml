@@ -60,7 +60,7 @@
 						</value>
 					</property>
 				</bean>
-				<bean class="scratch.config.PageAdapterInterceptor"></bean>
+				<!-- <bean class="scratch.config.PageAdapterInterceptor"></bean> -->
 			</array>
 		</property>
 	</bean>
