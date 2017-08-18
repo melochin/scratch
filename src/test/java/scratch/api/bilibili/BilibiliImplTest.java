@@ -23,5 +23,11 @@ public class BilibiliImplTest {
 		System.out.println(videos);
 		Assert.assertTrue(videos.size() > 0);
 	}
+	
+	@Test
+	public void searchTest() {
+		List<Video> videos = bilibili.search("交给岚");
+		Assert.assertTrue(videos.size() > 0);
+	}
 
 }

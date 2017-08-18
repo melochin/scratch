@@ -10,9 +10,11 @@ import javax.mail.MessagingException;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import scratch.model.User;
 import scratch.service.UserService;
@@ -28,6 +30,21 @@ public class UserServiceTest extends ContextTest{
 	
 	@Autowired
 	private CipherSupport cipher;
+	
+/*	@Test
+	public void resetPassword() {
+		List<User> user = userService.list();
+		user.forEach(u -> {
+			if(!StringUtils.isEmpty(u.getSalt())) {
+				return;
+			}
+			// 解密
+			String password = cipher.decode(u.getHashedPassword());
+			u.setPassword(password);
+			userService.modify(u);
+		});
+	}*/
+	
 	
 	/** 用户查询相关服务测试  */
 	@Test

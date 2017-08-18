@@ -13,6 +13,11 @@ import scratch.model.AnimeEpisode;
 import scratch.support.service.MailException;
 import scratch.test.ContextTest;
 
+/**
+ * 邮件服务测试
+ * @author melochin
+ * @since 2017.08.18
+ */
 public class EmailServiceTest extends ContextTest {
 
 	@Autowired

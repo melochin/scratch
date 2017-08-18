@@ -14,8 +14,13 @@ public class AnimeDaoTest extends ContextTest {
 	private IAnimeDao dao;
 	
 	@Test
+	public void queryTest() {
+		System.out.println(dao.listByTypeLeftJointFocus("11"));
+	}
+	
+	@Test
 	public void testFindAll() {
-		System.out.println(dao.findAll());
+		System.out.println(dao.list());
 	}
 
 	@Test
