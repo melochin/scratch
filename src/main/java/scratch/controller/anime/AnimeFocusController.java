@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,20 +51,20 @@ public class AnimeFocusController {
 		return "/anime/focus";
 	}
 	
-	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/add", method=RequestMethod.POST)
-	public ModelAndView add(@RequestParam("animeId") Long animeId,
-			@SessionAttribute(SessionContext.USER) User user) {
-		service.save(new Anime(animeId), user);
-		return new ModelAndView("redirect:/anime/focus");
+	public String add(@RequestParam("animeId") Long animeId,
+			@AuthenticationPrincipal UserAdapter userAdapter, 
+			@RequestHeader("referer") String referer) {
+		service.save(new Anime(animeId), userAdapter.getUser());
+		return "redirect:"+referer;
 	}
 	
-	@UserRole(value=Role.User)
 	@RequestMapping(value="/focus/delete", method=RequestMethod.POST)
-	public ModelAndView delete(@RequestParam("animeId") Long animeId,
-			@SessionAttribute(SessionContext.USER) User user) {
-		service.delete(new Anime(animeId), user);
-		return new ModelAndView("redirect:/anime/focus");
+	public String delete(@RequestParam("animeId") Long animeId,
+			@AuthenticationPrincipal UserAdapter userAdapter, 
+			@RequestHeader("referer") String referer) {
+		service.delete(new Anime(animeId), userAdapter.getUser());
+		return "redirect:"+referer;
 	}
 	
 }

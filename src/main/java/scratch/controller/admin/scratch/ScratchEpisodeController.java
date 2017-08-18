@@ -5,12 +5,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import scratch.model.AnimeEpisodeScratch;
 import scratch.model.DictType;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.DictService;
@@ -29,6 +31,7 @@ public class ScratchEpisodeController {
 	
 	private boolean needQueryCount = true;
 	
+	/** 待审核、通过审核、失败审核的总数 */
 	@ModelAttribute
 	private void setModel(Model model) {
 		// 数据发生变化时，才会触发重新查询
@@ -46,7 +49,7 @@ public class ScratchEpisodeController {
 		model.addAttribute("module", "temp");
 	}
 	
-	// 显示各个状态的抓取数据
+	/** 显示各个状态的数据 */
 	@GetMapping("")
 	public String showEpisodeScratch(@RequestParam(value="status", required=false, defaultValue="0") 
 	Integer status, Model model) {
@@ -62,6 +65,17 @@ public class ScratchEpisodeController {
 			@RequestHeader("Referer") String referer,
 			RedirectAttributes ra) {
 		episodeService.passScratch(id);
+		needQueryCount = true;
+		ModelUtils.setSuccess(ra, "操作成功");
+		return redirect(referer);
+	}
+	
+	/** 审核通过，传递{@link AnimeEpisodeScratch}实体，能够更改数据 **/
+	@PostMapping("/pass/modify")
+	public String passAndModify(AnimeEpisodeScratch episodeScratch,
+			@RequestHeader("Referer") String referer,
+			RedirectAttributes ra) {
+		episodeService.passScratch(episodeScratch);
 		needQueryCount = true;
 		ModelUtils.setSuccess(ra, "操作成功");
 		return redirect(referer);
