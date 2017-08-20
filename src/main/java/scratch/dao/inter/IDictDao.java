@@ -18,6 +18,11 @@ public interface IDictDao {
 	@MapKey("name")
 	List<Map<String, Object>> findByType(@Param("type") String type);
 	
+	/**
+	 * @param parentCode
+	 * @param mustBeUsed	true 不包含停止使用的 	false 包含停止使用的 
+	 * @return
+	 */
 	DictList findByParentCode(
 			@Param("parentCode") String parentCode, @Param("mustBeUsed") boolean mustBeUsed);
 	

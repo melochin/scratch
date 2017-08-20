@@ -1,7 +1,6 @@
 package scratch.service;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,10 @@ public class DictService {
 	@Autowired 
 	private IDictDao dao;
 	
-	@SuppressWarnings("rawtypes")
 	@Autowired
-	private RedisTemplate redis;
+	private RedisTemplate<String, DictList> redis;
 	
-	private final static String REDIS_PREFIX = "dic_";
+	private final static String KEY = "dictionary";
 	
 	private final static Logger log = Logger.getLogger(DictService.class);
 	
@@ -48,35 +46,46 @@ public class DictService {
 		return dao.findByParentCode("-1", false);
 	}
 	
-	public List<Dict> findByParentCode(String parentCode) {
-		return dao.findByParentCode(parentCode, false);
-	}
-	
 	public Dict findByCodeAndParentCode(String code, String parentCode) {
 		return dao.findByCodeAndParentCode(code, parentCode);
 	}
 	
+	/**
+	 * 直接从数据库中读取，读取的字典包含停止使用的项目
+	 * 主要针对后台维护使用的
+	 * @param parentCode
+	 * @return
+	 */
+	public List<Dict> findByParentCode(String parentCode) {
+		return dao.findByParentCode(parentCode, false);
+	}
 	
-	@SuppressWarnings("unchecked")
+	/**
+	 * 使用缓存
+	 * @param parentCode
+	 * @return
+	 */
 	public DictList findByType(String parentCode) {
-		
 		// redis连接的状态标志
 		// 连接:数据将存储在缓存 	未连接:直接走DB
 		boolean connected = isRedisConnected();
+		DictList dicts = new DictList();
 		
 		// 尝试从redis中读取字典数据
-		if(connected && redis.hasKey(REDIS_PREFIX + parentCode)) {
-			return  (DictList) redis.opsForValue().get(REDIS_PREFIX + parentCode);
+		String key = KEY;
+		if(connected && redis.opsForHash().hasKey(key, parentCode)) {
+			dicts = (DictList) redis.opsForHash().get(key, parentCode);
+			return dicts;
 		}
 		
 		// 直接从DB中读取字典数据
-		DictList dicts = dao.findByParentCode(parentCode, true);
+		dicts = dao.findByParentCode(parentCode, true);
 		if(dicts == null || dicts.size() == 0) {
 			return null;
 		}
 		// 将数据缓存在redis中
 		if(connected) {
-			redis.opsForValue().set(REDIS_PREFIX + parentCode, dicts, 6, TimeUnit.HOURS);	
+			redis.opsForHash().put(key, parentCode, dicts);
 		}
 		
 		return dicts;

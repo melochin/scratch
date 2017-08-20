@@ -15,10 +15,10 @@
 			<a class="item" th:classappend="${module == type.code ? 'active' : ''}" 
 				th:each="type : ${types}" th:href="@{${type.code}}"th:text="${type.value}"></a>
 			<div class="right menu">
-				<div class="item">
+				<div class="item ui search">
 					<div class="ui icon input">
-						<input id="search" type="text" placeholder="Search..."> <i
-							class="search link icon"></i>
+						<input id="search" class="prompt" type="text" placeholder="Search..."> 
+						<i class="search link icon"></i>
 					</div>
 				</div>
 			</div>
@@ -42,12 +42,25 @@
 
 		<div class="ui modal"></div>
 		
-		<script type="text/javascript">
+		<script type="text/javascript" th:inline="javascript">
+			var titles = /*[[${searchHistories}]]*/ null;
+			var source = new Array();
+			if(titles != null) {
+				for(var i=0; i<titles.length; i++) {
+					source.push({title : titles[i]});
+				}
+			}
+			
 			$('#search').bind('keypress',function(event){  
 	            if(event.keyCode == "13") {  
 	                window.location.href = encodeURI("search?word=" + $(this).val()); 
 	            }  
 	        });
+			$('.item.search')
+			  .search({
+			    source: source
+			  })
+			;
 		</script>
 	</div>
 </body>

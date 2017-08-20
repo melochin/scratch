@@ -9,15 +9,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.servlet.ModelAndView;
 
-import scratch.aspect.Role;
-import scratch.aspect.UserRole;
 import scratch.context.DictTypeContext;
-import scratch.context.SessionContext;
 import scratch.model.entity.Anime;
-import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
@@ -42,7 +36,7 @@ public class AnimeFocusController {
 			type = null;
 		}
 		
-		Long userId = userAdapter.getUser().getUserId();
+		Long userId = userAdapter.getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId, type, focus));
 		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
 		
@@ -55,7 +49,7 @@ public class AnimeFocusController {
 	public String add(@RequestParam("animeId") Long animeId,
 			@AuthenticationPrincipal UserAdapter userAdapter, 
 			@RequestHeader("referer") String referer) {
-		service.save(new Anime(animeId), userAdapter.getUser());
+		service.save(new Anime(animeId), userAdapter.getUserId());
 		return "redirect:"+referer;
 	}
 	
@@ -63,7 +57,7 @@ public class AnimeFocusController {
 	public String delete(@RequestParam("animeId") Long animeId,
 			@AuthenticationPrincipal UserAdapter userAdapter, 
 			@RequestHeader("referer") String referer) {
-		service.delete(new Anime(animeId), userAdapter.getUser());
+		service.delete(animeId, userAdapter.getUserId());
 		return "redirect:"+referer;
 	}
 	

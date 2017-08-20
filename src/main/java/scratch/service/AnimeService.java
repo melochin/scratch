@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,7 +26,6 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.support.FileUtils;
 import scratch.support.PageFactory;
-import scratch.support.service.PageBean;
 
 @Service
 public class AnimeService {
@@ -33,11 +35,16 @@ public class AnimeService {
 	 */
 	private static final String UPLOAD_ANIME = "/upload/anime";
 	
+	private static final String SEARCH_HISTORY = "searchHistory";
+	
+	private RedisTemplate<String, String> redisTemplate;
+	
 	private IAnimeDao animeDao;
 	
 	@Autowired
-	public AnimeService(IAnimeDao animeDao) {
+	public AnimeService(IAnimeDao animeDao, RedisTemplate<String, String> redisTemplate) {
 		this.animeDao = animeDao;
+		this.redisTemplate = redisTemplate;
 	}
 	
 	public List<Anime> list() {
@@ -48,7 +55,15 @@ public class AnimeService {
 		return animeDao.listByTypeLeftJointFocus(type);
 	}
 	
-	public List<Anime> listByName(String name) {
+	public List<Anime> listByName(String name, Long userId) {
+		if(userId != null) {
+			String key = SEARCH_HISTORY + ":" + userId;
+			SetOperations<String, String> ops = redisTemplate.opsForSet();
+			if(ops.size(key) >= 5) {
+				ops.pop(key);
+			}
+			ops.add(key, name);
+		}
 		return animeDao.listByNameLeftJoinFocus(name);
 	}
 	
@@ -198,6 +213,13 @@ public class AnimeService {
 		} catch (Exception e) {
 			modifyAlias(alias);
 		}
+	}
+	
+	public Set<String> listSearchHistory(Long userId) {
+		if(userId == null) {
+			return null;
+		}
+		return redisTemplate.opsForSet().members("searchHistory" + ":" + userId);
 	}
 
 }

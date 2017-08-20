@@ -27,10 +27,6 @@ public class UserAdapter implements UserDetails {
 	public UserAdapter(User user) {
 		this.user = user;
 	}
-	
-	public User getUser() {
-		return user;
-	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -72,5 +68,20 @@ public class UserAdapter implements UserDetails {
 		return true;
 	}
 
+	public Long getUserId() {
+		return user.getUserId();
+	}
+
+	public void setUsername(String username) {
+		user.setUsername(username);
+	}
+
+	public String getStatus() {
+		return user.getStatus();
+	}
+
+	public Integer getRole() {
+		return user.getRole();
+	}
 
 }

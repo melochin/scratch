@@ -1,7 +1,11 @@
 package scratch.model.entity;
 
-public class Dict {
+import java.io.Serializable;
+
+public class Dict implements Serializable {
 	
+	private static final long serialVersionUID = -2929207270259270671L;
+
 	private String code;
 	
 	private String parentCode;

@@ -6,9 +6,8 @@ import java.util.Map;
 
 import scratch.model.entity.Dict;
 
+@SuppressWarnings("serial")
 public class DictList extends ArrayList<Dict>{
-
-	private static final long serialVersionUID = 5506552739651180534L;
 
 	// List 转换成 map 时候的 hashCode
 	private int hashCode;
@@ -48,5 +47,5 @@ public class DictList extends ArrayList<Dict>{
 		
 		return map;
 	}
-	
+
 }

@@ -97,7 +97,7 @@ public class LoginController {
 			CookieSupport.addUser(curUser);
 		}*/
 		
-		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()).getUser());
+		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
 		if(!StringUtils.isEmpty(referer)) {
 			url = "redirect:" + referer;
 			status.setComplete();
