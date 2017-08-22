@@ -1,7 +1,5 @@
 package scratch.controller;
 
-import java.util.Enumeration;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -78,24 +74,11 @@ public class LoginController {
 	@RequestMapping(path="/login", method=RequestMethod.POST)
 	public String login(User user, 
 			@ModelAttribute("referer") String referer,
-			@RequestParam(required=false) boolean remember, 
 			RedirectAttributes ra, SessionStatus status) {
 		String url = "redirect:/";
 		
 		Authentication authentication = service.authen(user.getUsername(), user.getPassword());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		System.out.println(SessionUtils.getSession());
-		
-		Enumeration<String> attributes = SessionUtils.getSession().getAttributeNames();
-		while(attributes.hasMoreElements()) {
-			System.out.println(attributes.nextElement());
-			
-		}
-		// 记住我的功能待更改
-		/*if(remember) {
-			CookieSupport.addUser(curUser);
-		}*/
 		
 		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
 		if(!StringUtils.isEmpty(referer)) {
@@ -113,7 +96,7 @@ public class LoginController {
 	 */
 	@UserRole(activi=false)
 	@GetMapping("/logout")
-	public String logout(@SessionAttribute(SessionContext.USER) User user, RedirectAttributes ra) {
+	public String logout(RedirectAttributes ra) {
 		SessionUtils.removeAttribute(SessionContext.USER);
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ModelUtils.setSuccess(ra, "登出成功");

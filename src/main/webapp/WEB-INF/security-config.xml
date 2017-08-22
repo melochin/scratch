@@ -6,6 +6,7 @@
 
 	<http use-expressions="false">
 		<intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/user/logout" access="ROLE_USER,ROLE_ADMIN" />
 		<intercept-url pattern="/user/info" access="ROLE_USER" />
 		<intercept-url pattern="/anime/focus" access="ROLE_USER" />
 		<intercept-url pattern="/anime/focus/**" access="ROLE_USER" />
