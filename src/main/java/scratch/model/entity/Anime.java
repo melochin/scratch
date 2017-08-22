@@ -1,12 +1,13 @@
 package scratch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class Anime {
+public class Anime implements Serializable{
 
 	private Long id;
 
