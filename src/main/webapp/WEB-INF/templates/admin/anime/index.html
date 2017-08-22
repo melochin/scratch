@@ -56,7 +56,7 @@
 					</td>
 					<td th:text="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"></td>
 					<td th:text="${anime.finished == false ? '否' : '是'}"></td>
-					<td th:text="${(animeTypes.asMap()).get(anime.type)}">
+					<td th:text="${animeTypes.get(anime.type)}">
 					<td>
 						<a class="ui green button"
 							th:data-href="@{anime/form/{animeId}(animeId=${anime.id})}">编辑</a>

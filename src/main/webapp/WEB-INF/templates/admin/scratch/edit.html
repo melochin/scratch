@@ -13,7 +13,7 @@
 			<label>资源站点</label>
 			<!-- search selectbox -->
 			<label th:value="${episode.hostId}"></label>
-			<input type="text" readonly="readonly" th:value="${hosts.asMap().get(#strings.toString(episode.hostId))}">
+			<input type="text" readonly="readonly" th:value="${hosts.get(#strings.toString(episode.hostId))}">
 		</div>
 		<div class="field">
 			<label>集名</label>

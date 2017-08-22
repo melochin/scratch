@@ -26,7 +26,7 @@
 				<i class="filter icon"></i>
 				
 				<th:block th:if="${type != null}" 
-					th:text="${'类型：' + (animeTypes.asMap()).get(type)} + ' '"></th:block>
+					th:text="${'类型：' + animeTypes.get(type)} + ' '"></th:block>
 				<th:block th:if="${focus != null}" 
 					th:text="${'订阅：' + (focus == 1 ? '订阅中' : '未订阅')}"></th:block>
 				<th:block th:if="${focus == null && type == null}">过滤</th:block>

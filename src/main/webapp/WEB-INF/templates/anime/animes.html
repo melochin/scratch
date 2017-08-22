@@ -23,7 +23,7 @@
 			<div class="content">
 				<!-- header -->
 				<div class="header" th:text="${anime.name}">animeName</div>
-				<div th:if="${session.user_g != null and module != 'home'}">
+				<div th:if="${session.user_g != null}">
 				
 					<form th:if="${anime.focus == false}" 
 						th:action="@{/anime/focus/add}" method="post">
