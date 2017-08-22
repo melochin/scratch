@@ -19,6 +19,7 @@ import scratch.model.ohter.DictList;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
+import scratch.service.anime.AnimePushService;
 import scratch.support.web.spring.ModelUtils;
 
 @RequestMapping("/admin/scratch/episode")
@@ -33,6 +34,9 @@ public class EpisodeController {
 	
 	@Autowired
 	private DictService dictService;
+
+	@Autowired
+	private AnimePushService animePushService;
 	
 	@ModelAttribute
 	private void setModel(Model model) {
@@ -97,6 +101,12 @@ public class EpisodeController {
 	public String delete(@PathVariable("id") Long episodeId) {
 		episodeService.delete(episodeId);
 		return "redirect:/admin/scratch/episode"; 
+	}
+	
+	@GetMapping("/push")
+	public String push() {
+		animePushService.push();
+		return "redirect:/admin/scratch/episode";
 	}
 	
 }
