@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:live="http://www.springframework.org/schema/social/live"
 	xmlns:github="http://www.springframework.org/schema/social/github"
 	xmlns:google="http://www.springframework.org/schema/social/google"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -10,12 +9,11 @@
 		http://www.springframework.org/schema/social/github http://www.springframework.org/schema/social/spring-social-github.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/social/google http://www.springframework.org/schema/social/spring-social-google.xsd
-		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social-1.1.xsd
-		http://www.springframework.org/schema/social/live http://www.springframework.org/schema/social/spring-social-live.xsd">
+		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social-1.1.xsd">
 
 	<!-- 配置service provider提供的秘钥 -->
 	<github:config app-id="${github.client.id}" app-secret="${github.client.secret}" />
-	<live:config app-id="${live.client.id}" app-secret="${live.client.secret}" />
+	<!--<live:config app-id="${live.client.id}" app-secret="${live.client.secret}" />-->
 	
 	<!-- 配置connection repository -->
 	<bean id="userIdSource" class="org.springframework.social.connect.web.SessionUserIdSource"></bean>

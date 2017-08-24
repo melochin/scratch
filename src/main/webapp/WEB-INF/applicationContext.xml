@@ -90,7 +90,7 @@
    <!-- 开启AOP功能 -->
 	<aop:aspectj-autoproxy />
    
-	<beans profile="develop">
+	<beans profile="default">
 		<context:property-placeholder location="classpath:config-dev.properties"/>
 	</beans>
 	
@@ -99,7 +99,7 @@
 		<task:scheduler id="myScheduler" pool-size="5"/>
  		<task:annotation-driven scheduler="myScheduler"/>
 	</beans>
-	
+
 
 	
 </beans>

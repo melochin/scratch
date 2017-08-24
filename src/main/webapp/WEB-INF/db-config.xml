@@ -11,7 +11,7 @@
 			<value>com.mysql.jdbc.Driver</value>
 		</property> 
 		<property name="url">
-			<value>jdbc:mysql://${jdbc.ip}/words?serverTimezone=UTC&amp;userUnicode=true&amp;characterEncoding=UTF-8</value>
+			<value>jdbc:mysql://${jdbc.ip}/${jdbc.dbname}?serverTimezone=UTC&amp;userUnicode=true&amp;characterEncoding=UTF-8</value>
 		</property> 
 		<property name="username">
 			<value>${jdbc.username}</value>
@@ -43,7 +43,7 @@
 	<!-- mybatis配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="mapperLocations" value="classpath*:scratch/dao/*.xml" />
+		<property name="mapperLocations" value="classpath*:scratch/dao/mapper/*.xml" />
 		<property name="typeAliasesPackage" value="scratch.model" />
 		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
 		<property name="plugins">

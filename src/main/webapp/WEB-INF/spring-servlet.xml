@@ -95,7 +95,7 @@
 	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
 	
 
-	<beans profile="develop">
+	<beans profile="default">
 		<context:property-placeholder location="classpath:config-dev.properties"/>
 	</beans>
 	
