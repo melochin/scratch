@@ -1,7 +1,5 @@
 package scratch.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -9,17 +7,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.aspect.UserRole;
 import scratch.context.SessionContext;
+import scratch.exception.AuthenException;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
@@ -34,67 +28,61 @@ public class LoginController {
 	
 	private static Logger log = Logger.getLogger(LoginController.class);
 
+	private final static String DEFAULT_REDIRECT_URL = "/";
+
 	@Autowired
 	private UserService service;
-	
 
 	/**
-	 * 显示登录界面
+	 * 登录界面
+	 * @see LoginController#login(User, String, SessionStatus)
 	 * @return
 	 */
-	@RequestMapping(path="/login", method=RequestMethod.GET)
-	public String loginForm(@RequestHeader(name="referer", required=false, defaultValue="/") String referer, 
-			HttpServletRequest request, Model model) {
-		
-		if(SessionUtils.containAttribute(SessionContext.USER)) {
-			return "redirect:/";
+	@GetMapping("/login")
+	public String loginForm(@RequestHeader(name="referer", required=false, defaultValue="/") String referer,
+							Model model) {
+		//判断referer是不是含有/user，防止/user路径重定向/user路径
+		if(!StringUtils.isEmpty(referer) && referer.indexOf("/user") > 0) {
+			referer = DEFAULT_REDIRECT_URL;
 		}
-		
-		//判断referer是不是自身路径，防止重复定向
-		if(!StringUtils.isEmpty(referer)) {
-			if(referer.indexOf("/user") > 0 || referer.indexOf("/common") > 0) {
-				referer = "/";
-			}
-		}
-		if(log.isDebugEnabled()) {
-			log.debug("request referer:" + referer);
-		}
+
+		// session attribute中存入referer,便于登录成功时重定向
 		model.addAttribute("referer", referer);
 		
 		return "/user/login";
 	}
-	
+
 	/**
-	 * 处理登录
+	 * 登录操作
 	 * @param user
-	 * @param remember
+	 * @param referer
+	 * @param status
+	 * @return
+	 */
+	@PostMapping("/login")
+	public String login(User user,
+			@ModelAttribute("referer") String referer,
+			SessionStatus status) {
+		String url = DEFAULT_REDIRECT_URL;
+		// 账号校验
+		Authentication authentication = service.authen(user.getUsername(), user.getPassword());
+		// 存入session
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
+		// get redirect
+		if(!StringUtils.isEmpty(referer)) {
+			url = referer;
+			status.setComplete();
+		}
+		return "redirect:" + url;
+	}
+
+	/**
+	 * 账号登出
+	 * 注意：必须处于登录状态，才能调用登出
 	 * @param ra
 	 * @return
 	 */
-	@RequestMapping(path="/login", method=RequestMethod.POST)
-	public String login(User user, 
-			@ModelAttribute("referer") String referer,
-			RedirectAttributes ra, SessionStatus status) {
-		String url = "redirect:/";
-		
-		Authentication authentication = service.authen(user.getUsername(), user.getPassword());
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
-		if(!StringUtils.isEmpty(referer)) {
-			url = "redirect:" + referer;
-			status.setComplete();
-		}
-		return url;
-	}
-	
-	/**
-	 * 处理登出
-	 * 注意：必须处于登录状态，才能调用登出
-	 * @param session
-	 * @return
-	 */
-	@UserRole(activi=false)
 	@GetMapping("/logout")
 	public String logout(RedirectAttributes ra) {
 		SessionUtils.removeAttribute(SessionContext.USER);

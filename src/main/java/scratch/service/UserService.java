@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import scratch.context.KeyContext;
 import scratch.controller.RegisterController;
 import scratch.controller.UserController;
 import scratch.dao.UserDao;
+import scratch.exception.AuthenException;
 import scratch.model.entity.User;
 import scratch.support.cipher.CipherSupport;
 import scratch.support.service.MailException;
@@ -33,13 +33,18 @@ import scratch.support.service.PageBean;
 @Service
 public class UserService {
 
-	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 	
-	@Autowired
 	private DaoAuthenticationProvider provider;
-	
-	@SuppressWarnings("unused")
+
+	@Autowired
+	public UserService(RedisTemplate redisTemplate,
+                       DaoAuthenticationProvider provider) {
+		this.redisTemplate = redisTemplate;
+		this.provider = provider;
+	}
+
+    @SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(UserService.class);
 	
 	private static long TIME_OUT = 10;	//有效期10分钟
@@ -85,13 +90,28 @@ public class UserService {
 	public User getByNameAndPwd(String username, @PasswordEncode String password) {
 		return dao.getByNameAndPwd(username, password);
 	}*/
-	
+
+	/**
+	 * 账号认证
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public Authentication authen(String username, String password) {
 		User user = getByName(username);
-		String salt = user.getSalt(); 
+		if(user == null) {
+			throw new AuthenException();
+		}
+		String salt = user.getSalt();
+		// check password
 		String hashedPassword = BCrypt.hashpw(password, salt);
-		Authentication authentication =  provider.authenticate(
-				new UsernamePasswordAuthenticationToken(username, hashedPassword));
+		Authentication authentication = null;
+		try {
+			authentication =  provider.authenticate(
+					new UsernamePasswordAuthenticationToken(username, hashedPassword));
+		} catch (RuntimeException e) {
+			throw new AuthenException();
+		}
 		return authentication;
 	}
 	
