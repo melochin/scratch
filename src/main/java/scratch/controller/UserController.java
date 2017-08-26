@@ -137,8 +137,8 @@ public class UserController {
 		if(!userService.canReset(userId, resetCode)) {
 			throw new RuntimeException();
 		}
-		
-		userService.modifyPasswordAndDeleteResetCode(userId, password);
+
+		userService.resetPassword(userId, password);
 		status.setComplete();
 		
 		ModelUtils.setSuccess(ra, "密码重置成功");

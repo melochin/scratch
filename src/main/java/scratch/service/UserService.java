@@ -1,7 +1,6 @@
 package scratch.service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
@@ -9,6 +8,7 @@ import javax.mail.MessagingException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -18,55 +18,61 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import scratch.aspect.PasswordEncode;
-import scratch.context.KeyContext;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import scratch.context.RedisContext;
 import scratch.controller.RegisterController;
 import scratch.controller.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.AuthenException;
 import scratch.model.entity.User;
-import scratch.support.cipher.CipherSupport;
 import scratch.support.service.MailException;
 import scratch.support.service.PageBean;
 
-@Transactional
+import static scratch.context.RedisContext.*;
+
 @Service
 public class UserService {
 
-	private RedisTemplate<String, String> redisTemplate;
+	private ValueOperations<String, String> valueOperations;
 	
 	private DaoAuthenticationProvider provider;
 
-	@Autowired
-	public UserService(RedisTemplate redisTemplate,
-                       DaoAuthenticationProvider provider) {
-		this.redisTemplate = redisTemplate;
-		this.provider = provider;
-	}
+	private EmailService emailService;
+
+	private UserDao dao;
 
     @SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(UserService.class);
 	
 	private static long TIME_OUT = 10;	//有效期10分钟
-		
-	private static final String ACTIVE = "active_";
-	
-	private static final String RESET = "reset_";
-	
+
 	@Autowired
-	private EmailService emailService;
-	
-	@Autowired
-	private CipherSupport cipher;
-	
-	@Autowired
-	private UserDao dao;
+	public UserService(RedisTemplate redisTemplate,
+					   DaoAuthenticationProvider provider,
+					   EmailService emailService,
+					   UserDao userDao) {
+		this.provider = provider;
+		this.valueOperations = redisTemplate.opsForValue();
+		this.emailService = emailService;
+		this.dao = userDao;
+	}
 	
 	/**------------------------------查询类服务--------------------------------*/
 	
 	/** 根据userId查询User */
 	public User getById(Long userId) {
 		return dao.getById(userId);
+	}
+
+	/** 根据用户名查询User */
+	public User getByName(String username) {
+		User user = new User(username);
+		return dao.getByName(user);
+	}
+
+	/** 根据username与email查找User */
+	public User getByNameAndEmail(String username, String email) {
+		return dao.getByNameAndEmail(username, email);
 	}
 	
 	/** 查询所有User */
@@ -84,20 +90,10 @@ public class UserService {
 	public boolean isExistByUsername(String username) {
 		return dao.countByName(username) > 0;
 	}
-	
-/*	*//** 根据username与password查找User *//*
-	@PasswordEncode
-	public User getByNameAndPwd(String username, @PasswordEncode String password) {
-		return dao.getByNameAndPwd(username, password);
-	}*/
 
-	/**
-	 * 账号认证
-	 * @param username
-	 * @param password
-	 * @return
-	 */
+	/** 账号认证　*/
 	public Authentication authen(String username, String password) {
+		// get salt
 		User user = getByName(username);
 		if(user == null) {
 			throw new AuthenException();
@@ -112,40 +108,29 @@ public class UserService {
 		} catch (RuntimeException e) {
 			throw new AuthenException();
 		}
+		if(authentication == null) {
+			throw new AuthenException();
+		}
 		return authentication;
 	}
-	
-	public User getByName(String username) {
-		User user = new User(username);
-		return dao.getByName(user);
-	}
-	
-	/** 根据username与email查找User */
-	public User getByNameAndEmail(String username, String email) {
-		return dao.getByNameAndEmail(username, email);
-	}
-	
+
 	/**------------------------------修改类服务--------------------------------*/
 	
 	/** 用户注册（注意事务）*/
 	@Transactional
 	public void save(User user) throws MailException {
-		
 		if(isExistByUsername(user.getUsername())) throw new RuntimeException("账号已经存在");
-		encodePassword(user);
 		// 设置默认值
 		if(user.getStatus() == null) {
 			user.setStatus("0");
 		}
-		if(user.getRole() == null) {
-			user.setRole(null);
-		}
 		// 新增用户
+		encodePassword(user);
 		dao.save(user);
-		//如果用户的状态处于激活，那就不发生邮件
-		//后台直接添加的用户可能处于该状态
+		// 发送认证邮件
+		// 后台管理添加的用户，可以选择跳过这步骤
 		if(user.getStatus().equals("1")) return;
-		//抛出checked异常，不影响事务
+		// 如果邮件发送失败，抛出checked异常，不影响注册事务，可以事后补邮件认证
 		try{
 			sendActiveMail(user);
 		} catch (Exception e) {
@@ -154,19 +139,23 @@ public class UserService {
 		}
 		return;
 	}
-	
-	/**	更新密码，并且删除redis中缓存的resetCode*/
-	public void modifyPasswordAndDeleteResetCode(Long userId, @PasswordEncode String password) {
-		User user = new User(userId);
-		user.setPassword(password);
-		encodePassword(user);
-		// 注意：内部调用的方式是原生的，不是aop代理之后的modify
+
+	/** 用户密码更改　*/
+	@Transactional
+	public void modifyPassword(String username, String oldPassword, String newPassword) {
+		Authentication authentication = authen(username, oldPassword);
+		if(authentication == null) {
+			throw new RuntimeException("密码错误");
+		}
+		User user = getByName(username);
+		user.setPassword(newPassword);
 		modify(user);
-		String redisKey = RESET + userId;
-		redisTemplate.opsForValue().getOperations().delete(redisKey);
 	}
-	
-	/** 更新用户信息，自动对user.password进行加密 */
+
+	/**
+	 * 更新用户信息，自动对user.password进行加密
+	 * @param u
+	 */
 	@Transactional
 	public void modify(User u) {
 		if(StringUtils.isEmpty(u.getPassword())) {
@@ -182,53 +171,65 @@ public class UserService {
 		dao.remove(User.class, id);
 	}
 	
-	/**-----------------------------邮箱类服务------------------------------*/
-	
-	/**---------------------------
-	 * @throws MessagingException 
-	 * @throws MailException */
+	/**-------用户邮箱认证 ------------*/
+
+	/** 发送用户邮箱认证邮件　*/
 	public void sendActiveMail(User user) throws MailException, MessagingException {
 		String activeUrl = getActiUrl(user.getUserId());
 		emailService.sendUserActiveCode(activeUrl, user.getEmail());
 	}
-	
-	
-	/**-------用户激活服务 ------------*/
-	
-	/**	生成激活用的URL */
+
+	 /** 修改用户邮箱地址、发送验证邮箱 */
+	 @Transactional
+	public void modifyEmail(Long userId, String email) throws MailException, MessagingException {
+		User user = new User(userId);
+		user.setEmail(email);
+		modify(user);
+		sendActiveMail(user);
+	}
+
+	/**
+	 * 生成邮箱认证用的URL
+	 *
+	 * 负责处理该URL的方法
+	 * @see RegisterController#activiti(Long, String, RedirectAttributes)
+	 *
+	 * @param userId
+	 * @return
+	 */
 	public String getActiUrl(Long userId) {
-		String encodeStr = encrypt(userId, KeyContext.USER_ACTIVE);
-		//将加密后的字符串放入缓存
-		redisTemplate.opsForValue()
-			.set(ACTIVE + userId.toString(), encodeStr, TIME_OUT, TimeUnit.MINUTES);
+		// 生成认证码
+		String confirmCode = BCrypt.hashpw(String.valueOf(userId), BCrypt.gensalt());
+		//将认证码放入缓存
+		String key = redisKey(USER_AUTH_MAIL,userId);
+		valueOperations.set(key, confirmCode, TIME_OUT, TimeUnit.MINUTES);
 		//生成账号激活的URL
 		String url = MvcUriComponentsBuilder.fromMethodName(
-				RegisterController.class, "activiti", userId, encodeStr, null)
-				.build()
-				.encode()
-				.toUriString();
+				RegisterController.class, "activiti", userId, confirmCode, null)
+				.build().encode().toUriString();
 		return url;
 	}
 	
 	/**
+	 * 处理邮箱认证,认证成功则更改用户状态
+	 *
 	 * @param userId
-	 * @return -1: redis中不存在值;	 0: 激活失败; 1: 激活成功
+	 * @return -1: redis中不存在值;
+	 * 			0: 激活失败;
+	 * 			1: 激活成功
 	 */
-	public int activi(Long userId, String activiCode) {
-		String redisKey = ACTIVE + userId;
-		
-		if(!redisTemplate.hasKey(redisKey)) {
+	@Transactional
+	public int confirmEmail(Long userId, String confirmCode) {
+		// 查找redis中存放的code，找到执行更新操作
+		String redisKey = redisKey(USER_AUTH_MAIL, userId);
+		String code = valueOperations.get(redisKey);
+		if(StringUtils.isEmpty(code) || !code.equals(confirmCode)) {
 			return -1;
 		}
-		
-		if(!activiCode.equals(redisTemplate.opsForValue().get(redisKey))) {
-			return -1;
-		}
-		
-		int result = 0;
-		result = dao.updateStatus(userId, "1") == 1 ? 1 : 0;
+		// 更新成功，删除redis中存放的值
+		int result = dao.updateStatus(userId, "1") == 1 ? 1 : 0;
 		if(result == 1) {
-			redisTemplate.opsForValue().getOperations().delete(redisKey);
+			valueOperations.getOperations().delete(redisKey);
 		}
 		return result;
 	}
@@ -245,72 +246,58 @@ public class UserService {
 	
 	/** 生成重置链接 */
 	private String getRestUrl(Long userId) {
-		String encodeStr = encrypt(userId, KeyContext.USER_PWD_RESET);
+		String resetCode = BCrypt.hashpw(String.valueOf(userId), BCrypt.gensalt());
 		//将加密后的字符串放入缓存
-		redisTemplate.opsForValue()
-			.set(RESET + userId.toString(), encodeStr, TIME_OUT, TimeUnit.MINUTES);
+		String key = redisKey(USER_RESET_PSWD, userId);
+		valueOperations.set(key, resetCode, TIME_OUT, TimeUnit.MINUTES);
 		//生成密码重置的URL
 		String url = MvcUriComponentsBuilder.fromMethodName(
-				UserController.class, "resetPasswordForm", encodeStr, userId, null)
-				.build()
-				.encode()
-				.toUriString();
+				UserController.class, "resetPasswordForm", resetCode, userId, null)
+				.build().encode().toUriString();
 		return url;		
 	}
-	
+
 	/** 重置密码 */
 	public boolean resetPassword(Long userId, String newPassword) {
 		User user = dao.getById(userId);
 		user.setPassword(newPassword);
 		modify(user);
 		// 需要判断是否更新成功
-		redisTemplate.opsForValue().getOperations().delete(RESET + userId);
+		valueOperations.getOperations().delete(redisKey(USER_RESET_PSWD, userId));
 		return true;
 	}
-	
-	
-	/** 判断能否重置 */
-	public boolean canReset(Long userId, String resetCode) {
-		String redisKey = RESET + userId;
-		
-		if(!redisTemplate.hasKey(redisKey)) {
-			return false;
-		}
-		
-		if(!resetCode.equals(redisTemplate.opsForValue().get(redisKey))) {
-			return false;
-		}
-		return true;
-	}
-	
-	
+
 	/**
-	 * 加密方式：md5(userId & currentTimeMills & key2, key1)
+	 * 判断用户是否具有重新设置密码的权限
 	 * @param userId
-	 * @param key
+	 * @param resetCode
 	 * @return
 	 */
-	public String encrypt(Long userId, String key) {
-		String encodes[] = {userId.toString(), String.valueOf(System.currentTimeMillis()), String.valueOf(UUID.randomUUID())};
-		return cipher.encode(key, encodes);
+	public boolean canReset(Long userId, String resetCode) {
+		// get key and value
+		String redisKey = redisKey(USER_RESET_PSWD, userId);
+		String code = valueOperations.get(redisKey);
+		// 与redis中的code进行校对
+		if(StringUtils.isEmpty(code) || !code.equals(resetCode)) {
+			return false;
+		}
+		return true;
 	}
-	
+
 	/**
 	 * 生成加密密码和盐
 	 * @param user
-	 * @param hasSalt 
 	 */
 	public void encodePassword(User user) {
 		String password = user.getPassword();
 		if(StringUtils.isEmpty(password)) {
 			throw new RuntimeException("user's password cant be empty");
 		}
-		
+		// 生成盐和加密后的密码
 		String salt = BCrypt.gensalt();
 		String hashedPassword = BCrypt.hashpw(password, salt);
-		
 		user.setSalt(salt);
 		user.setHashedPassword(hashedPassword);
 	}
-	
+
 }

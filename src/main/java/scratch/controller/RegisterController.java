@@ -120,7 +120,7 @@ public class RegisterController {
 	public String activiti(@PathVariable("userId") Long userId, 
 			@PathVariable("actiCode") String actiCode, RedirectAttributes ra) {
 
-		int result = service.activi(userId, actiCode);
+		int result = service.confirmEmail(userId, actiCode);
 		switch (result) {
 			case -1:
 				throw new RuntimeException();
