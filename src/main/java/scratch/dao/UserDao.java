@@ -25,8 +25,8 @@ public class UserDao extends BasicDao<User> {
 			+ "where username = ? and email = ?";
 	private static final String COUNT_BY_USERNAME = "select count(*) from User where username = ?";
 
-	public User getByName(User user) {
-		return getByHql(GET_USER_BY_NAME, user.getUsername());
+	public User getByName(String username) {
+		return getByHql(GET_USER_BY_NAME, username);
 	}
 
 	public User getById(long userId) {

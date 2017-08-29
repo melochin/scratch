@@ -2,6 +2,7 @@ package scratch.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -121,6 +122,10 @@ public class BasicDao<E> {
 			f.setAccessible(true);
 			Object newValue = f.get(newObject);
 			if(newValue == null) {
+				continue;
+			}
+			int modifies = f.getModifiers();
+			if(Modifier.isFinal(modifies) || Modifier.isStatic(modifies)) {
 				continue;
 			}
 			f.set(oldObject, newValue);
