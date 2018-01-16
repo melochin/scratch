@@ -1,46 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>user register</title>
+	<title>新用户注册</title>
 	<th:block th:replace="~{base/lib :: common}"></th:block>
-	<th:block th:replace="~{base/lib :: bootstrap}"></th:block>
-	<th:block th:replace="~{base/lib :: react}"></th:block>
-	<th:block th:replace="~{base/lib :: formValidation}"></th:block>
-	<th:block th:replace="~{base/lib :: materialize}"></th:block>
 	<th:block th:replace="~{base/lib :: semantic}"></th:block>
 	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
 </head>
 
-<body th:replace="base/layout/user :: layout(~{::.row})">
-	<div class="row">
-		<div class="col-md-4"></div>
-		<div class="col-md-4">
-			<section class="login-form form-valid">
-				<form action="register" method="post" id="userRegisterForm" role="login">
-					<div class="form-group">
+<body th:replace="base/layout/user :: layout(~{::#container})">
+	<div class="ui doubling three column centered grid" id="container">
+		<div class="column">
+			<div class="ui segment ">
+				<form class="ui form" action="register" method="post" id="userRegisterForm" role="login">
+
+					<div class="field">
+						<label>账号</label>
 						<input id ="username" class="form-control" name="username" th:value="${user.username }"
-							placeholder="账号" />
+							   placeholder="账号" />
 					</div>
-					<div class="form-group">
-						<input class="form-control" name="email" th:value="${user.email }" 
-							placeholder="邮箱" />
+					<div class="field">
+						<label>邮箱</label>
+						<input class="form-control" name="email" th:value="${user.email }"
+							   placeholder="邮箱" />
 					</div>
-					<div class="form-group">
-						<input class="form-control" name="password" type="password" 
-							placeholder="密码" />
+					<div class="field">
+						<label>密码</label>
+						<input class="form-control" name="password" type="password"
+							   placeholder="密码" />
 					</div>
-					<div class="form-group">
-						<input class="form-control" name="rePassword" type="password" 
-							placeholder="确认密码" />
+					<div class="field">
+						<label>确认密码</label>
+						<input class="form-control" name="rePassword" type="password"
+							   placeholder="确认密码" />
 					</div>
-					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					<input type="hidden" th:id="${_csrf.parameterName}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"　/>
 					<div class="row">
-						<input class="btn btn-primary col-md-11" type="submit" value="注册" />
+						<input class="ui primary button" type="submit" value="注册" />
 					</div>
-				</form>		
-			</section>
+				</form>
+			</div>
 		</div>
-		<div class="col-md-4"></div>
 	</div>
 </body>
 

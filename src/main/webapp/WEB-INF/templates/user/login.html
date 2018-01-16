@@ -1,65 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>用户登录</title>
-	<th:block th:replace="~{base/lib :: common}"></th:block>
-	<th:block th:replace="~{base/lib :: semantic}"></th:block>
+    <title>用户登录</title>
+    <th:block th:replace="~{base/lib :: common}"></th:block>
+    <th:block th:replace="~{base/lib :: semantic}"></th:block>
 
-	<link th:remove="all" href="../resource/semantic/semantic.css" rel="stylesheet"></link>
-	<script th:remove="all" type="text/javascript" src="../resource/js/tools/jquery.js"></script>
-	<script th:remove="all" type="text/javascript" src="../resource/semantic/semantic.js"></script>
+    <link th:remove="all" href="../resource/semantic/semantic.css" rel="stylesheet"></link>
+    <script th:remove="all" type="text/javascript" src="../resource/js/tools/jquery.js"></script>
+    <script th:remove="all" type="text/javascript" src="../resource/semantic/semantic.js"></script>
 </head>
-<body style="background:#ccc;background-size:cover;" >
-	<div class="ui doubling three column centered grid" style="padding-top:100px;">
-		<div class="column">
-			<div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
-				<form class="ui form" method="post" id="userLoginForm">
-					<div class="ui field fluid input left icon">
-						<input class="form-control" type="text" name="username"
-							placeholder="用户名" />
-						<i class="user icon"></i>
-					</div>
-					<div class="ui field fluid input left icon">
-						<input class="form-control" type="password" name="password"
-							placeholder="密码" />
-							<i class="hide icon"></i>
-					</div>
-					<div class="ui filed error">
-						<span class="error" th:text="${error}"></span>
-					</div>
-					
-					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-					
-					<div class="ui doubling two column grid">
-						<div class="ui column">
-							<input class="ui fluid green button" type="submit" value="登录" />
-						</div>
-						<div class="ui column">
-							<a class="ui fluid button" th:href="@{/user/register}">注册</a>
-						</div>
-					</div>
-				</form>
-			</div>
-			
-			<div class="ui message">
-				忘记密码？<a th:href="@{/user/reset/password/apply}"><span>找回密码</span></a>
-				<br/>
-				如果账号还没有激活，请<a ><span>重新验证邮件</span></a>
-			</div>
-			
-			<div class="ui horizontal divider">
-					使用其他账号登录
-			</div>
-			<form th:action="@{/connect/github}" method="POST">
-				<button class="ui blue button" type="submit">
-					<i class="github icon"></i>
-						Github
-				</button>
-			</form>
-		</div>
-	</div>
-	
-	<th:block th:replace="~{base/alert}"></th:block>
-	
+<body style="background:#ccc;background-size:cover;">
+<div class="ui doubling three column centered grid" style="padding-top:100px;">
+    <div class="column">
+        <div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
+            <form class="ui form" method="post" id="userLoginForm">
+                <div class="ui field fluid input left icon">
+                    <input class="form-control" type="text" name="username"
+                           placeholder="用户名"/>
+                    <i class="user icon"></i>
+                </div>
+                <div class="ui field fluid input left icon">
+                    <input class="form-control" type="password" name="password"
+                           placeholder="密码"/>
+                    <i class="hide icon"></i>
+                </div>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="ui doubling two column grid">
+                    <div class="ui column">
+                        <input class="ui fluid green button" type="submit" value="登录"/>
+                    </div>
+                    <div class="ui column">
+                        <a class="ui fluid button" th:href="@{/user/register}">注册</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="ui message">
+            忘记密码？<a th:href="@{/user/reset/password/apply}"><span>找回密码</span></a>
+            <br/>
+            如果账号还没有激活，请<a><span>重新验证邮件</span></a>
+        </div>
+
+        <div class="ui horizontal divider">
+            使用其他账号登录
+        </div>
+        <form th:action="@{/connect/github}" method="POST">
+            <button class="ui blue button" type="submit">
+                <i class="github icon"></i>
+                Github
+            </button>
+        </form>
+    </div>
+</div>
+
+<th:block th:replace="~{base/alert}"></th:block>
+
 </body>
 </html>
