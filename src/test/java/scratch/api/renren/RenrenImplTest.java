@@ -1,7 +1,8 @@
-package scratch.service.reader.renren;
+package scratch.api.renren;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -17,23 +18,18 @@ public class RenrenImplTest{
 	
 	@Test
 	public void testSearch() {
-		List<Video> videos = renren.search("小巨人");
+		List<Video> videos = renren.search("致命之吻");
 		assertNotNull("List<Video> is null", videos);
-		
+
 		for(Video v : videos) {
 			assertNotNull("title is null", v.getTitle());
 			assertNotNull("publishAt is null", v.getPublishAt());
 			assertNotNull("resourceUrl is null",v.getResourceUrl());
+			assertNotNull("downloadListUrl is null", v.getDownloadListUrl());
+			List<VideoEpisode> videoEpisodes = renren.getEpisodeList(v.getDownloadListUrl());
+			assertNotNull(videoEpisodes);
 		}
-		
-		System.out.println(videos);
-	}
-	
-	@Test
-	public void testGetEpisodeList() {
-		List<VideoEpisode> videoEpisodes = renren.getEpisodeList("http://xiazai002.com/S00000");
-		assertNotNull(videoEpisodes);
-		System.out.println(videoEpisodes);
+
 	}
 
 }

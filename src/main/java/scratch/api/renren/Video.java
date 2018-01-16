@@ -56,8 +56,12 @@ public class Video {
 
 	@Override
 	public String toString() {
-		return "Video [title=" + title + ", imgUrl=" + imgUrl + ", publishAt=" + publishAt + ", resourceUrl="
-				+ resourceUrl + "]";
+		return "Video{" +
+				"title='" + title + '\'' +
+				", imgUrl='" + imgUrl + '\'' +
+				", publishAt=" + publishAt +
+				", resourceUrl='" + resourceUrl + '\'' +
+				", downloadListUrl='" + downloadListUrl + '\'' +
+				'}';
 	}
-	
 }
