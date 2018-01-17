@@ -40,4 +40,4 @@
 			values(#{dict.code}, #{dict.parentCode}, #{dict.value}, #{dict.sequence}, #{dict.used})
 	</insert>
 
-</mapper>  
+</mapper>

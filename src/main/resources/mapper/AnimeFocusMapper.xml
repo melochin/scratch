@@ -25,6 +25,18 @@
 			from anime_focus f, anime a 
 			where f.user_id = #{userId} and f.anime_id = a.id;
 	</select>
+
+	<select id="findByAnimeAndUser" resultMap="AnimeFocusMap">
+		select f.id as id,
+			f.anime_id as anime_id,
+			a.name as anime_name,
+			f.user_id as user_id,
+			f.last_push_time as last_push_time
+			from anime_focus f, anime a
+			where f.user_id = #{userId} and f.anime_id = #{animeId}
+				and f.anime_id = a.id;
+	</select>
+
 	
 	<!-- 新增 -->
 	<insert id="save">
@@ -47,7 +59,7 @@
 	<delete id="delete">
 		delete from anime_focus where id = #{id}
 	</delete>
-	
+
 	<delete id="deleteByAnimeAndUser">
 		delete from anime_focus where anime_id = #{animeId} and user_id = #{userId} 
 	</delete>
