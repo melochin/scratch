@@ -1,9 +1,6 @@
 package scratch.controller;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,8 @@ import scratch.service.AnimeService;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
 
+import javax.swing.text.html.Option;
+
 @Controller
 public class HomeController {
 	
@@ -50,20 +49,17 @@ public class HomeController {
 	@Autowired
 	private DictService dictService;
 	
-	@Autowired
-	private RedisTemplate<String, Object> redisTemplate;
-	
 	private int limit = 10;
-	
-	
+
 	@ModelAttribute
 	public void setModel(Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
 		Long userId = null;
-		model.addAttribute("types", dictService.findByType(DictTypeContext.ANIMETYPE));
-		if(userAdapter != null){
-			userId = userAdapter.getUserId();
-		}
-		model.addAttribute("searchHistories", animeService.listSearchHistory(userId));
+		model.addAttribute("types",
+				dictService.findByType(DictTypeContext.ANIMETYPE));
+		Optional.ofNullable(userAdapter).ifPresent(adapter -> {
+			model.addAttribute("searchHistories",
+					animeService.listSearchHistory(adapter.getUserId()));
+		});
 	}
 	
 	/**
@@ -77,22 +73,10 @@ public class HomeController {
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public String mainPage(Model model, 
 			@AuthenticationPrincipal UserAdapter userAdapter){
-		
-		List<Anime> mostFocuseds = null;
-		Map<String, List<Anime>> mostFcousedMap = null;
-		ValueOperations<String, Object> vops = redisTemplate.opsForValue();
-		
-		mostFocuseds = (List<Anime>) vops.get("mostFocuseds");
-		if(mostFocuseds == null) {
-			mostFocuseds = animeService.listMostFocused(limit);
-			vops.set("mostFocuseds", mostFocuseds, 6, TimeUnit.HOURS);
-		}
-		mostFcousedMap = (Map<String, List<Anime>>) vops.get("mostFcousedMap");
-		if(mostFcousedMap == null) {
-			mostFcousedMap = animeService.listMostFcousedGroupByType(limit);
-			vops.set("mostFcousedMap", mostFcousedMap, 6, TimeUnit.HOURS);			
-		}
-		
+
+		List<Anime> mostFocuseds = animeService.listMostFocused(limit);
+		Map<String, List<Anime>> mostFcousedMap = animeService.listMostFcousedGroupByType(limit);
+
 		model.addAttribute("mostFocusAnimes", wrapAnimes(mostFocuseds, userAdapter));
 		model.addAttribute("typeAndAnimes", wrapAnimes(mostFcousedMap, userAdapter));
 		model.addAttribute("module", "home");
@@ -110,21 +94,10 @@ public class HomeController {
 	@GetMapping("/{typeCode}")
 	public String listAnimesByType(@PathVariable("typeCode") String code,
 			Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
-		// 校验类型是否正确
 		DictList dictList = dictService.findByType(DictTypeContext.ANIMETYPE);
-		if(dictList.get(code) == null) {
-			throw new RuntimeException();
-		}
-		
-		List<Anime> mostFocuseds = null;
-		ValueOperations<String, Object> vops = redisTemplate.opsForValue();
+		if(dictList.get(code) == null) throw new RuntimeException();
 
-		mostFocuseds = (List<Anime>) vops.get("mostFocuseds:" + code);
-		if(mostFocuseds == null) {
-			mostFocuseds = animeService.listByType(code);
-			vops.set("mostFocuseds:" + code, mostFocuseds, 6, TimeUnit.HOURS);
-		}
-		
+		List<Anime> mostFocuseds = animeService.listByType(code);
 		model.addAttribute("animes", wrapAnimes(mostFocuseds, userAdapter));
 		model.addAttribute("module", code);
 		return "index";
@@ -140,13 +113,9 @@ public class HomeController {
 	@GetMapping("/search")
 	public String search(@RequestParam("word") String word,
 			Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
-		word = word.trim();
-		Long userId = null;
-		if(userAdapter != null) {
-			userId = userAdapter.getUserId();
-		}
-		
-		model.addAttribute("animes", wrapAnimes(animeService.listByName(word, userId), userAdapter));
+		Long userId = Optional.ofNullable(userAdapter).orElseGet(null).getUserId();
+		model.addAttribute("animes",
+				wrapAnimes(animeService.listByName(word.trim(), userId), userAdapter));
 		return "index";
 	}
 	
@@ -161,6 +130,13 @@ public class HomeController {
 		model.addAttribute("anime", animeService.getById(animeId));
 		model.addAttribute("episodes", episodeService.listByAnimeId(animeId));
 		return "/anime/episodes";
+	}
+
+	@GetMapping("/anime/episodess/{animeId}")
+	public String showAnimeEpisodess(@PathVariable("animeId") Long animeId, Model model) {
+		model.addAttribute("anime", animeService.getById(animeId));
+		model.addAttribute("episodes", episodeService.listByAnimeId(animeId));
+		return "/anime/episodess";
 	}
 	
 	/**
@@ -203,8 +179,8 @@ public class HomeController {
 	@RequestMapping(value="/common/message", method=RequestMethod.GET)
 	public String message(RedirectAttributes ra, Model model) {
 		if(model.asMap().size() == 0) {
-			Random random = new Random();
-			model.addAttribute("success", FACECHARS[random.nextInt(FACECHARS.length)]);
+			model.addAttribute("success",
+					FACECHARS[new Random().nextInt(FACECHARS.length)]);
 		}
 		model.addAllAttributes(ra.getFlashAttributes());
 		return "base/message";

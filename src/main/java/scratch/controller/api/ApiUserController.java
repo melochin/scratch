@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import scratch.model.entity.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
+import scratch.support.web.JsonResult;
 
 import java.util.List;
 
@@ -41,5 +42,20 @@ public class ApiUserController {
 		userService.deleteById(userId);
 		return;
 	}
+
+	/**
+	 * 校验username是否重名
+	 * @param username
+	 * @return validate true : 校验通过，不重名
+	 */
+	@RequestMapping(path="/api/validate/username", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	JsonResult existUser(@RequestParam("username") String username) {
+		JsonResult result = new JsonResult();
+		boolean validate = !userService.isExistByUsername(username);
+		result.setValidate(validate);
+		return result;
+	}
+
 
 }

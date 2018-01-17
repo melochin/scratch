@@ -5,6 +5,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import scratch.context.SessionContext;
 import scratch.model.entity.User;
+import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
 import scratch.support.web.JsonResult;
@@ -80,24 +82,24 @@ public class RegisterController {
 		}
 		return "redirect:/user/login";
 	}
-	
+
 	/**
 	 * 发送邮箱校验
-	 * @param session
-	 * @param model
+	 * @param userAdapter
+	 * @param ra
 	 * @return
 	 * @throws MailException
 	 * @throws MessagingException
 	 */
 	@GetMapping(path="/register/sendMail")
-	public String sendMail(@SessionAttribute(SessionContext.USER) User user, 
+	public String sendMail(@AuthenticationPrincipal UserAdapter userAdapter,
 			RedirectAttributes ra) throws MailException, MessagingException {
 		
-		if(user == null) {
+		if(userAdapter == null) {
 			throw new RuntimeException();
 		}
-		
-		user = service.getById(user.getUserId());
+
+		User user = service.getById(userAdapter.getUserId());
 		
 		if(!"1".equals(user.getStatus())) {
 			service.sendActiveMail(user);
@@ -135,19 +137,6 @@ public class RegisterController {
 		}
 		
 		return "redirect:/user/info";
-	}
-	
-	/**
-	 * 校验username是否重名
-	 * @param username
-	 * @return validate true : 校验通过，不重名
-	 */
-	@RequestMapping(path="/api/validate/username", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody JsonResult existUser(@RequestParam("username") String username) {
-		JsonResult result = new JsonResult();
-		boolean validate = !service.isExistByUsername(username);
-		result.setValidate(validate);
-		return result;
 	}
 
 }

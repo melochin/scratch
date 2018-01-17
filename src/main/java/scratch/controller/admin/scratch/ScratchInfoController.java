@@ -1,17 +1,16 @@
 package scratch.controller.admin.scratch;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import scratch.service.anime.AnimeScratchService;
 
-@RequestMapping("/admin")
 @Controller
 public class ScratchInfoController {
 
@@ -23,7 +22,7 @@ public class ScratchInfoController {
 		model.addAttribute("module", "scratch");
 	}
 	
-	@GetMapping("/scratch")
+	@GetMapping("/admin/scratch")
 	public String showRecord(Model model) {
 		// 目前服务是否运行
 		boolean isRun = scratchService.isRun();
@@ -34,7 +33,5 @@ public class ScratchInfoController {
 		model.addAttribute("counts", map.values());
 		return "/admin/scratch/index";
 	}
-	
-	
-	
+
 }

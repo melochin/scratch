@@ -6,14 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -56,6 +49,20 @@ public class UserController {
 	 */
 	@PostMapping("/update/pwd")
 	public void updatePassword() { }
+
+	@PostMapping("/update/email")
+	public String modifyEmail(@AuthenticationPrincipal UserAdapter user,
+							  @RequestParam("email") String email,
+							  @RequestHeader("referer") String referer,
+							  RedirectAttributes ra) {
+		try{
+			userService.modifyEmail(user.getUserId(), email);
+			ModelUtils.setSuccess(ra, "邮箱更改成功，并已发出认证邮件");
+		} catch (Exception e) {
+			ModelUtils.setError(ra, e.getMessage());
+		}
+		return "redirect:" + referer;
+	}
 	
 	/**
 	 * 密码重置申请页面（需要填写邮箱信息）

@@ -155,39 +155,4 @@ public class AnimeController {
 		return "redirect:" + referer;
 	}
 	
-	
-	
-	/** Ajax Api	*/
-	/*	@UserRole(value=Role.Admin)
-		@RequestMapping(value="/anime/{animeId}", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-		public @ResponseBody Result<Anime> find(@PathVariable("animeId") Long animeId) {
-			Result<Anime> result = null;
-			Anime anime = service.findById(animeId);
-			if(anime != null) {
-				result = new Result<Anime>(anime);
-			} else {
-				result = new Result<Anime>("番剧不存在");
-			}
-			return result;
-		}*/
-		
-	/*	*//** 新增页面	*//*
-		@UserRole(value=Role.Admin)
-		@GetMapping(value="/anime/form")
-		public String animeFormForNew(Model model) {
-			model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
-			return "/admin/anime/save";
-		}*/
-		
-	
-/*	*//**	编辑页面（更新）	*//*
-	@UserRole(value=Role.Admin)
-	@RequestMapping(value="/anime/form/{animeId}", method=RequestMethod.GET)
-	public ModelAndView animeForm(@PathVariable("animeId") Long animeId, Model model) {
-		Anime anime = service.findById(animeId);
-		model.addAttribute("anime", anime);
-		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
-		return new ModelAndView("/admin/anime/edit");
-	}*/
-	
 }

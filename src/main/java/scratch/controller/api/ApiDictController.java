@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import scratch.exception.NotFoundException;
 import scratch.model.entity.Dict;
 import scratch.service.DictService;
+import scratch.support.web.JsonResult;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ApiDictController {
@@ -53,5 +55,15 @@ public class ApiDictController {
 		dict.setCode(code);
 		dictService.delete(dict);
 		return;
+	}
+
+	@GetMapping(value = "/api/admin/dics/validate/{code}/{parentCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public JsonResult validateCode(
+			@PathVariable(value = "code", required = true) String code,
+			@PathVariable(value = "parentCode", required = true) String parentCode) {
+		JsonResult result = new JsonResult();
+		Dict newDict = dictService.findByCodeAndParentCode(code, parentCode);
+		result.setValidate(newDict == null);
+		return result;
 	}
 }

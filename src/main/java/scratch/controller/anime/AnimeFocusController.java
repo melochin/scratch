@@ -44,21 +44,5 @@ public class AnimeFocusController {
 		model.addAttribute("focus", focus);
 		return "/anime/focus";
 	}
-	
-	@RequestMapping(value="/focus/add", method=RequestMethod.POST)
-	public String add(@RequestParam("animeId") Long animeId,
-			@AuthenticationPrincipal UserAdapter userAdapter, 
-			@RequestHeader("referer") String referer) {
-		service.save(new Anime(animeId), userAdapter.getUserId());
-		return "redirect:"+referer;
-	}
-	
-	@RequestMapping(value="/focus/delete", method=RequestMethod.POST)
-	public String delete(@RequestParam("animeId") Long animeId,
-			@AuthenticationPrincipal UserAdapter userAdapter, 
-			@RequestHeader("referer") String referer) {
-		service.delete(animeId, userAdapter.getUserId());
-		return "redirect:"+referer;
-	}
-	
+
 }

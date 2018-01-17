@@ -16,7 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.support.web.spring.ModelUtils;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class ExceptionController {
 
 	private static Logger log = Logger.getLogger(ExceptionController.class);
@@ -55,6 +55,10 @@ public class ExceptionController {
 		String referer = request.getHeader("referer");
 		String error = e.getMessage();
 		ModelUtils.setError(ra, error);
+
+		// referer 如果不属于范围内的需要　
+		// redirect view_error
+
 		return "redirect:" + referer;
 	}
 
