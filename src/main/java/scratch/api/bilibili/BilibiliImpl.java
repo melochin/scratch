@@ -197,7 +197,7 @@ public class BilibiliImpl implements Bilibili{
 	public List<Video> search(String keyword, int page) {
 		List<Video> videos = new ArrayList<Video>();
 		String url = UriComponentsBuilder.fromUriString(SEARCH_URL).build()
-				.expand(keyword, "totalrank", page)
+				.expand(keyword, "pubdate", page)
 				.encode()
 				.toUriString();
 		String html = new HttpConnection().connect(url);

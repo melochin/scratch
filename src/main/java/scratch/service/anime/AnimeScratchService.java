@@ -1,18 +1,8 @@
 package scratch.service.anime;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.log4j.Logger;
@@ -49,9 +39,13 @@ public class AnimeScratchService {
 	
 	@Autowired
 	private AnimeMessageService messsageService;
-	
+
+	private BlockingQueue<String> messages;
+
 	private static Boolean isScratchRun = false;
-	
+
+	private static Boolean isFirst = true;
+
 	/**
 	 * key: host code, value: anime alias list; 
 	 * hsot code = 0, 认为anime没有维护任何host的alias 
@@ -68,9 +62,101 @@ public class AnimeScratchService {
 		this.adpaterMap.put(new Long(3), new RenrenAdapter(new RenrenImpl()));
 		this.adpaterMap.put(new Long(4), new BilibiliAdapter(new BilibiliImpl()));
 	}
-	
+
+	//@Scheduled(fixedRate=360*60*1000)
+	public void run() {
+
+		// 运行状态判断，防止多个任务在执行
+		if(!updateRun(true)) {
+			if(log.isInfoEnabled()) {
+				log.debug("scratch service is running, waiting for next time");
+			}
+			return;
+		}
+
+		// 初始化
+		initAnimeAliasMap();
+		initMessages();
+
+		// 准备多线程
+		ExecutorService exec = Executors.newCachedThreadPool();
+		CountDownLatch countDownLatch = new CountDownLatch(adpaterMap.size());
+		ConcurrentMap<String, Integer> resultMap = new ConcurrentHashMap<String, Integer>();
+
+		if(log.isInfoEnabled()) {
+			log.info("start runing scratch service");
+		}
+
+		// 遍历所有适配器，执行数据抓取线程任务
+		adpaterMap.entrySet().forEach(entry -> {
+			// 获取HostId及对应的适配器
+			Long hostId = entry.getKey();
+			Adapter adapter = entry.getValue();
+			// 加载对应的ANIME数据
+			List<Anime> animes = getAnimeMap(hostId);
+			// 网络访问任务可能超时，启用线程任务
+			exec.execute(() -> {
+				int episodeCount = readAndPushAnimeEpidsode(adapter, animes, hostId);
+				resultMap.put(adapter.getClass().getName(), episodeCount);
+				countDownLatch.countDown();
+			});
+		});
+
+		// 结束线程，等待所有scratch任务完成
+		// 1.输出运行结果 2.重置运行状态
+		exec.execute(() -> {
+			try {
+				countDownLatch.await();
+			} catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+
+			int count = resultMap.entrySet().stream()
+					.mapToInt(e -> e.getValue()).sum();
+			if(log.isInfoEnabled()) {
+				log.info("end scratch service : get " + count + " episode \n"
+						+ resultMap);
+			}
+
+			addMessage("运行完毕：共抓取" + count + "条数据");
+			//重置运行状态
+			updateRun(false);
+		});
+
+		exec.shutdown();
+	}
+
+	// 运行状态
+	public boolean isRun() {
+		return isScratchRun;
+	}
+
+	public synchronized List<String> getMessages() {
+		List<String> list = new ArrayList<>();
+		if(messages == null) return list;
+		list.addAll(messages);
+		return list;
+	}
+
+
+	// 运行记录
+	public Map<String, Integer> getRecordMap() {
+		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
+		List<ScratchRecord> records = recordDao.list();
+		for(ScratchRecord record : records) {
+			long plus = (record.getEndTime().getTime() - record.getStartTime().getTime()) / 1000;
+			plus = plus == 0 ? 1 : plus;
+			long unit = record.getCount() / plus;
+			String endTime = DateFormatUtils.format(record.getEndTime(), DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern());
+			map.put(endTime, new Integer((int) unit));
+		}
+		return map;
+	}
+
+
 	/** init AnimeAliasMap */
 	private synchronized void initAnimeAliasMap() {
+		animeAliasMap = new LinkedHashMap<Long, List<Anime>>();
 		// 获取未完结的番剧，且含有别名
 		List<Anime> animes = animeDao.listWithAlias();
 		animes.forEach(anime -> {
@@ -96,103 +182,59 @@ public class AnimeScratchService {
 		animeAliasMap.get(hostId).add(anime);
 	}
 	
-	
 	private synchronized List<Anime> getAnimeMap(Long hostId) {
 		return Optional.ofNullable(animeAliasMap.get(hostId)).orElse(new ArrayList<Anime>());
 	}
-	
-	
-	@Scheduled(fixedRate=360*60*1000)
-	public void run() {
-		
-		// 运行状态判断，防止多个任务在执行
+
+	/**
+	 *
+	 * @param adapter 适配器
+	 * @param animes 对应站点需要抓取的anime
+	 * @param hostId 站点ID
+	 * @return
+	 */
+	private int readAndPushAnimeEpidsode(Adapter adapter, List<Anime> animes, Long hostId) {
+		int count = animes.stream().mapToInt(anime -> {
+			int size = 0;
+			try{
+				// 网络访问 抓取数据
+				List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
+				addMessage("HostId:" + hostId + " Anime:" + anime.getName() + " [完成]");
+				// 设置默认值
+				if(episodes == null) return size;
+				episodes.forEach(e -> e.setHostId(hostId));
+				// 发送给消息队列
+				messsageService.push(episodes);
+				size = episodes.size();
+			} catch (Exception e) {
+				addMessage("[Error]" + e.getMessage());
+				log.error(e.getMessage());
+			}
+			return size;
+		}).sum();
+		return count;
+	}
+
+	private synchronized void initMessages() {
+		messages = new LinkedBlockingQueue<String>();
+	}
+
+	private synchronized void addMessage(String message) {
+		messages.add(message);
+	}
+
+	/**
+	 * 更新运行状态
+	 * @param exceptedStatus
+	 * @return
+	 */
+	private boolean updateRun(boolean exceptedStatus) {
 		synchronized (isScratchRun) {
-			if(isScratchRun && log.isInfoEnabled()) {
-				log.debug("scratch service is running, waiting for next time");				
-				return;
-			}
-			isScratchRun = true;
+			if(isScratchRun == exceptedStatus) return false;
+			isScratchRun = exceptedStatus;
 		}
-		
-		// 初始化
-		initAnimeAliasMap();
-		
-		ExecutorService exec = Executors.newCachedThreadPool();
-		CountDownLatch countDownLatch = new CountDownLatch(adpaterMap.size());
-		ConcurrentMap<String, Integer> resultMap = new ConcurrentHashMap<String, Integer>();
-		
-		if(log.isInfoEnabled()) {
-			log.info("start runing scratch service");
-		}
-		
-		// 遍历所有适配器，执行数据抓取线程任务
-		adpaterMap.entrySet().forEach(entry -> {
-			// 获取HostId及对应的适配器
-			Long hostId = entry.getKey();
-			Adapter adapter = entry.getValue();
-			// 加载对应的ANIME数据
-			List<Anime> animes = getAnimeMap(hostId);
-			// 网络访问任务可能超时，启用线程任务
-			exec.execute(() -> {
-				int episodeCount = animes.stream().mapToInt(anime -> {
-					List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
-					episodes.forEach(e -> e.setHostId(hostId));
-					// 需要过滤掉无用的数据
-					try {
-						messsageService.push(episodes);
-					} catch (IOException | TimeoutException e) {
-						e.printStackTrace();
-					}
-					return episodes.size();
-				}).sum();
-				
-				// 保存抓取结果
-				resultMap.put(adapter.getClass().getName(), episodeCount);
-				countDownLatch.countDown();
-			});
-		});
-			
-		// 结束线程，等待所有scratch任务完成
-		// 1.输出运行结果 2.重置运行状态
-		exec.execute(() -> {
-			try {
-				countDownLatch.await();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} 
-			
-			if(log.isInfoEnabled()) {
-				int count = resultMap.entrySet().stream()
-						.mapToInt(e -> e.getValue()).sum();
-				log.info("end scratch service : get " + count + " episode \n" 
-						+ resultMap);
-			}
-			//重置运行状态
-			synchronized(isScratchRun) {
-				isScratchRun = false;	
-			}
-			
-		});
-		
-		exec.shutdown();
+		return true;
 	}
-	
-	// 运行状态
-	public boolean isRun() {
-		return isScratchRun;
-	}
-	
-	// 运行记录
-	public Map<String, Integer> getRecordMap() {
-		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
-		List<ScratchRecord> records = recordDao.list();
-		for(ScratchRecord record : records) {
-			long plus = (record.getEndTime().getTime() - record.getStartTime().getTime()) / 1000;
-			plus = plus == 0 ? 1 : plus;
-			long unit = record.getCount() / plus;
-			String endTime = DateFormatUtils.format(record.getEndTime(), DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern());
-			map.put(endTime, new Integer((int) unit));	
-		}
-		return map;
-	}
+
+
 }

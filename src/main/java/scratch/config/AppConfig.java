@@ -15,7 +15,6 @@ import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
-import scratch.model.view.UserForm;
 import scratch.service.UserService;
 
 public class AppConfig {
@@ -27,20 +26,9 @@ public class AppConfig {
 	public ConversionServiceFactoryBean conversionService() {
 		ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
 		
-		Converter<UserForm, User> convert = new Converter<UserForm, User>() {
-
-			@Override
-			public User convert(UserForm source) {
-				User user = new User();
-				user.setUserId(source.getUserId());
-				user.setPassword(source.getNewPassword());
-				return user;
-			}
-		};
-		
 		@SuppressWarnings("rawtypes")
 		Set<Converter> converts = new HashSet<Converter>();
-		converts.add(convert);
+
 		
 		converts.add(new Converter<AnimeEpisodeScratch, AnimeEpisode>() {
 

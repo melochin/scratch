@@ -24,6 +24,10 @@ public class DictList extends ArrayList<Dict>{
 	public String get(Long key) {
 		return asMap().get(String.valueOf(key));
 	}
+
+	public String get(Integer key) {
+		return asMap().get(String.valueOf(key));
+	}
 	
 	/**
 	 * 将List Dict转换为<String,String>Map 便于取code对应的值
@@ -31,21 +35,23 @@ public class DictList extends ArrayList<Dict>{
 	 * @return
 	 */
 	private Map<String, String> asMap() {
-		// 如果哈希值没有发生变化且map已存在
-		// 认为map没必要重新生成
-		if(hashCode == this.hashCode() && map != null) {
-			return map;
-		}
-		// 生成map
+		if(isUpdated() == false) return map;
+		Map<String, String> hashMap = getMap();
+		map = hashMap;
+		hashCode = this.hashCode();
+		return map;
+	}
+
+	private boolean isUpdated() {
+		return hashCode != this.hashCode() || map == null;
+	}
+
+	private Map<String, String> getMap() {
 		Map<String, String> hashMap = new HashMap<String, String>();
 		for(Dict dict : this) {
 			hashMap.put(dict.getCode(), dict.getValue());
 		}
-		// 更新map, hashCode
-		map = hashMap;
-		hashCode = this.hashCode();
-		
-		return map;
+		return hashMap;
 	}
 
 }

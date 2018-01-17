@@ -1,5 +1,6 @@
 package scratch.service.reader.adpater;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,11 @@ public class BilibiliAdapter implements Adapter {
 	
 	@Override
 	public List<AnimeEpisode> readAnimeEpidsode(Anime anime) {
-		List<Video> videos = bilibili.search(anime.getName());
+		List<Video> videos = new ArrayList<>();
+		String[] aliass = anime.getAlias().split(";");
+		for(String alias : aliass) {
+			videos.addAll(bilibili.search(alias));
+		}
 		return videos.stream()
 				.map(video -> convert(anime, video))
 				.collect(Collectors.toList());

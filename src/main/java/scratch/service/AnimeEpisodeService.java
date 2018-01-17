@@ -113,9 +113,7 @@ public class AnimeEpisodeService {
 	
 	@Transactional
 	public void delete(Long id) {
-		if(episodeDao.delete(id) != 1) {
-			throw new RuntimeException("删除失败");
-		}
+		episodeDao.delete(id);
 	}
 
 	@Transactional

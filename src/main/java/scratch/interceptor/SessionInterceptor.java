@@ -37,7 +37,7 @@ public class SessionInterceptor implements  HandlerInterceptor {
 		if(request.getSession().getAttribute(SessionContext.USER) == null ) {
 			if("localhost".equals(request.getServerName()) || 
 					"127.0.0.1".equals(request.getRemoteHost())) {
-				user = dao.getByName(user);
+				user = dao.getByName(user.getUsername());
 				request.getSession().setAttribute(SessionContext.USER, user);
 			}
 		}

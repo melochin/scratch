@@ -2,17 +2,15 @@ package scratch.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -37,12 +35,12 @@ public class AnimeService {
 	
 	private static final String SEARCH_HISTORY = "searchHistory";
 	
-	private RedisTemplate<String, String> redisTemplate;
+	private RedisTemplate<String, Object> redisTemplate;
 	
 	private IAnimeDao animeDao;
 	
 	@Autowired
-	public AnimeService(IAnimeDao animeDao, RedisTemplate<String, String> redisTemplate) {
+	public AnimeService(IAnimeDao animeDao, RedisTemplate<String, Object> redisTemplate) {
 		this.animeDao = animeDao;
 		this.redisTemplate = redisTemplate;
 	}
@@ -52,13 +50,19 @@ public class AnimeService {
 	}
 	
 	public List<Anime> listByType(String type) {
-		return animeDao.listByTypeLeftJointFocus(type);
+		String key = "mostFocuseds:" + type;
+		List<Anime> mostFocuseds = (List<Anime>) redisTemplate.opsForValue().get(key);
+		if(mostFocuseds != null) return mostFocuseds;
+
+		mostFocuseds = animeDao.listByTypeLeftJointFocus(type);
+		redisTemplate.opsForValue().set(key, mostFocuseds, 6, TimeUnit.HOURS);
+		return mostFocuseds;
 	}
 	
 	public List<Anime> listByName(String name, Long userId) {
 		if(userId != null) {
 			String key = SEARCH_HISTORY + ":" + userId;
-			SetOperations<String, String> ops = redisTemplate.opsForSet();
+			SetOperations<String, Object> ops = redisTemplate.opsForSet();
 			if(ops.size(key) >= 5) {
 				ops.pop(key);
 			}
@@ -74,10 +78,18 @@ public class AnimeService {
 	
 	/** 查询最受关注的Anime
 	 *	@param limit 限制显示个数
-	 */ 
+	 */
 	public List<Anime> listMostFocused(int limit) {
+
+		String key = "mostFocuseds" + ":" + limit;
+		List<Anime> mostFocuseds = (List<Anime>) redisTemplate.opsForValue().get(key);
+		if(mostFocuseds != null) return mostFocuseds;
+
 		List<Anime> animes = listMostFocused();
-		return animes.size() > limit ? animes.subList(0, limit) : animes;
+		animes = animes.size() > limit ? animes.subList(0, limit) : animes;
+		redisTemplate.opsForValue().set(key, animes, 6, TimeUnit.HOURS);
+
+		return animes;
 	}
 	
 	/** 将最受关注的Anime，根据类型分组 **/
@@ -91,6 +103,11 @@ public class AnimeService {
 	 * @param limit 限制每组显示个数
 	 */
 	public Map<String,List<Anime>> listMostFcousedGroupByType(int limit) {
+
+		String key = "mostFcousedMap" + ":" + limit;
+		Map<String, List<Anime>> mostFcousedMap = (Map<String, List<Anime>>) redisTemplate.opsForValue().get(key);
+		if(mostFcousedMap != null) return mostFcousedMap;
+
 		Map<String, List<Anime>> map = listMostFcousedGroupByType();
 		// 遍历分组的animes，对数量进行限制调整
 		map.entrySet().forEach(entry -> {
@@ -98,6 +115,8 @@ public class AnimeService {
 			animes = animes.size() > limit ? animes.subList(0, limit) : animes;
 			entry.setValue(animes);
 		});
+
+		redisTemplate.opsForValue().set(key, mostFcousedMap, 6, TimeUnit.HOURS);
 		return map;
 	}
 	
@@ -216,10 +235,10 @@ public class AnimeService {
 	}
 	
 	public Set<String> listSearchHistory(Long userId) {
-		if(userId == null) {
-			return null;
-		}
-		return redisTemplate.opsForSet().members("searchHistory" + ":" + userId);
+		if(userId == null) return null;
+		String key = "searchHistory" + ":" + userId;
+		return redisTemplate.opsForSet().members(key)
+				.stream().map(s -> s.toString()).collect(Collectors.toSet());
 	}
 
 }

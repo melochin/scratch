@@ -2,12 +2,7 @@ package scratch.model.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -27,27 +22,35 @@ public class User implements Serializable {
 	@NotBlank(message="用户名不能为空")
 	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="用户名只能以数字或字母组合，且长度不能少于6位超过18位")
 	private String username;
-	
-	@Column(name="email", length=100)
-	@Pattern(regexp="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message="请输入正确的邮箱")
-	private String email;
-	
-	@NotBlank(message="密码不能为空")
-	@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="密码只能以数字或字母组合，且长度不能少于6位超过18位")
-	@Column(insertable=false, updatable=false)
+
+	//@Pattern(regexp="^[a-zA-Z0-9_]{6,18}$", message="密码只能以数字或字母组合，且长度不能少于6位超过18位")
+	@Transient
 	private String password;
 	
 	@Column(name="password")
 	private String hashedPassword;
-	
+
+	@Column(name="email", length=100)
+	@Pattern(regexp="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message="请输入正确的邮箱")
+	private String email;
+
+	/**
+	 * 用户状态
+	 */
 	@Column(name="status", length=1)
 	private String status;
-	
-	@Column(name="salt")
-	private String salt;
-	
+
+	/**
+	 * 用户角色
+	 */
 	@Column(name="role")
 	private Integer role;
+
+	/**
+	 * 加密的盐
+	 */
+	@Column(name="salt")
+	private String salt;
 	
 	public User() {}
 
@@ -131,8 +134,12 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", username=" + username + ", email=" + email + ", password=" + password
-				+ ", status=" + status + ", role=" + role + "]";
+		return "User{" +
+				"userId=" + userId +
+				", username='" + username + '\'' +
+				", email='" + email + '\'' +
+				", status='" + status + '\'' +
+				", role=" + role +
+				'}';
 	}
-
 }

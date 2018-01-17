@@ -70,10 +70,12 @@ public class AnimeFocusService {
 		return animeDisplays;
 	}
 	
-	public void save(Anime anime, Long userId) {
+	public void save(Long  animeId, Long userId) {
 		User user = new User(userId);
+		Anime anime = new Anime(animeId);
 		AnimeFocus animeFocus = new AnimeFocus(anime, user);
 		animeFocus.setLastPushTime(new Date());
+		if(focusDao.findByAnimeAndUser(animeId, userId) != null) return;
 		focusDao.save(animeFocus);
 	}
 	

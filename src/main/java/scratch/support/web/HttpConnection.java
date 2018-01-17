@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -23,6 +24,8 @@ public class HttpConnection {
 	private String json = "";
 	
 	private String method = "get";
+
+	private HttpURLConnection connection;
 	
 	public HttpConnection method(String method) {
 		this.method = method;
@@ -56,7 +59,7 @@ public class HttpConnection {
 		
 		return html;
 	}
-	
+
 	public String connect(URL url) {
 		String html = "";
 		HttpURLConnection connection = null;
@@ -64,33 +67,61 @@ public class HttpConnection {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);
-			
+			connection.setInstanceFollowRedirects(false);
+
 			// set headers
 			connection.setRequestProperty("User-agent", USER_AGENT);
 			for(Entry<String, String> entry : headers.entrySet()) {
-				connection.setRequestProperty(entry.getKey(), entry.getValue());	
+				connection.setRequestProperty(entry.getKey(), entry.getValue());
 			}
-			
+
 			if("post".equals(method)) {
 				connection.setDoInput(true);
 				connection.setUseCaches(false);
 				connection.setRequestMethod("POST");
 			}
-			
+
 			connection.connect();
-			
+
 			if("post".equals(method)) {
 				String result = getRequestParam();
 				OutputStream output = connection.getOutputStream();
 				output.write(result.getBytes("UTF-8"));
-				output.flush();	
+				output.flush();
 			}
-			
+			this.connection = connection;
 			html = StringUtils.toString(connection.getInputStream(), "UTF-8");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return html;
+	}
+
+	public Map<String, String> getCookie() {
+		Map<String, String> cookies = new HashMap<String, String>();
+		if(connection == null) {
+			return cookies;
+		}
+		Map<String, List<String>> headers = connection.getHeaderFields();
+		List<String> lists = headers.get("Set-Cookie");
+		if(lists != null && lists.size() > 0) {
+			for(int i=0; i<lists.size(); i++) {
+				String cookie = lists.get(i);
+				// 找到第一个分号
+				int endIndex = cookie.indexOf(";");
+				if(endIndex == -1) {
+					endIndex = cookie.length();
+				}
+				int midIndex = cookie.indexOf("=");
+				if(midIndex == -1) {
+					continue;
+				}
+				String key = cookie.substring(0, midIndex);
+				String value = cookie.substring(midIndex+1, endIndex);
+				cookies.put(key, value);
+			}
+		}
+		return cookies;
 	}
 	
 	private String getRequestParam() {

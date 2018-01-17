@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
+import javax.swing.text.html.Option;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,30 +93,42 @@ public class UserService {
 
 	/** 账号认证　*/
 	public Authentication authen(String username, String password) {
-		// get salt
-		User user = Optional.ofNullable(getByName(username))
-				.orElseThrow(() -> new AuthenException());
-		String salt = user.getSalt();
-		// check password
-		String hashedPassword = BCrypt.hashpw(password, salt);
+		String hashedPassword = BCrypt.hashpw(password, getSalt(username));
 		Authentication authentication = null;
 		try {
 			authentication =  provider.authenticate(
 					new UsernamePasswordAuthenticationToken(username, hashedPassword));
+			Optional.ofNullable(authentication).orElseThrow(() -> new RuntimeException());
 		} catch (RuntimeException e) {
-			throw new AuthenException();
-		}
-		if(authentication == null) {
 			throw new AuthenException();
 		}
 		return authentication;
 	}
+
+	private String getSalt(String username) {
+		User user = Optional.ofNullable(getByName(username))
+				.orElseThrow(() -> new AuthenException());
+		return user.getSalt();
+	}
+
 
 	/**------------------------------修改类服务--------------------------------*/
 	
 	/** 用户注册（注意事务）*/
 	@Transactional
 	public void save(User user) throws MailException {
+		if (saveUser(user)) return;
+		try{
+			sendActiveMail(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new MailException(e.getMessage());
+		}
+		return;
+	}
+
+	@Transactional
+	public boolean saveUser(User user) {
 		if(isExistByUsername(user.getUsername())) throw new RuntimeException("账号已经存在");
 		// 设置默认值
 		if(user.getStatus() == null) {
@@ -126,15 +139,9 @@ public class UserService {
 		dao.save(user);
 		// 发送认证邮件
 		// 后台管理添加的用户，可以选择跳过这步骤
-		if(user.getStatus().equals("1")) return;
+		if(user.getStatus().equals("1")) return true;
 		// 如果邮件发送失败，抛出checked异常，不影响注册事务，可以事后补邮件认证
-		try{
-			sendActiveMail(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new MailException(e.getMessage());
-		}
-		return;
+		return false;
 	}
 
 	/** 用户密码更改　*/
@@ -155,9 +162,7 @@ public class UserService {
 	 */
 	@Transactional
 	public void modify(User u) {
-		if(StringUtils.isEmpty(u.getPassword())) {
-			u.setHashedPassword(null);
-		} else {
+		if(!StringUtils.isEmpty(u.getPassword())) {
 			encodePassword(u);
 		}
 		dao.update(u, u.getUserId());

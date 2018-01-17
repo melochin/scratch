@@ -12,6 +12,9 @@ public interface IAnimeFocusDao {
 	
 	List<AnimeFocus> findByUserId(@Param("userId") Long userId);
 
+	AnimeFocus findByAnimeAndUser(
+			@Param("animeId") Long animeId, @Param("userId") Long userId);
+
 	void save(@Param("focus") AnimeFocus focus);
 	
 	void update(@Param("focus") AnimeFocus focus);
