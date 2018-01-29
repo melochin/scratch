@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -16,7 +17,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.support.web.spring.ModelUtils;
 
-//@ControllerAdvice
+@ControllerAdvice(
+		basePackages = {
+			"scratch.controller.admin",
+			"scratch.controller.anime"
+		})
 public class ExceptionController {
 
 	private static Logger log = Logger.getLogger(ExceptionController.class);

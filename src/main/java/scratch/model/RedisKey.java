@@ -1,6 +1,6 @@
-package scratch.context;
+package scratch.model;
 
-public class RedisContext {
+public class RedisKey {
 
 	public static final String USER_AUTH_MAIL = "userAuthMail";
 
