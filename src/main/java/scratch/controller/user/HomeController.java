@@ -127,13 +127,6 @@ public class HomeController {
 		return "/anime/episodes";
 	}
 
-	@GetMapping("/anime/episodess/{animeId}")
-	public String showAnimeEpisodess(@PathVariable("animeId") Long animeId, Model model) {
-		model.addAttribute("anime", animeService.getById(animeId));
-		model.addAttribute("episodes", episodeService.listByAnimeId(animeId));
-		return "/anime/episodess";
-	}
-	
 	/**
 	 * 用户处于登录状态，读取是否关注的属性
 	 * @param animes

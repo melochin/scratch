@@ -8,14 +8,14 @@
 	
 	<div class="ui five doubling special cards">
 		<div th:each="anime : ${animes}" class="ui card">
-			<a class="imgae" th:href="${'/anime/episodess/' + anime.id}">
+			<a class="imgae" th:href="${'/anime/episodes/' + anime.id}">
 				<img src="https://semantic-ui.com/images/avatar2/large/kristy.png"
 						th:src="'/upload/' + ${anime.pic}" style="width:100%" />
 			</a>
 			<div class="content">
 				<!-- header -->
 				<div class="header">
-					<a th:href="${'/anime/episodess/' + anime.id}"
+					<a th:href="${'/anime/episodes/' + anime.id}"
 					   th:text="${anime.name}"></a>
 				</div>
 			</div>

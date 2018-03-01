@@ -1,23 +1,65 @@
 <html xmlns:th="www.thymeleaf.org">
+<head>
+    <title>首页—Scratch</title>
 
-<div class="header" th:text="${anime.name}"></div>
-<div class="scrolling content">
-	<div class="ui grid">
-		<div class="ui row">
-			<div class="ui segment">
-				<img class="ui small left floated image" th:src="${anime.pic}">
-				<p th:text="${anime.description}"></p>
-			</div>	
-		</div>
-		<div class="ui divider"></div>
-		<div class="ui row">
-			<h3 class="ui header">剧集</h3>
-		</div>
-		<div class="ui row">
-			<p th:if="${episodes.size() == 0}">暂无</p>
-			<a class="ui primary basic button" th:each="episode : ${episodes}" 
-				th:href="${episode.url}" th:text="${episode.number}"></a>
-		</div>
-	</div>
- </div>
+    <th:block th:replace="base/lib :: common" />
+    <th:block th:replace="base/lib :: react" />
+    <th:block th:replace="base/lib :: semantic" />
+    <script type="text/babel" th:src="@{/js/comments.js}"></script>
+</head>
+
+<body th:replace="base/layout/user :: layout(~{::#container})">
+<div id="container">
+
+    <div class="ui segment" style="margin: 0 10rem 0 10rem; min-height: 260px">
+        <h1 th:text="${anime.name}"></h1>
+        <img class="ui  left floated image" style="min-height: 90px; max-height: 180px" th:src="'/upload/' + ${anime.pic}">
+        <p th:text="${anime.description}"></p>
+    </div>
+
+    <div class="ui segment" style="margin: 1rem 10rem 1rem 10rem">
+        <p>
+            <i class="table icon" onclick="showCards()"></i>
+            <i class="list icon" onclick="showBoxs()"></i>
+        </p>
+        <div class="ui five stackable cards">
+            <a class="ui card"  target="_blank" th:each="episode : ${episodes}"
+                 th:href="${episode.url}">
+                <div class="content">
+                    <div class="description">
+                        <p th:text="${episode.number}"></p>
+                    </div>
+                </div>
+                <div class="extra content">
+                    <span class="left floated" th:text="${anime.name}">
+                    </span>
+                    <span class="right floated" th:text="${episode.saveTime}"></span>
+                </div>
+            </a>
+        </div>
+        <p class="boxs" style="display: none">
+            <a class="ui primary basic button" th:each="episode : ${episodes}"
+               th:href="${episode.url}" th:text="${episode.number}"></a>
+        </p>
+    </div>
+
+    <div id="comments" />
+
+    <script>
+
+        function showCards() {
+            $(".cards").attr("style", "");
+            $(".boxs").attr("style", "display:none");
+        }
+
+        function showBoxs() {
+            $(".boxs").attr("style", "");
+            $(".cards").attr("style", "display:none");
+        }
+
+    </script>
+</div>
+
+
+</body>
 </html>
