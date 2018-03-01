@@ -3,6 +3,7 @@ package scratch.config;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -16,12 +17,17 @@ import scratch.model.entity.AnimeEpisodeScratch;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
+import scratch.support.service.PageBean;
 
 public class AppConfig {
 
 	@Autowired
 	private UserService userService;
-	
+
+	/**
+	 * 类型转换
+	 * @return
+	 */
 	@Bean
 	public ConversionServiceFactoryBean conversionService() {
 		ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
@@ -29,7 +35,6 @@ public class AppConfig {
 		@SuppressWarnings("rawtypes")
 		Set<Converter> converts = new HashSet<Converter>();
 
-		
 		converts.add(new Converter<AnimeEpisodeScratch, AnimeEpisode>() {
 
 			@Override
@@ -42,9 +47,9 @@ public class AppConfig {
 				animeEpisode.setScratchTime(episodeScratch.getScratchTime());
 				return animeEpisode;
 			}
-			
+
 		});
-		
+
 		converts.add(new Converter<AnimeEpisode,AnimeEpisodeScratch>() {
 
 			@Override
@@ -58,7 +63,17 @@ public class AppConfig {
 				scratch.setStatus(0);
 				return scratch;
 			}
-			
+
+		});
+
+		converts.add(new Converter<Page, PageBean>() {
+
+			@Override
+			public PageBean convert(Page source) {
+				scratch.support.service.Page page =
+						new scratch.support.service.Page(source);
+				return new PageBean(source, page);
+			}
 		});
 		
 		conversionServiceFactoryBean.setConverters(converts);
@@ -68,7 +83,7 @@ public class AppConfig {
 	@Bean
 	public UserDetailsService userDetailService() {
 		return new UserDetailsService() {
-			
+
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 				User user = userService.getByName(username);

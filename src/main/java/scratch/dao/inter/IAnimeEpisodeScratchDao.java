@@ -12,6 +12,7 @@ import scratch.model.entity.AnimeEpisodeScratch;
 public interface IAnimeEpisodeScratchDao {
 	
 	AnimeEpisodeScratch getById(@Param("id") Long id);
+
 	
 	/**
 	 * 根据URL查找对象

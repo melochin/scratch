@@ -50,7 +50,10 @@ public interface IAnimeDao {
 	void delete(@Param("id") Long id);
 
 	/**--------------------------更新Alias--------------------------------------**/
-	
+
+	AnimeAlias getAliasById(@Param("animeId") Long animeId,
+							@Param("hostId") Long hostId);
+
 	void saveAlias(@Param("alias") AnimeAlias alias);
 	
 	void modifyAlias(@Param("alias") AnimeAlias alias);

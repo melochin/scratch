@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.context.DictTypeContext;
+import scratch.model.DictType;
 import scratch.model.entity.AnimeEpisodeScratch;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.DictService;
@@ -55,7 +55,7 @@ public class ScratchEpisodeController {
 	Integer status, Model model) {
 		model.addAttribute("episodeScratchs", episodeService.listScratch(status));
 		model.addAttribute("status", status);
-		model.addAttribute("hostMap", dictService.findByType(DictTypeContext.HOST));
+		model.addAttribute("hostMap", dictService.findByType(DictType.HOST));
 		return "/admin/scratch/temp";
 	}
 

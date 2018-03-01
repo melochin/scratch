@@ -18,14 +18,14 @@ public class ApiEpisodeController {
 	@Autowired
 	private AnimeService animeService;
 
-	@GetMapping("/api/admin/animes")
-	public List<Anime> getAnimes() {
-		return animeService.list();
-	}
-
 	@GetMapping("/api/admin/episodes")
-	public List<AnimeEpisode> get() {
-		return episodeService.list();
+	public List<AnimeEpisode> get(
+			@RequestParam(value = "animeId", required = false) Long animeId) {
+		if(animeId != null) {
+			return episodeService.listByAnimeId(animeId);
+		} else {
+			return episodeService.list();
+		}
 	}
 
 	@PostMapping("/api/admin/episodes")

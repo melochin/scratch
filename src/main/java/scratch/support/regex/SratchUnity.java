@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scratch.service.ScratchCookie;
-
 public class SratchUnity {
 
 

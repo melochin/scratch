@@ -1,4 +1,4 @@
-package scratch.controller;
+package scratch.controller.user;
 
 import javax.mail.MessagingException;
 

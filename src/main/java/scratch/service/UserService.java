@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
-import javax.swing.text.html.Option;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +20,15 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import scratch.controller.RegisterController;
-import scratch.controller.UserController;
+import scratch.controller.user.RegisterController;
+import scratch.controller.user.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.AuthenException;
 import scratch.model.entity.User;
 import scratch.support.service.MailException;
 import scratch.support.service.PageBean;
 
-import static scratch.context.RedisContext.*;
+import static scratch.model.RedisKey.*;
 
 @Service
 public class UserService {
@@ -286,8 +285,8 @@ public class UserService {
 	 * @return
 	 */
 	public boolean canReset(Long userId, String resetCode) {
-		String redisKey = redisKey(USER_RESET_PSWD, userId);
-		return redisService.equalsTo(redisKey, resetCode);
+		String redisValue = redisService.get(USER_RESET_PSWD, String.valueOf(userId));
+		return resetCode.equals(redisValue);
 	}
 
 	/**

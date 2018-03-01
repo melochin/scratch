@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.aspect.Role;
-import scratch.aspect.UserRole;
 import scratch.model.entity.User;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
@@ -44,7 +42,6 @@ public class UserController {
 	 * @param page
 	 * @return
 	 */
-	@UserRole(Role.Admin)
 	@RequestMapping("")
 	public String list(@RequestParam(value="p", defaultValue="1") int page, Model model) {
 		PageBean<User> userList = userService.list(page, PAGE_USER_SIZE);
@@ -58,7 +55,6 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@UserRole(Role.Admin)
 	@RequestMapping(value="/{userId}", produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody JsonResult getUserInfo(@PathVariable("userId") Long id) {
 		JsonResult result = new JsonResult();
@@ -71,7 +67,6 @@ public class UserController {
 		return result;
 	}
 	
-	@UserRole(Role.Admin)
 	@RequestMapping(value="/validate", produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody JsonResult validateUser(@RequestParam("username") String username) {
 		JsonResult result = new JsonResult();
@@ -81,20 +76,7 @@ public class UserController {
 		return result;
 	}
 	
-	@UserRole(Role.Admin)
-	@RequestMapping(value="/form/{userId}")
-	public ModelAndView userForm(@PathVariable("userId") Long id, Model model) {
-		User user = userService.getById(id);
-		model.addAttribute("user", user);
-		return new ModelAndView("/admin/user/edit");
-	}
-	
-	@UserRole(Role.Admin)
-	@RequestMapping(value="/form")
-	public String userFormForNew() {
-		return "/admin/user/save";
-	}
-	
+
 	/**
 	 * 
 	 * 新增用户
@@ -103,7 +85,6 @@ public class UserController {
 	 * @return
 	 * @throws MailException
 	 */
-	@UserRole(Role.Admin)
 	@RequestMapping(value="/save", method=RequestMethod.POST)
 	public ModelAndView save(@Valid User user, 
 			@RequestHeader(value="referer", required=false) String referer) throws MailException {
@@ -122,7 +103,6 @@ public class UserController {
 	 * @param status
 	 * @return
 	 */
-	@UserRole(Role.Admin)
 	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public ModelAndView update(User user, @RequestParam(required=false)String status) {
 		if(status == null) {
@@ -139,7 +119,6 @@ public class UserController {
 	 * @param referer
 	 * @return
 	 */
-	@UserRole(Role.Admin)
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public ModelAndView delete(@RequestParam("userId") Long userId, @RequestHeader("referer") String referer) {
 		ModelAndView view = new ModelAndView("redirect:/admin/user/index");

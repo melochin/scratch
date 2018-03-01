@@ -20,6 +20,14 @@ public class Page {
 		this.curPage = curPage;
 		this.perPageItem = perPageItem;
 	}
+
+
+	public Page(com.github.pagehelper.Page page) {
+		this.curPage = page.getPageNum();
+		this.totalPage = page.getPages();
+		this.perPageItem = page.getPageSize();
+	}
+
 	
 	public Integer getCurPage() {
 		return curPage;

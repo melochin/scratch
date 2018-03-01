@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
@@ -24,9 +26,13 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.support.FileUtils;
 import scratch.support.PageFactory;
+import scratch.support.service.PageBean;
 
 @Service
 public class AnimeService {
+
+	@Autowired
+	private ConversionService conversionService;
 
 	/**
 	 * @deprecated 将用图片服务代替
@@ -120,13 +126,13 @@ public class AnimeService {
 		return map;
 	}
 	
-	public Page<Anime> pageByType(String type, Integer page) {
+	public PageBean pageByType(String type, Integer page) {
 		// type 空字串 当 null处理
 		type = Optional.ofNullable(type)
 				.filter(s -> !StringUtils.isEmpty(s))
 				.orElse(null);
 		PageRowBounds pageRowBounds = PageFactory.asList(page);
-		return animeDao.pageByType(type, pageRowBounds);
+		return conversionService.convert(animeDao.pageByType(type, pageRowBounds), PageBean.class);
 	}
 	
 	public Anime getById(Long animeId) {
@@ -176,6 +182,7 @@ public class AnimeService {
 		update(anime);
 		
 		//保存文件
+		file.createNewFile();
 		multipartFile.transferTo(file);
 	}
 
@@ -191,7 +198,7 @@ public class AnimeService {
 		String suffix = FileUtils.getSuffix(originFilename);
 		//使用UUID作为文件名
 		String filename = UUID.randomUUID().toString() + "." + suffix;
-		return new File(FilenameUtils.concat(realPath + UPLOAD_ANIME, filename));
+		return new File(FilenameUtils.concat(realPath + UPLOAD_ANIME,filename));
 	}
 	
 	private void deleteFile(String filename, String realPath) {
@@ -227,9 +234,9 @@ public class AnimeService {
 	 */
 	@Transactional
 	public void saveOrModifyAlias(AnimeAlias alias) {
-		try{
-			saveAlias(alias);	
-		} catch (Exception e) {
+		if(animeDao.getAliasById(alias.getAnimeId(), alias.getHostId()) == null) {
+			saveAlias(alias);
+		} else {
 			modifyAlias(alias);
 		}
 	}

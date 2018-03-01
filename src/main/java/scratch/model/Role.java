@@ -1,4 +1,4 @@
-package scratch.aspect;
+package scratch.model;
 
 public enum Role {
 

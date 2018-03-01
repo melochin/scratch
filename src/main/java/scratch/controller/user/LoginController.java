@@ -1,4 +1,4 @@
-package scratch.controller;
+package scratch.controller.user;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.aspect.UserRole;
-import scratch.context.SessionContext;
-import scratch.exception.AuthenException;
+import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;

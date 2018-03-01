@@ -1,5 +1,6 @@
 package scratch.controller.api;
 
+import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import scratch.model.entity.Dict;
 import scratch.service.DictService;
 import scratch.support.web.JsonResult;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +67,15 @@ public class ApiDictController {
 		Dict newDict = dictService.findByCodeAndParentCode(code, parentCode);
 		result.setValidate(newDict == null);
 		return result;
+	}
+
+	@GetMapping(value = "/api/dics/{parentCode}")
+	public Map listByParentCode(@PathVariable("parentCode") String parentCode) {
+		List<Dict> dicts = dictService.findByParentCode(parentCode);
+		Map map = new HashMap();
+		dicts.forEach((dict -> {
+			map.put(dict.getCode(), dict.getValue());
+		}));
+		return map;
 	}
 }

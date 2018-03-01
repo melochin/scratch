@@ -5,13 +5,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import scratch.context.DictTypeContext;
-import scratch.model.entity.Anime;
+import scratch.model.DictType;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
@@ -38,7 +36,7 @@ public class AnimeFocusController {
 		
 		Long userId = userAdapter.getUserId();
 		model.addAttribute("animeList", service.findAllAnime(userId, type, focus));
-		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
 		
 		model.addAttribute("type", type);
 		model.addAttribute("focus", focus);

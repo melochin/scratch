@@ -1,6 +1,8 @@
 package scratch.model.entity;
 
-public class AnimeAlias {
+import java.io.Serializable;
+
+public class AnimeAlias implements Serializable{
 
 	private Long animeId;
 	

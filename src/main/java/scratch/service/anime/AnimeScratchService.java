@@ -1,6 +1,5 @@
 package scratch.service.anime;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -11,9 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import scratch.api.bilibili.BilibiliImpl;
-import scratch.api.dilidili.DilidiliImpl;
-import scratch.api.fix.FixImpl;
 import scratch.api.renren.RenrenImpl;
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IScratchRecord;
@@ -21,9 +17,6 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.ScratchRecord;
 import scratch.service.reader.adpater.Adapter;
-import scratch.service.reader.adpater.BilibiliAdapter;
-import scratch.service.reader.adpater.DilidiliAdapter;
-import scratch.service.reader.adpater.FixAdapter;
 import scratch.service.reader.adpater.RenrenAdapter;
 
 @Service
@@ -40,8 +33,6 @@ public class AnimeScratchService {
 	@Autowired
 	private AnimeMessageService messsageService;
 
-	private BlockingQueue<String> messages;
-
 	private static Boolean isScratchRun = false;
 
 	private static Boolean isFirst = true;
@@ -57,13 +48,13 @@ public class AnimeScratchService {
 	
 	/** init adapterMap */
 	{
-		this.adpaterMap.put(new Long(1), new DilidiliAdapter(new DilidiliImpl()));
-		this.adpaterMap.put(new Long(2), new FixAdapter(new FixImpl()));
+	//	this.adpaterMap.put(new Long(1), new DilidiliAdapter(new DilidiliImpl()));
+	//	this.adpaterMap.put(new Long(2), new FixAdapter(new FixImpl()));
 		this.adpaterMap.put(new Long(3), new RenrenAdapter(new RenrenImpl()));
-		this.adpaterMap.put(new Long(4), new BilibiliAdapter(new BilibiliImpl()));
+	//	this.adpaterMap.put(new Long(4), new BilibiliAdapter(new BilibiliImpl()));
 	}
 
-	//@Scheduled(fixedRate=360*60*1000)
+	@Scheduled(fixedRate=2*60*1000)
 	public void run() {
 
 		// 运行状态判断，防止多个任务在执行
@@ -76,7 +67,7 @@ public class AnimeScratchService {
 
 		// 初始化
 		initAnimeAliasMap();
-		initMessages();
+		LogMessage.clear();
 
 		// 准备多线程
 		ExecutorService exec = Executors.newCachedThreadPool();
@@ -100,6 +91,7 @@ public class AnimeScratchService {
 				resultMap.put(adapter.getClass().getName(), episodeCount);
 				countDownLatch.countDown();
 			});
+
 		});
 
 		// 结束线程，等待所有scratch任务完成
@@ -118,7 +110,7 @@ public class AnimeScratchService {
 						+ resultMap);
 			}
 
-			addMessage("运行完毕：共抓取" + count + "条数据");
+			LogMessage.add("运行完毕：共抓取" + count + "条数据");
 			//重置运行状态
 			updateRun(false);
 		});
@@ -133,11 +125,9 @@ public class AnimeScratchService {
 
 	public synchronized List<String> getMessages() {
 		List<String> list = new ArrayList<>();
-		if(messages == null) return list;
-		list.addAll(messages);
+		list.addAll(LogMessage.get());
 		return list;
 	}
-
 
 	// 运行记录
 	public Map<String, Integer> getRecordMap() {
@@ -199,28 +189,25 @@ public class AnimeScratchService {
 			try{
 				// 网络访问 抓取数据
 				List<AnimeEpisode> episodes = adapter.readAnimeEpidsode(anime);
-				addMessage("HostId:" + hostId + " Anime:" + anime.getName() + " [完成]");
+				LogMessage.add("[完成] HostId:" + hostId + " Anime:" + anime.getName() +
+						" 抓取" + episodes.size() +"条数据");
 				// 设置默认值
 				if(episodes == null) return size;
-				episodes.forEach(e -> e.setHostId(hostId));
+				episodes.forEach(e -> {
+					e.setHostId(hostId);
+					e.setAnime(anime);
+					e.setScratchTime(new Date());
+				});
 				// 发送给消息队列
 				messsageService.push(episodes);
 				size = episodes.size();
 			} catch (Exception e) {
-				addMessage("[Error]" + e.getMessage());
+				LogMessage.add("[错误]" + e.getMessage());
 				log.error(e.getMessage());
 			}
 			return size;
 		}).sum();
 		return count;
-	}
-
-	private synchronized void initMessages() {
-		messages = new LinkedBlockingQueue<String>();
-	}
-
-	private synchronized void addMessage(String message) {
-		messages.add(message);
 	}
 
 	/**

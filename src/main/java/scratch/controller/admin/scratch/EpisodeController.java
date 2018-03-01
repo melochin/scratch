@@ -7,20 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.context.DictTypeContext;
-import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
-import scratch.model.ohter.DictList;
 import scratch.service.AnimeEpisodeService;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
 import scratch.service.anime.AnimePushService;
-import scratch.support.web.spring.ModelUtils;
 
 @RequestMapping("/admin/scratch/episode")
 @Controller

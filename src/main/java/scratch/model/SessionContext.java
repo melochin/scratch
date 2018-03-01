@@ -1,4 +1,4 @@
-package scratch.context;
+package scratch.model;
 
 public class SessionContext {
 

@@ -1,11 +1,10 @@
-package scratch.controller;
+package scratch.controller.user;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -20,7 +19,8 @@ import scratch.support.web.spring.ModelUtils;
 @ControllerAdvice(
 		basePackages = {
 			"scratch.controller.admin",
-			"scratch.controller.anime"
+			"scratch.controller.anime",
+			"scratch.controller.user"
 		})
 public class ExceptionController {
 

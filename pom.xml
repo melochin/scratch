@@ -48,7 +48,7 @@
 	</build>
 
 	<properties>
-		<spring-framework-version>4.3.8.RELEASE</spring-framework-version>
+		<spring-framework-version>5.0.3.RELEASE</spring-framework-version>
 		<spring-security-version>4.2.2.RELEASE</spring-security-version>
 		<spring-social-version>2.0.0.M2</spring-social-version>
 	</properties>
@@ -127,7 +127,7 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
+			<version>2.0.0.Final</version>
 		</dependency>
 
 		<dependency>
@@ -145,19 +145,19 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.1.0.Final</version>
+			<version>5.2.10.Final</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
-			<version>4.1.0.Final</version>
+			<version>5.2.10.Final</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.2.0.Final</version>
+			<version>5.2.1.Final</version>
 		</dependency>
 
 
@@ -209,7 +209,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.5.3</version>
+			<version>2.9.3</version>
 		</dependency>
 
 		<!-- 模板引擎 -->
@@ -284,6 +284,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring-framework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<version>5.0.3.RELEASE</version>
 		</dependency>
 
 		<!-- Spring WebMvc -->

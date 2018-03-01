@@ -11,7 +11,7 @@ import org.springframework.social.connect.ConnectionData;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.context.SessionContext;
+import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.support.web.spring.SessionUtils;
 

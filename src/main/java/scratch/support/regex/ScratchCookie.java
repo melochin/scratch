@@ -1,4 +1,4 @@
-package scratch.service;
+package scratch.support.regex;
 
 import java.util.HashMap;
 import java.util.Map;

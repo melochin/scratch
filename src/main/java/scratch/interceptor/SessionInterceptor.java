@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import scratch.dao.UserDao;
 import scratch.model.entity.User;
-import scratch.context.SessionContext;
+import scratch.model.SessionContext;
 
 public class SessionInterceptor implements  HandlerInterceptor {
 

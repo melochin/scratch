@@ -1,8 +1,11 @@
 package scratch.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class AnimeEpisode {
+public class AnimeEpisode implements Serializable {
 
 	// 自增ID
 	private Long id;
@@ -20,6 +23,7 @@ public class AnimeEpisode {
 	private String url;
 	
 	// 抓取时间
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date scratchTime;
 	
 	// 保存时间

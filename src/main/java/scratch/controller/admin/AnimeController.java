@@ -11,23 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.context.DictTypeContext;
+import scratch.model.DictType;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.model.entity.Dict;
 import scratch.model.ohter.DictList;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
+import sun.misc.Request;
 
 @RequestMapping("/admin")
 @Controller
@@ -52,22 +47,10 @@ public class AnimeController {
 	public String index(@RequestParam(value="p", defaultValue="1") Integer page, 
 			@RequestParam(value="type", required=false) String type, Model model) {
 		model.addAttribute("animeList", service.pageByType(type, page));
-		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
+		model.addAttribute("animeTypes", dictService.findByType(DictType.ANIMETYPE));
 		return "/admin/anime/index";
 	}
-	
-	@GetMapping(value={"/anime/form","/anime/form/{animeId}"})
-	public String animeForm(@PathVariable(required=false) Long animeId, Model model) {
-		model.addAttribute("animeTypes", dictService.findByType(DictTypeContext.ANIMETYPE));
-		
-		if(animeId != null) {
-			Anime anime = service.getById(animeId);
-			model.addAttribute("anime", anime);
-			return "/admin/anime/edit";	
-		}
-		
-		return "/admin/anime/save";	
-	}
+
 	
 	/**	新增处理	*/
 	@RequestMapping(value="/anime/save", method=RequestMethod.POST)
@@ -115,7 +98,7 @@ public class AnimeController {
 		if(aliass == null) {
 			aliass = new ArrayList<AnimeAlias>();
 		}
-		DictList dictList = dictService.findByType(DictTypeContext.HOST);
+		DictList dictList = dictService.findByType(DictType.HOST);
 		for(Dict dict : dictList) {
 			boolean find = false;
 			for(AnimeAlias a : aliass) {
@@ -132,13 +115,29 @@ public class AnimeController {
 			}
 		}
 		model.addAttribute("anime", anime);
-		model.addAttribute("hosts", dictService.findByType(DictTypeContext.HOST));
+		model.addAttribute("hosts", dictService.findByType(DictType.HOST));
 		return new ModelAndView("/admin/anime/link");
 	}
-	
+
+
+	@GetMapping("anime/upload/{animeId}")
+	public ModelAndView uploadForm(@PathVariable("animeId") Long animeId, Model model) {
+		model.addAttribute(animeId);
+		return new ModelAndView("/admin/anime/upload");
+	}
+
+	@PostMapping("anime/upload/{animeId}")
+	public @ResponseBody String upload(@RequestParam("picFile") MultipartFile file,
+			@PathVariable("animeId") Long animeId, HttpServletRequest request) throws IOException {
+		String realPath = request.getServletContext().getRealPath(WEB_INF_RESOURCE);
+		Anime anime = service.getById(animeId);
+		service.updateWithFile(anime, file, realPath);
+		return "success";
+	}
+
 	/** 关联站点  **/
 	@RequestMapping(value="/anime/link", method=RequestMethod.POST)
-	public String link(Anime anime, @RequestHeader("referer") String referer) {
+	public @ResponseBody void link(Anime anime) {
 		
 		anime.getAliass().forEach(a -> {
 			String alias = a.getAlias();
@@ -151,8 +150,9 @@ public class AnimeController {
 				service.deleteAlias(a);
 			}
 		});
-		
-		return "redirect:" + referer;
+		return;
 	}
+
+
 	
 }

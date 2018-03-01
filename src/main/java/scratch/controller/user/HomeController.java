@@ -1,11 +1,8 @@
-package scratch.controller;
+package scratch.controller.user;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.context.DictTypeContext;
+import scratch.model.DictType;
 import scratch.model.entity.Anime;
 import scratch.model.ohter.DictList;
 import scratch.model.ohter.UserAdapter;
@@ -27,8 +24,6 @@ import scratch.service.AnimeEpisodeService;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
-
-import javax.swing.text.html.Option;
 
 @Controller
 public class HomeController {
@@ -55,7 +50,7 @@ public class HomeController {
 	public void setModel(Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
 		Long userId = null;
 		model.addAttribute("types",
-				dictService.findByType(DictTypeContext.ANIMETYPE));
+				dictService.findByType(DictType.ANIMETYPE));
 		Optional.ofNullable(userAdapter).ifPresent(adapter -> {
 			model.addAttribute("searchHistories",
 					animeService.listSearchHistory(adapter.getUserId()));
@@ -94,7 +89,7 @@ public class HomeController {
 	@GetMapping("/{typeCode}")
 	public String listAnimesByType(@PathVariable("typeCode") String code,
 			Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
-		DictList dictList = dictService.findByType(DictTypeContext.ANIMETYPE);
+		DictList dictList = dictService.findByType(DictType.ANIMETYPE);
 		if(dictList.get(code) == null) throw new RuntimeException();
 
 		List<Anime> mostFocuseds = animeService.listByType(code);

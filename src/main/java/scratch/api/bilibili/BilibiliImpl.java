@@ -63,9 +63,7 @@ public class BilibiliImpl implements Bilibili{
 	public List<Video> getVideos(VideoType videoType, int page) {
 		List<Video> videoList = new ArrayList<Video>();
 		
-		String url = UriComponentsBuilder.fromUriString(VIDEO_API_URL).build()
-				.expand(videoType.getCode(), page).toUriString();
-		String html = new HttpConnection().connect(url);
+		String html = new HttpConnection().connect(VIDEO_API_URL, videoType.getCode(), page);
 		String json = html.substring(9, html.length()-2);
 		
 		log.debug(json);
@@ -196,13 +194,8 @@ public class BilibiliImpl implements Bilibili{
 	 */
 	public List<Video> search(String keyword, int page) {
 		List<Video> videos = new ArrayList<Video>();
-		String url = UriComponentsBuilder.fromUriString(SEARCH_URL).build()
-				.expand(keyword, "pubdate", page)
-				.encode()
-				.toUriString();
-		String html = new HttpConnection().connect(url);
+		String html = new HttpConnection().connect(SEARCH_URL, keyword, "pubdate", page);
 		log.debug(html);
-		
 		Document document = Jsoup.parse(html);
 		document.select(".video.matrix")
 			.forEach(videoDiv -> {
@@ -225,6 +218,10 @@ public class BilibiliImpl implements Bilibili{
 		video.setTitle(title);
 		
 		String href = Optional.of(a.attr("href")).get();
+
+		// 处理一下href
+		href = href.substring(href.indexOf("www"));
+		href = "https://" + href.substring(0, href.indexOf("?"));
 		video.setUrl(href);
 		
 		Element img = element.select(".img>img").get(0);
