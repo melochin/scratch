@@ -20,7 +20,7 @@
 	</resultMap>
 	
 	<select id="listByAnimeId" resultMap="AnimeEpisodeMap">
-		select * from anime_episode where anime_id = #{animeId};
+		select * from anime_episode where anime_id = #{animeId} order by sequence desc;
 	</select>
 	
 	<select id="findByUrl" resultMap="AnimeEpisodeMap">

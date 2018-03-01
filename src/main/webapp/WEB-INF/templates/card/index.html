@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="base/lib :: common" />
+    <th:block th:replace="base/lib :: react" />
+    <th:block th:replace="base/lib :: semantic" />
+    <script th:src="@{/js/bundle.js}" type="text/babel"></script>
+    <link rel="stylesheet" th:href="@{/js/card.css}"></link>
+</head>
+<body>
+    <div id="card" style="height: 100%">
+
+    </div>
+</body>
+</html>

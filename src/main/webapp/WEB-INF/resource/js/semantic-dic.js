@@ -1,56 +1,20 @@
-// api
-$.fn.api.settings.api = {
-	'get dictionary data' : 'dic/parentcode/{code}',
-	'update dictionary data' : 'dict/update',
-	'validate dictionary code' : 'dict/validate/code',
-	'delete dictionary data' : 'dict/delete'
-};
-
-
 
 $(document).ready(function() {
-	$('.ui.dropdown').dropdown();
 
-	$('#form-dicdata').form({
-		on : 'blur',
-		inline:true,
-		fields : {
-			code : {
-				rules: [
-				  {
-					  type : 'empty'
-				  }, 
-				  {
-					  type : 'ajax',
-					  value : {
-						  action : 'validate dictionary code',
-						  elements : {
-							  code: $('#form-dicdata').find("input[name='code']"),
-							  parentCode: $('#form-dicdata').find("input[name='parentCode']")
-						  }
-					  },
-				  	  prompt : '编码已经存在'
-				  }
-				 ]
-				
-			},
-			value : {
-				rules: [{
-					type : 'empty'
-				}]
-			},
-			sequence : {
-				rules: [
-			        {
-			        	type : 'number'
-			        }
-				]
-			}
-		}
-	});
+	var rows = (
+		<tr>
+			<td>1</td>
+		<td>2</td>
+		</tr>
+	)
+
+	ReactDOM.render(<EditForm titles={["a","b"]} rows={rows}/>, document.getElementById("test-container"));
 
 	var $table = $('.ui.ten.wide.column');
-	$('.item').api({
+
+	var $items = $(".dict.item");
+
+    $items.api({
 		action : "get dictionary data",
 		beforeSend: function(settings) {
 			ReactDOM.render(<Loading />, $table.get(0));
@@ -90,27 +54,32 @@ function initModal() {
 	  .onShow
 }	
 	
-	
+
+//　渲染加载
 var Loading = React.createClass({
-	
 	render: function() {
 		return (
 				<div>
 				  <div className="ui active loader">Loading</div>
 				  <p></p>
-				 </div>
+				</div>
 		)
 	}
 });
 
-// <Table dicts={data.data} code={data.code}  item={_this} />
 
+// <Table dicts={data.data} code={data.code}  item={_this} />
+/*
+* 参数：
+* List<Dict> data
+* String code
+* */
 var Table = React.createClass({
-	
+
 	getInitialState : function () {
 		return {currentDic : ""};
 	},
-	
+
 	// 刷新重新加载
 	refresh : function() {
 		this.props.item.click();
@@ -136,21 +105,19 @@ var Table = React.createClass({
 			}
 		});
 	},
-	
+
+	// 显示数据编辑窗口　设置当前编辑的dict
 	handleModifiedClickEvent : function(dict) {
 		this.setState({currentDic:dict});
 		var $modal = $('.add.modal');
 		$modal.modal('show');
 	},
-	
+
+	// 显示删除提示窗口　
 	handleDeleteClickEvent : function(dict) {
 		this.setState({currentDic:dict});
 		var $modal = $('.basic.delete.modal');
 		$modal.modal('show');
-		/*
-		$modal.find(".content").find("p").text("确定删除" + dict.value + "?");
-		$modal.find(".ok.button").attr("data-code", dict.code);*/
-		
 	},
 	
 	handleClick: function() {
@@ -181,45 +148,51 @@ var Table = React.createClass({
 		});
 		$('#modal-dicdata').modal('show');
 	},
-	
+
+	getTrs : function () {
+        var _this = this;
+        var trs;
+        if(this.props.dicts != null) {
+            trs = this.props.dicts.map(function(dict, index) {
+                return (
+                    <Tr code={dict.code} value={dict.value} sequence={dict.sequence} used={dict.used}
+                		modifyClick = {_this.handleModifiedClickEvent.bind(_this, dict)}
+                		deleteClick={_this.handleDeleteClickEvent.bind(_this, dict)}/>
+            	)
+            });
+        }
+        return trs;
+    },
+
 	render: function() {
 		var _this = this;
-		var trs;
+		var trs = _this.getTrs();
 		
 		var form = <DidctForm dict={this.state.currentDic}/>;
-		
-		if(this.props.dicts != null) {
-			trs = this.props.dicts.map(function(dict, index) {
-				return (
-						<Tr code={dict.code} value={dict.value} sequence={dict.sequence} used={dict.used} 
-							modifyClick = {_this.handleModifiedClickEvent.bind(_this, dict)} 
-							deleteClick={_this.handleDeleteClickEvent.bind(_this, dict)}/>
-					)
-				});
-		}
+
 		return(
 			<div>
-			<div>
-				<button id="addDictionaryData" className="ui teal button" onClick={this.handleClick.bind(this)}>
-					<i className="ui add icon"></i> 字典数据
-				</button>
-			</div>
+				<div>
+					<button id="addDictionaryData" className="ui teal button" onClick={this.handleClick}>
+						<i className="ui add icon"></i> 字典数据
+					</button>
+				</div>
 
-			<table className="ui celled padded table">
-				<thead>
-					<tr>
-						<th className="single line">编码</th>
-						<th className="single line">文字</th>
-						<th className="single line">顺序</th>
-						<th className="single line">状态</th>
-					</tr>
-				</thead>
-				<tbody>
-					{trs}
-				</tbody>
-			</table>
-			<DeleteModal deleteEvent={this.handleDeleteEvent} dict={this.state.currentDic}/>
-			<FormModal form={form} />
+				<table className="ui celled padded table">
+					<thead>
+						<tr>
+							<th className="single line">编码</th>
+							<th className="single line">文字</th>
+							<th className="single line">顺序</th>
+							<th className="single line">状态</th>
+						</tr>
+					</thead>
+					<tbody>
+						{trs}
+					</tbody>
+				</table>
+				<DeleteModal deleteEvent={this.handleDeleteEvent} dict={this.state.currentDic}/>
+				<FormModal form={form} />
 			</div>
 		)
 	}
@@ -315,12 +288,13 @@ var DidctForm = React.createClass({
 	updateState: function(dict) {
 		var action;
 		if(dict == null) {
-			dict = new Object;
-			dict.code = "";
-			dict.parentCode = "";
-			dict.value = "";
-			dict.sequence = "";
-			dict.used = "";
+			dict = {
+				code : "",
+				parentCode : "",
+				value : "",
+                sequence : "",
+                used : "",
+			}
 			action = "add";
 		} else {
 			action = "update";
@@ -336,13 +310,8 @@ var DidctForm = React.createClass({
 	},
 	componentWillUpdate : function(nextProps, nextState) {
 		
-		console.debug(this.props.dict);
-		console.debug(this.state.dict);
-		console.debug(nextProps);
-		console.debug(nextState);
-		
-		if(nextProps.dict !== this.props.dict) {
-			this.updateState(this.props.dict);
+		if(nextProps.dict !== this.state.dict) {
+			this.updateState(nextProps.dict);
 			return true;
 		}
 		return false;
@@ -385,4 +354,38 @@ var DidctForm = React.createClass({
 	}
 })
 
+var EditForm = React.createClass({
+
+	getColumnTitles : function() {
+        return this.props.titles.map(function (title, index) {
+            return <th className="single line">{title}</th>
+        });
+	},
+
+	getRows : function() {
+		var _this = this;
+		return this.props.rows;
+	},
+
+	render : function () {
+		// 动态生成列标题
+		var columnTitles = this.getColumnTitles();
+		var rows = this.getRows();
+		return (
+			<div>
+				{this.props.head}
+				<table className="ui celled padded table">
+					<thead>
+						<tr>
+							{columnTitles}
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+            	</table>
+			</div>
+    	)
+    }
+})
 

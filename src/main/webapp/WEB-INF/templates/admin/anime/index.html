@@ -2,74 +2,17 @@
 <html xmlns:th="www.themeleaf.org">
 
 <head>
+	<title>番剧管理</title>
 	<th:block th:replace="base/lib :: common"></th:block>
 	<th:block th:replace="base/lib :: semantic"></th:block>
+	<th:block th:replace="base/lib :: react"></th:block>
+	<script type="text/babel" th:src="@{/js/semanticbundle.js}"></script>
+	<script type="text/babel" th:src="@{/js/semantic-custom.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
 	<div id="container">
-		<table class="ui celled table">
-			<colgroup>
-				<col style="width: 10%">
-				<col style="width: 20%">
-				<col style="width: 10%">
-				<col style="width: 10%">
-				<col style="width: 20%">
-				<col style="width: 40%">
-			</colgroup>
-			<thead>
-				<tr>
-					<th colspan="5">影视维护</th>
-					<th>
-						<button class="ui blue button add"
-							th:data-href="@{/admin/anime/form}">新增</button>
-					</th>
-				</tr>
-				<tr>
-					<th>名称</th>
-					<th>描述</th>
-					<th>开始连载月份</th>
-					<th>是否完结</th>
-					<th>
-						<div class="ui floating dropdown labeled icon button">
-							<i class="filter icon"></i>
-							<span class="text">类型</span>
-							 <div class="menu">
-								<div class="scrolling menu">
-										<a class="item" th:each="anime : ${animeTypes}"
-											th:href="@{/admin/anime(type=${anime.code})}" th:text="${anime.value}"></a>
-										<a class="item" th:href="@{/admin/anime}">全部</a>
-								</div>
-							</div>
-						</div>
-					</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="anime : ${animeList}">
-					<td th:text="${anime.name}"></td>
-					<td>
-						<div style="overflow: hidden; max-height: 50px;">
-							<span th:text="${anime.description }"></span>
-						</div>
-					</td>
-					<td th:text="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"></td>
-					<td th:text="${anime.finished == false ? '否' : '是'}"></td>
-					<td th:text="${animeTypes.get(anime.type)}">
-					<td>
-						<a class="ui green button"
-							th:data-href="@{anime/form/{animeId}(animeId=${anime.id})}">编辑</a>
-						<a class="ui orange button"
-							th:data-href="@{anime/link/{animeId}(animeId=${anime.id})}">关联</a>
-						<a class="ui red button"
-							th:href="@{anime/delete/{animeId}(animeId=${anime.id})}">删除</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<div class="ui modal"></div>
-		<th:div th:replace="base/page :: page(${animeList}, 'anime?p={p}')">
+		<div id="anime-container"></div>
 	</div>
 </body>
 </html>

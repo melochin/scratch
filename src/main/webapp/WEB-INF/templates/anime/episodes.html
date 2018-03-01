@@ -1,7 +1,7 @@
 <html xmlns:th="www.thymeleaf.org">
 
 <div class="header" th:text="${anime.name}"></div>
-<div class="content">
+<div class="scrolling content">
 	<div class="ui grid">
 		<div class="ui row">
 			<div class="ui segment">
@@ -16,7 +16,7 @@
 		<div class="ui row">
 			<p th:if="${episodes.size() == 0}">暂无</p>
 			<a class="ui primary basic button" th:each="episode : ${episodes}" 
-			th:href="${episode.url}" th:text="${episode.number}"></a>
+				th:href="${episode.url}" th:text="${episode.number}"></a>
 		</div>
 	</div>
  </div>

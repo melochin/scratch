@@ -106,7 +106,12 @@
 			where type = #{type}
 		</if>
 	</select>	
-	
+
+	<select id="getAliasById" resultType="AnimeAlias">
+		select anime_id as animeId, host_id as hostId, alias from anime_alias
+			where anime_id = #{animeId} and host_id = #{hostId}
+	</select>
+
 	<insert id="saveAlias">
 		insert into 
 			anime_alias(anime_id, host_id, alias) 
@@ -151,7 +156,7 @@
 		update anime set
 			name = #{anime.name},
 			alias = #{anime.alias},
-			<if test="anime.pic != null">
+			<if test="anime.pic != null and anime.pic != '' ">
 				pic = #{anime.pic},
 			</if>
 			description = #{anime.description},

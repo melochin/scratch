@@ -27,6 +27,24 @@
 		</form>
 	</div>
 </div>
+<script>
+    $(".actions button").bind("click", function (event) {
+		// ajax
+		var data = $("#editAnimeForm").serialize();
+		console.debug(data);
+		$.ajax("/admin/anime/link", {
+		    data : data,
+		    type : "post",
+		    success : function () {
+            	$(".ui.modal").modal("hide");
+            },
+			error : function() {
+			}
+		});
+        event.preventDefault();
+    })
+</script>
+
 <!-- 
 <form class="form-horizontal" action="anime/link"
 	id="editAnimeAliasForm" method="post" onsubmit="return false;">

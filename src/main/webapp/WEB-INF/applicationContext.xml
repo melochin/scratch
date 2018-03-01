@@ -20,10 +20,7 @@
 	<context:component-scan base-package="scratch.dao" />
 	<context:component-scan base-package="scratch.aspect" />
 	<context:component-scan base-package="scratch.service" />
-	<context:component-scan base-package="scratch.service.user" />
 	<context:component-scan base-package="scratch.support" />
-	<context:component-scan base-package="scratch.bilibili.dao" />
-	<context:component-scan base-package="scratch.bilibili.service" />
 	<context:component-scan base-package="scratch.api" />
 	
 	<!-- 开启邮箱服务 -->

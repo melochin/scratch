@@ -8,29 +8,32 @@
 
 <!--1.去掉 margin?-->
 <!--2.更改inverted颜色-->
-<div class="ui inverted stackable menu">
-	<div class="ui container">
+<div class="ui inverted stackable menu" style="border-radius:0px;">
+	<div class="ui container" style="height: 4rem;font-size:1rem;">
 		<div class="item">
 			<a th:href="@{/}">Scratch</a>
 		</div>
-		<div class="right item">
-			<!--没有用户时-->
-			<a class="ui inverted button" th:href="@{/user/login}" th:if="${session.user_g == null}">Login</a>
-			<!--存在用户时-->
-			<div class="ui dropdown"
-				th:href="@{/user/login}" th:unless="${session.user_g == null}">
-				<th:block th:text="${session.user_g.username}">username</th:block>
-				<i class="dropdown icon"></i>
-				<div class="ui inverted menu" th:object="${session.user_g}" style="background:grey;">
-					<a class="item" th:href="@{/user/info}">账号信息</a>
-					<a class="item" 
-						th:if="*{role == 1}" th:href="@{/admin}">
-						管理员后台
-					</a>
-					<a th:href="@{/user/logout}" class="item">
-						登出
-					</a>
-				</div>
+		<!--没有用户时-->
+		<div class="right item" th:if="${session.user_g == null}">
+			<div class="black ui buttons">
+				<a class="ui button" th:href="@{/user/login}">Login</a>
+			</div>
+		</div>
+		<!--存在用户时-->
+		<div class="right item" th:unless="${session.user_g == null}">
+			<img class="ui mini circular image" style="margin:5px;"
+				 src="https://semantic-ui.com/images/avatar2/small/elyse.png">
+			<span th:text="${session.user_g.username}"></span>
+			<div th:object="${session.user_g}" class="black ui buttons">
+				<a class="ui  button" th:href="@{/user/info}">
+					账号</a>
+				<a class="ui  button"
+				   th:if="*{role == 1}" th:href="@{/admin}">
+					Admin
+				</a>
+				<a class="ui  button" th:href="@{/user/logout}">
+					登出
+				</a>
 			</div>
 		</div>
 	</div>

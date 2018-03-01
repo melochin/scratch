@@ -1,3 +1,13 @@
+.five-margin {
+    margin:5px;
+}
+
+#home-container {
+
+}
+
+body { overflow-y: scroll; }
+
 
 .topbar {
 	background: #2A3F54;
@@ -33,11 +43,6 @@
     transition: all 0.5s ease;
 }
 
-.main {
-	width: 100%;
-    position: relative;
-    padding: 10px 0 20px 0;
-}
 
 .wrapper.toggled {
 	padding-left: 50px;
@@ -250,4 +255,16 @@ nav.subbar > ul.nav.nav-tabs > li.active > a {
 	position: fixed;
 	right: 45%;
 	top: 35%;	
+}
+
+
+.comments {
+    margin : 1rem 10rem 0 10rem;
+}
+
+.alert {
+    position: fixed;
+    right: 45%;
+    top: 35%;
+    opacity : 0.8;
 }

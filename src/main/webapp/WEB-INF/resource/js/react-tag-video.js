@@ -67,7 +67,7 @@ function loadHotVideos($element) {
 }
 
 var AJAX = class {
-			
+
 	static getVideos(params, callback) {
 		var url = "/scratch/ajax/search";
 		AJAX.getJSON(url, params, callback);
@@ -78,7 +78,7 @@ var AJAX = class {
 		var url = "/scratch/ajax/follow/videos";
 		AJAX.getJSON(url, params, callback);
 	}
-			
+
 	static getRunStatus(params, callback) {
 		var url = "/scratch/bili/ajax/isRun";
 		AJAX.getJSON(url, params, callback);
@@ -86,24 +86,24 @@ var AJAX = class {
 
 	static getVideoTypesCount(callback) {
 		var url = "/scratch/bili/ajax/getVideoTypesCount";
-		AJAX.getJSON(url, null, callback);	
+		AJAX.getJSON(url, null, callback);
 	}
 
 	static startService(callback) {
 		var url = "/scratch/bili/ajax/startService";
 		AJAX.getJSON(url, null, callback);
 	}
-	
+
 	static getJSON(url, params, callback) {
 		if(params != null) {
-			var url = url + "?" + $.param(params);	
+			var url = url + "?" + $.param(params);
 		}
 		$.getJSON(url, function(data){
 			console.debug("request url:" + url);
 			console.debug("response data:");
 			console.debug(data);
 			callback(data);
-		});	
+		});
 	}
 };
 

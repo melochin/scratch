@@ -1,31 +1,32 @@
 <html xmlns:th="www.thymeleaf.org">
 <head>
-<title>首页—Scratch</title>
-
-<th:block th:replace="base/lib :: common" />
-<th:block th:replace="base/lib :: semantic" />
+<title>Scratch</title>
+	<th:block th:replace="base/lib :: common" />
+	<th:block th:replace="base/lib :: react" />
+	<th:block th:replace="base/lib :: semantic" />
+	<script th:src="@{/js/anime/focus/button.js}" type="text/babel"></script>
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
 	<div id="container">
-		<div class="ui secondary pointing menu">
-			<div class="ui container">
-			<a class="item" th:classappend="${module == 'home' ? 'active' : ''}"  
-				th:href="@{/}">首页 </a> 
-			<a class="item" th:classappend="${module == type.code ? 'active' : ''}" 
-				th:each="type : ${types}" th:href="@{${type.code}}"th:text="${type.value}"></a>
-			<div class="right menu">
-				<div class="item ui search">
-					<div class="ui icon input">
-						<input id="search" class="prompt" type="text" placeholder="Search..."> 
-						<i class="search link icon"></i>
+		<div class="ui container">
+			<div class="ui secondary pointing menu">
+				<a class="item" th:classappend="${module == 'home' ? 'active' : ''}"
+					th:href="@{/}">首页 </a>
+				<a class="item" th:classappend="${module == type.code ? 'active' : ''}"
+					th:each="type : ${types}" th:href="@{${type.code}}"th:text="${type.value}"></a>
+				<div class="right menu">
+					<div class="item ui search">
+						<div class="ui icon input">
+							<input id="search" class="prompt" type="text" placeholder="Search...">
+							<i class="search link icon"></i>
+						</div>
 					</div>
 				</div>
 			</div>
-			</div>
 		</div>
 
-		<div id="content" class="ui container">
+		<div id="content" class="ui container" style="padding:10px;">
 			<th:block th:if="${module == 'home'}">
 				<h3 class="ui header" th:text="'热门'"></h3>
 				<div th:replace="anime/animes :: cards(${mostFocusAnimes})"></div>

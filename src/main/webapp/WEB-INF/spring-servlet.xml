@@ -49,11 +49,23 @@
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="defaultEncoding" value="utf-8"></property>
 	</bean> -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+	</bean>
 
 	<!-- 配置视图解析 -->
 
 	<!-- 配置静态资源 -->
-	<mvc:resources location="/WEB-INF//resource/" mapping="/**" />
+	<mvc:resources location="/WEB-INF//resource/bootstrap/" mapping="/bootstrap/**" />
+	<mvc:resources location="/WEB-INF//resource/css/" mapping="/css/**" />
+	<mvc:resources location="/WEB-INF//resource/formvalidation/" mapping="/formvalidation/**" />
+	<mvc:resources location="/WEB-INF//resource/js/" mapping="/js/**" />
+	<mvc:resources location="/WEB-INF//resource/materialize/" mapping="/materialize/**" />
+	<mvc:resources location="/WEB-INF//resource/pic/" mapping="/pic/**" />
+	<mvc:resources location="/WEB-INF//resource/upload/anime/" mapping="/upload/**" />
+	<mvc:resources location="/WEB-INF//resource/semantic/" mapping="/semantic/**" cache-period="2592000"/>
+	<mvc:resources location="/WEB-INF//resource/favicon.ico" mapping="/favicon.ico" cache-period="2592000"/>
+
 	<!-- thymeleaf -->
 
 
@@ -75,21 +87,6 @@
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
-
-	<!-- velocity -->
-	<bean id="velocityEngine"
-		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-		<property name="velocityProperties">
-			<props>
-				<prop key="resource.loader">class</prop>
-				<prop key="class.resource.loader.class">
-					org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
-				</prop>
-				<prop key="velocimacro.library"></prop>
-			</props>
-		</property>
-	</bean>
-
 
 	<!-- 开启方法校验 -->
 	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />

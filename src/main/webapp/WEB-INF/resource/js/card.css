@@ -1,0 +1,21 @@
+body {
+  background: white;
+}
+
+
+#card-box {
+  margin: 2rem 10rem 0rem 10rem;
+  padding : 10px;
+  height :  100%;
+  background: rgba(225, 218, 218, 0.87);
+}
+
+#card-box .form{
+  background: white;
+}
+
+#card-list {
+  background: white;
+  height: 100%;
+  border : 1px solid #ced6d5;
+}
