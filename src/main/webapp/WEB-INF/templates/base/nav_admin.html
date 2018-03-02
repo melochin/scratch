@@ -1,51 +1,54 @@
 <html xmlns:th="www.thymeleaf.org">
 <th:block th:remove="all">
-	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
-	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
-	<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+    <script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+    <script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+    <link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
 </th:block>
 <body>
-	<!-- 选中状态如何表现 -->
-	<!-- 去除超链接显示 -->
-	<div class="item">
-		<div class="ui center aligned container">
-			<div>
-				<img src="https://semantic-ui.com/images/avatar2/small/elyse.png"
-						 style="height:80px;width:80px;">
-			</div>
-			<p th:text="${session.user_g.username}"></p>
-			<button class="ui small inverted button">登出</button>
-		</div>
-	</div>
+<!-- 选中状态如何表现 -->
+<!-- 去除超链接显示 -->
+<div class="item">
+    <div class="ui center aligned container">
+        <div>
+            <img src="https://semantic-ui.com/images/avatar2/small/elyse.png"
+                 style="height:80px;width:80px;">
+        </div>
+        <p th:text="${session.user_g.username}"></p>
+        <button class="ui small inverted button">登出</button>
+    </div>
+</div>
 
-	<a class="item" th:href="@{/admin}">
-		<b>首页</b>
-	</a>
+<a class="item" th:href="@{/admin}">
+    <b>首页</b>
+</a>
 
-	<div class="item">
-		<div class="header">
-			<i class="setting icon"></i>数据抓取管理</div>
-			<div id="1" class="menu">
-				<a  class="item" th:classappend="${module == 'scratch' ? 'active' : ''}"
-					th:href="@{/admin/scratch}">运行状态</a>
-				<a  class="item" th:classappend="${module == 'temp' ? 'active' : ''}"
-					th:href="@{/admin/scratch/temp}">临时数据审核</a>
-				<a  class="item" th:classappend="${module == 'episode' ? 'active' : ''}"
-					th:href="@{/admin/scratch/episode}">剧集管理</a>
-			</div>
-	</div>
-	<div class="item">
-		<div class="header">
-			<i class="options icon"></i>
-			基础数据维护</div>
-		<div id="2" class="menu">
-			<a  class="item" th:classappend="${module == 'user' ? 'active' : ''}"
-				th:href="@{/admin/user}">用户管理</a>
-			<a  class="item" th:classappend="${module == 'anime' ? 'active' : ''}"
-				th:href="@{/admin/anime}">番剧管理</a>
-			<a  class="item" th:classappend="${module == 'dic' ? 'active' : ''}"
-				th:href="@{/admin/dic}">字典管理</a>
-		</div>
-	</div>
+<div class="item">
+    <div class="header">
+        <i class="setting icon"></i>
+        数据抓取管理
+    </div>
+    <div id="1" class="menu">
+        <a class="item" th:classappend="${module == 'scratch' ? 'active' : ''}"
+           th:href="@{/admin/scratch}">运行状态</a>
+        <a class="item" th:classappend="${module == 'temp' ? 'active' : ''}"
+           th:href="@{/admin/scratch/temp}">临时数据审核</a>
+        <a class="item" th:classappend="${module == 'episode' ? 'active' : ''}"
+           th:href="@{/admin/scratch/episode}">剧集管理</a>
+    </div>
+</div>
+<div class="item">
+    <div class="header">
+        <i class="options icon"></i>
+        基础数据维护
+    </div>
+    <div id="2" class="menu">
+        <a class="item" th:classappend="${module == 'user' ? 'active' : ''}"
+           th:href="@{/admin/user}">用户管理</a>
+        <a class="item" th:classappend="${module == 'anime' ? 'active' : ''}"
+           th:href="@{/admin/anime}">番剧管理</a>
+        <a class="item" th:classappend="${module == 'dic' ? 'active' : ''}"
+           th:href="@{/admin/dic}">字典管理</a>
+    </div>
+</div>
 </body>
 </html>

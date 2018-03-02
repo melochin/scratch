@@ -8,8 +8,8 @@
 
 <!--1.去掉 margin?-->
 <!--2.更改inverted颜色-->
-<div class="ui inverted stackable menu" style="border-radius:0px;">
-	<div class="ui container" style="height: 4rem;font-size:1rem;">
+<div class="ui inverted stackable menu" id="nav-header">
+	<div class="ui container">
 		<div class="item">
 			<a th:href="@{/}">Scratch</a>
 		</div>
@@ -21,7 +21,7 @@
 		</div>
 		<!--存在用户时-->
 		<div class="right item" th:unless="${session.user_g == null}">
-			<img class="ui mini circular image" style="margin:5px;"
+			<img class="ui mini circular image portrait"
 				 src="https://semantic-ui.com/images/avatar2/small/elyse.png">
 			<span th:text="${session.user_g.username}"></span>
 			<div th:object="${session.user_g}" class="black ui buttons">

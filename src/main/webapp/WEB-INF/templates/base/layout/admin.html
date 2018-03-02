@@ -1,15 +1,14 @@
 <html xmlns:th="www.thymeleaf.org">
 <body th:fragment="layout(content)">
-	<div class="display-table">
-		<div id="context">
-			<div class="ui left fixed vertical inverted pointing menu">
-				<div th:replace="~{base/nav_admin}"></div>
-			</div>
-			<div id="admin-content">
-				<div th:replace="${content}"></div>
-			</div>
-		</div>
-	</div> 
-	<th:block th:replace="~{base/alert}"></th:block>
+
+    <div class="ui left fixed vertical inverted pointing menu">
+        <div th:replace="~{base/nav_admin}"></div>
+    </div>
+
+    <div id="admin-content">
+        <div th:replace="${content}"></div>
+    </div>
+
+    <th:block th:replace="~{base/alert}"></th:block>
 </body>
 </html>

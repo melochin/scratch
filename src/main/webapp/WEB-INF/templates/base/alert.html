@@ -1,29 +1,9 @@
 <html xmlns:th="www.thymeleaf.org">
-<!-- 存在错误信息时  -->
 <th:block>
-	<!-- DOM -->
-	<div class="fix-nag">
-		<div class="ui inline cookie nag left">
-			<label class="title"></label>
-			<label class="title" th:text="${error}" th:if="${error != null}"></label>
-			<label class="title" th:text="${success}" th:if="${success != null}"></label>
-			<label class="title" th:text="${message}" th:if="${message != null}"></label>
-		</div>
-	</div>
-	<!-- 调用提示 -->
-	<script type="text/javascript" th:inline="javascript">
-        if($(".cookie.nag").length > 0) {
-            var mess = /*[[${error}]]*/;
-            if(mess != null) {
-                message(mess, 'error');
-                /*console.debug($(".cookie.nag").find("label"));
-				$label = $($(".cookie.nag").find("label").get(0));
-				$label.text(mess);
-				$('.cookie.nag').nag('show');
-				$('body').click(function () {
-					$('.cookie.nag').nag('hide');
-				});*/
-            }
+    <script type="text/javascript" th:inline="javascript">
+        var mess = /*[[${error}]]*/;
+        if (mess != null) {
+            message(mess, 'error');
         }
-	</script>
+    </script>
 </th:block>
