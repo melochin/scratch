@@ -2,6 +2,9 @@ body {
   background: white;
 }
 
+#card {
+  height : 100%;
+}
 
 #card-box {
   margin: 2rem 10rem 0rem 10rem;

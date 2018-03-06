@@ -30,17 +30,17 @@ var Run = React.createClass({
   api : {
     isRun : function() {
       var status = false;
-      $.ajax("/api/admin/scratch/runstatus", {
-        async : false,
-        success : function(data) {
-          status = data.status;
-        }
+      Ajax.get("/api/admin/scratch/runstatus", null, {
+          async : false,
+          success : function(data) {
+              status = data.status;
+          }
       });
       return status;
     },
     getMessages : function() {
       var dataMessages = null;
-      $.ajax("/api/admin/scratch/runmessage", {
+      Ajax.get("/api/admin/scratch/runmessage", null, {
         async : false,
         success : function(data) {
           dataMessages = data;
@@ -50,8 +50,7 @@ var Run = React.createClass({
     },
     run : function() {
       var status = false;
-      $.ajax("/api/admin/scratch/run", {
-        type : "get",
+      Ajax.get("/api/admin/scratch/run", null, {
         async : false,
         success : function(data) {
           status = data.status;
@@ -186,7 +185,7 @@ var TaskForm = React.createClass({
 
     componentDidMount : function () {
       var _this = this;
-      $.ajax("/api/admin/scratch/run/time", {
+      Ajax.get("/api/admin/scratch/run/time", null, {
           success : function(data) {
             _this.setState({
                 nextTime : data.nextTime,
@@ -210,7 +209,7 @@ var TaskForm = React.createClass({
       var _this = this;
       var time = $("input[name='startTime']").get(0).value;
       var interval = $("input[name='interval']").get(0).value;
-      $.ajax("/api/admin/scratch/run/time/" + time + "/interval/" + interval,{
+      Ajax.get("/api/admin/scratch/run/time/" + time + "/interval/" + interval, null, {
           success : function (data) {
               _this.setState({
                   nextTime : data.nextTime,

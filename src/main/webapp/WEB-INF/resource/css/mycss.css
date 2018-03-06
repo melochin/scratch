@@ -1,31 +1,8 @@
-
-
-.display{
-	display:block;
-}
-
-.hidden{
-	display:none;
-}
-
-
 .col-md-* {
 	margin: 0;
 }
 
 
-/*content container*/
-/* .content{
-	background:#EDEFF0;
-	margin:0 -15px;		����col������15px
-}
- */
- /* .content {
-    margin-top: 70px;
-    padding: 0 30px;
-} */
- 
-/*������*/
 .tool{
 	padding:5px 0;
 }
@@ -279,27 +256,5 @@ ul .dropdown-menu{
   }
 }
 
-.navbar-default .navbar-nav > li > a {
-	color:#FFF;
-}
 
-.navbar-default .navbar-nav > li > a:hover {
-	color:#FFF;
-	background:rgba(0,0,0,0.2);
-}
-
-.navbar-default .navbar-nav > .open > a {
-	color:#FFF;
-	background:rgba(0,0,0,0.2);
-}
-
-.navbar-default .navbar-nav > .open > a:focus {
-	color:#FFF;
-	background:rgba(0,0,0,0.2);
-}
-
-
-.video-section {
-	padding: 0 20px;
-}
 

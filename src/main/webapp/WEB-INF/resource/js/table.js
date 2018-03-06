@@ -1,12 +1,11 @@
 var Table = require("./semantic-react/table").Table;
 var Column = require("./semantic-react/table").Column;
 var DropDown = require("./semantic-react/table").DropDown;
+var Select = require("./semantic-react/table").Select;
 
 $(document).ready(function() {
     dic.render();
-
     ReactDomRender(<Episode/>, "episodes-box");
-    //episode.render("episodes-box");
     userInfo.render("user-contaienr");
     animeInfo.render("anime-container");
 });
@@ -17,8 +16,7 @@ var Episode = React.createClass({
     getInitialState : function () {
         return {
             datas : new Array(),
-            page : null,
-            filter : new Object()
+            page : null
         }
     },
 
@@ -28,8 +26,7 @@ var Episode = React.createClass({
 
     componentDidMount : function () {
         var _this = this;
-        $.ajax("/api/admin/episodes", {
-            async : false,
+        Ajax.get("/api/admin/episodes", null, {
             success : function(data) {
                 _this.setState({datas : data});
             }
@@ -38,7 +35,7 @@ var Episode = React.createClass({
 
     getAnimeMap : function() {
         var map = new Object();
-        $.ajax("/api/admin/animes", {
+        Ajax.get("/api/admin/animes", null, {
             async : false,
             success : function(data) {
                 data.map(anime => {
@@ -50,7 +47,7 @@ var Episode = React.createClass({
     },
 
     setFliter : function(name, value) {
-      if(this.filterAttr == null) {
+        if(this.filterAttr == null) {
           this.filterAttr = new Object();
       }
       this.filterAttr[name] = value;
@@ -58,7 +55,7 @@ var Episode = React.createClass({
 
     filter : function () {
         var _this = this;
-        $.ajax("/api/admin/episodes", {
+        Ajax.get("/api/admin/episodes", null, {
             data : this.filterAttr,
             success : function (data) {
                 _this.setState({datas : data});
@@ -73,11 +70,11 @@ var Episode = React.createClass({
                    onSave={(data) => Ajax.syncPost("/api/admin/episodes", data)}
                    modify={(data) => Ajax.syncPut("/api/admin/episodes", data)}
                    delete={(data) => Ajax.syncDelete("/api/admin/episodes/" + data.id)}>
-                <Column name="anime.id" type="select" map={this.animeMap}></Column>
-                <Column name="number"></Column>
-                <Column name="url"></Column>
-                <Column name="scratchTime" type="datetime"></Column>
-                <Column name="pushTime"></Column>
+                <Column name="anime.id" type="select" map={this.animeMap} width="250px"></Column>
+                <Column name="number" width="150px"></Column>
+                <Column name="url" width="150px"></Column>
+                <Column name="scratchTime" type="datetime" width="150px"></Column>
+                <Column name="pushTime" type="datetime" width="150px"></Column>
             </Table>
             )
     },
@@ -86,8 +83,7 @@ var Episode = React.createClass({
         return(
             <div className="ui six column doubling stackable grid container">
                 <div className="two column">
-                    <Select name={"animeId"} map={this.animeMap}
-                            onChange={(event) => (this.setFliter(event.target.name, event.target.value))} />
+                    <Select name={"animeId"} map={this.animeMap} onChange={(event) => (this.setFliter(event.target.name, event.target.value))} />
                 </div>
                 <div className="column">
                     <button className="ui small zprimary button" onClick={this.filter} >确定</button>
@@ -108,68 +104,21 @@ var Episode = React.createClass({
     }
 });
 
-
-/*var episode = {
-
-  map : function() {
-    var map = new Object();
-    $.ajax("/api/admin/animes", {
-      async : false,
-      success : function(data) {
-        data.map(anime => {
-          map[anime.id] = anime.name;
-        })
-      }
-    });
-    console.debug(map);
-    return map;
-  },
-
-  list : function(func) {
-    $.ajax("/api/admin/episodes", {
-      success : function(data) {
-        func(data);
-      }
-    });
-  },
-  filter : function(animeId) {
-    var result
-    $.ajax("/api/admin/episodes", {
-      data: "animeId=" + animeId,
-      async : false,
-      success: function (data) {
-          result = data;
-      }
-    });
-    return result;
-  },
-  render : function(id) {
-    var element = document.getElementById(id);
-    if(element == null) return;
-    var map = this.map();
-    ReactDomRender(
-        <Table list={this.list} titles={["名称","集号","链接", "更新时间","推送时间"]}
-               save={(data) => Ajax.syncPost("/api/admin/episodes", data)}
-               modify={(data) => Ajax.put("/api/admin/episodes", data)}
-               delete={(data) => Ajax.delete("/api/admin/episodes/" + data.id)}>
-        <Column name="anime.id" type="select" map={map}></Column>
-        <Column name="number"></Column>
-        <Column name="url"></Column>
-        <Column name="scratchTime"></Column>
-        <Column name="pushTime"></Column>
-    </Table>, id)
-  }
-
-}*/
-
 var userInfo = {
 
     rendernRestButton : function (data) {
 
         var click = function () {
             if(!confirm("确定重置用户:" + data.username + "的密码？")) return;
-            // 调用重置服务
-            Ajax.put("/api/admin/users/reset/" + data.userId);
+            Ajax.put("/api/admin/users/reset/" + data.userId, null, {
+                success : function (data) {
+                    console.log(data);
+                    message("密码重置成功, 初试密码为:" +data.password);
+                },
+                error : function () {
+                    message("密码重置失败");
+                }
+            });
         }
 
         return (
@@ -181,7 +130,7 @@ var userInfo = {
 
     page : function(pageNo) {
         var result = new Object();
-        $.ajax("/api/admin/users?page=" + pageNo, {
+        Ajax.get("/api/admin/users?page=" + pageNo, null,{
             async : false,
             success : function(data) {
                 result.data = data.data;
@@ -196,7 +145,7 @@ var userInfo = {
 
     render : function (id) {
         ReactDomRender(<Table onPage={this.page} title="用户管理" titles={["用户名", "邮箱", "状态", "权限"]}
-                              renderButtons={this.rendernRestButton}
+                              onRenderButtons={this.rendernRestButton}
                               rule = {USER_RULE.ADMIN}
                               modify={(data) => (Ajax.syncPut("/api/admin/users", data))}
                               onSave={(data) => (Ajax.syncPost("/api/admin/users", data))}
@@ -213,7 +162,7 @@ var animeInfo = {
 
     map : function () {
         var result;
-        $.ajax("/api/dics/02", {
+        Ajax.get("/api/dics/02", null, {
             async : false,
             success : function (data) {
                 result = data;
@@ -224,7 +173,7 @@ var animeInfo = {
 
     page : function (page) {
         var result = new Object();
-        $.ajax("/api/admin/animes?page=" + page, {
+        Ajax.get("/api/admin/animes?page=" + page, null, {
             async : false,
             success : function (data) {
                 result.data = data.data;
@@ -244,8 +193,12 @@ var animeInfo = {
                 <div className="ui floating dropdown icon button">
                     <i className="dropdown icon"></i>
                     <div className="menu">
-                        <div className="item" data-href={"/admin/anime/upload/" + data.id}>上传图片</div>
-                        <div className="item"　data-href={"/admin/anime/link/" + data.id}><i class="hide icon"></i>关联</div>
+                        <div className="item" data-href={CONTEXT + "/admin/anime/upload/" + data.id}>
+                            上传图片
+                        </div>
+                        <div className="item"　data-href={CONTEXT + "/admin/anime/link/" + data.id}>
+                            <i className="hide icon"></i>关联
+                        </div>
                     </div>
                 </div>
             </span>
@@ -260,11 +213,11 @@ var animeInfo = {
                               modify= {(data) => (Ajax.syncPut("/api/admin/animes", data))}
                               delete = {(data) => (Ajax.syncDelete("/api/admin/animes/" + data.id))}
                               onRenderButtons={this.renderButtons}>
-            <Column name="name"/>
-            <Column name="description"/>
-            <Column name="publishMonth" type="datetime"/>
-            <Column name="finished" type="select" map={{false : "否", true : "是"}}/>
-            <Column name="type" type="select" map={this.map()}/>
+            <Column name="name" width="150px"/>
+            <Column name="description" width="150px" type="textarea" />
+            <Column name="publishMonth" type="datetime" />
+            <Column name="finished" type="select" map={{false : "否", true : "是"}} width="100px"/>
+            <Column name="type" type="select" map={this.map()} width="200px"/>
         </Table>, id)
     }
 }
@@ -273,7 +226,7 @@ var dic = {
 
     listOptions : function() {
         var result;
-        $.ajax("/api/admin/dics?parentCode=-1", {
+        Ajax.get("/api/admin/dics?parentCode=-1", null, {
             async : false,
             success : function(data) {
                 result = data;
@@ -283,9 +236,10 @@ var dic = {
     },
 
     selectChange : function(event) {
-        $.ajax("/api/admin/dics?parentCode="+event.target.value, {
+        var parentCode = event.target.value;
+        Ajax.get("/api/admin/dics?parentCode="+parentCode, null, {
             success : function (data) {
-                dicTable.render(data);
+                dicTable.render(data, parentCode);
             }
         });
     },
@@ -297,7 +251,7 @@ var dic = {
 }
 
 var dicTable = {
-    render : function(data) {
+    render : function(data, parentCode) {
         ReactDomRender(
             <Table datas={data} dataKeyName={"code"}
                    titles={["编码", "父编码", "值", "序号", "使用状态"]}
@@ -305,10 +259,10 @@ var dicTable = {
                    modify={(data) => (Ajax.syncPut("/api/admin/dics", data))}
                    delete={(data) => (Ajax.syncDelete("/api/admin/dics/" + data.parentCode + "/" + data.code))}
                    rule={DIC_RULE}>
-                <Column name="code"></Column>
-                <Column name="parentCode"></Column>
-                <Column name="value"></Column>
-                <Column name="sequence"></Column>
+                <Column name="code" width="150px"></Column>
+                <Column name="parentCode" width="150px" canModify={false} defaultValue={parentCode}></Column>
+                <Column name="value" width="150px"></Column>
+                <Column name="sequence" width="150px"></Column>
                 <Column name="used" type={"select"} map={{"1":"使用", "0" : "暫停"}}></Column>
             </Table>, "dic-box");
     }

@@ -1,4 +1,6 @@
 var Remarkable = require('remarkable');
+var ReactCSSTransitionGroup = require('react-addons-css-transition-group'); // ES5 with npm
+
 // This values are default
 var md = new Remarkable({
   html:         false,        // Enable html tags in source
@@ -126,18 +128,13 @@ var Button = React.createClass({
       key : key,
       value : value
     }
-    var json = JSON.stringify(card);
     var _this = this;
-    $.ajax("/api/cards", {
-      data : json,
-      method : "post",
-      contentType : "application/json; charset=utf-8",
-      headers : getToken(),
-      success : function(data) {
-        _this.props.onChange(data);
+    Ajax.post("/api/cards", card, {
+      success : function (data) {
+          _this.props.onChange(data);
       }
-    });
-    this.setState({isInsert : false})
+    })
+    this.setState({isInsert : false});
   },
 
   onCancelClick : function() {
@@ -152,7 +149,10 @@ var Button = React.createClass({
         onClick={this.props.memoryclick}>记忆模式</button>
       <button className="ui small primary button"style={{margin : "10px 0 10px 0"}}
         onClick={this.onInsertClick}>新增</button>
-    </div>
+    </div>      <ReactCSSTransitionGroup
+        transitionName="example"
+        transitionEnterTimeout={500}
+        transitionLeaveTimeout={300}>
       {this.state.isInsert &&
         <div className="ui form" style={{maxWidth: "14rem", padding : "14px", border : "1px solid #ced6d5"}}>
           <div className="field">
@@ -167,6 +167,7 @@ var Button = React.createClass({
           <button className="ui small button" onClick={this.onCancelClick}>取消</button>
         </div>
       }
+    </ReactCSSTransitionGroup>
     </div>
     )
   }
@@ -179,12 +180,7 @@ var CardList = React.createClass({
   renderCard : function(content) {
     var _this = this;
     var handleDelete = function() {
-      var json = JSON.stringify(content);
-      $.ajax("/api/cards", {
-        data : json,
-        method : "delete",
-        contentType : "application/json; charset=utf-8",
-        headers : getToken(),
+      Ajax.delete("/api/cards", content, {
         success : function(data) {
           _this.props.onChange(data);
         }
@@ -226,7 +222,6 @@ var CardList = React.createClass({
   },
 })
 
-        //<Cards contents={contents}/>
 var Box = React.createClass({
 
   getDefaultProps : function() {
@@ -252,7 +247,7 @@ var Box = React.createClass({
     var last_response_data;
     var i = 0;
 
-    var source=new EventSource("/api/stream/cards");
+    var source= new EventSource(CONTEXT + "/api/stream/cards");
     source.onmessage=function(event)
     {
       console.debug("event source");

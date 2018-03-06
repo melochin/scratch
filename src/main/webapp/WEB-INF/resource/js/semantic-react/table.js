@@ -607,6 +607,12 @@ var Row = React.createClass({
 
 var Input = React.createClass({
 
+    getDefaultProps : function() {
+      return {
+        border : false
+      }
+    },
+
     getInitialState : function() {
         return {
             value : this.props.value
@@ -635,10 +641,14 @@ var Input = React.createClass({
 
     render : function() {
         var style = this.props.style;
-        if(this.props.readOnly) {
+
+        var displayBorder = !this.props.readOnly || this.props.border;
+
+        if(!displayBorder) {
             if(style == null) style = new Object();
             style.border = "1px solid rgba(0, 0, 0, 0.0)";
         }
+
         return (
             <input value = {this.state.value} name={this.props.name}
                    type={this.props.type}
@@ -660,6 +670,8 @@ var Select = React.createClass({
     },
 
     handleChange : function(event) {
+        console.debug(event);
+        console.debug(this.props.onChange);
         if(this.props.onChange != null) {
             this.props.onChange(event);
         }
@@ -754,31 +766,89 @@ var Column = React.createClass({
         var readOnly = this.props.readOnly;
         var status = this.props.status;
         var value = this.props.value;
-
+        var width = this.props.width;
         if(!this.props.canModify) {
             readOnly = true;
         }
 
         if(this.props.type == "select") {
             return (
-                <div>
-                    <Select value={value} name={this.props.name} map={this.props.map}
-                            readOnly={readOnly} onChange={this.props.onChange} />
-                </div>
+                <Select value={value} name={this.props.name} map={this.props.map} style={{maxWidth : width}}
+                        readOnly={readOnly} onChange={this.props.onChange} />
             )
         } else if(this.props.type == "datetime") {
-            return <Datetime value={value}
-                             readOnly = {readOnly}
-                             name={this.props.name} onChange={this.props.onChange} />
+          return <Datetime value={value}
+                    readOnly = {readOnly}  style={{maxWidth : width}}
+                    name={this.props.name} onChange={this.props.onChange} />
+        } else if(this.props.type == "textarea") {
+          return <TextArea value={value}
+                    readOnly = {readOnly} style={{maxWidth : width}}
+                    name={this.props.name} onChange={this.props.onChange} />
         } else {
             return(
-                <div className="ui small input">
-                    <Input value={value} name={this.props.name} type={this.props.type}
-                           readOnly={readOnly} onBlur={this.props.onChange}/>
+                <div className="ui small input" style={{maxWidth : width}}>
+                  <Input value={value} name={this.props.name} type={this.props.type}
+                         readOnly={readOnly} onBlur={this.props.onChange}/>
                 </div>
             )
         }
     }
+});
+
+var TextArea = React.createClass({
+
+  getInitialState : function () {
+    return {
+      value : this.props.value
+    }
+  },
+
+  componentWillReceiveProps : function(nextProps) {
+    this.setState({value : nextProps.value});
+  },
+
+  handleClick : function() {
+    if(this.props.readOnly) return;
+    // 打开modal
+    $(this.refs.modal).modal('show');
+  },
+
+  handleChange : function (event) {
+    this.props.onChange(event);
+    this.setState({value : event.target.value});
+  },
+
+  renderInput : function() {
+    return(
+      <div className="ui small icon input" style={this.props.style} onClick={this.handleClick}>
+        <Input value={this.state.value} name={this.props. name}
+               readOnly={true} border={!this.props.readOnly}/>
+          {!this.props.readOnly && <i className="edit outline icon"></i>}
+      </div>
+    )
+  },
+
+  renderModal : function () {
+    return (
+      <div className="ui modal" ref="modal">
+        <div className="content">
+          <div className="ui form">
+            <textarea name={this.props.name}
+              value={this.state.value} onChange={this.handleChange}></textarea>
+          </div>
+        </div>
+      </div>
+    )
+  },
+
+  render : function() {
+    return (
+      <div>
+        {this.renderInput()}
+        {this.renderModal()}
+      </div>
+    )
+  }
 });
 
 /*
@@ -796,7 +866,7 @@ var Datetime = React.createClass({
         console.debug(this.props.value);
         var value = moment(parseInt(this.props.value)).format("YYYY-MM-DDTHH:mm");
         return(
-            <div className="ui small input">
+            <div className="ui small input" style={this.props.style}>
                 <Input type="datetime-local" value={value} name={this.props.name}
                        readOnly={this.props.readOnly} onBlur={this.handleChange}/>
             </div>
@@ -856,7 +926,7 @@ var Page = React.createClass({
         if(this.state.current == 1 && this.state.total == 1) return null;
 
         return (
-            <div className="ui right floated pagination menu">
+            <div className="ui right floated pagination mini menu" style={{margin : '5px 0'}}>
                 <a className="icon item" onClick={() => {this.onClick(this.state.current - 1)}}>
                     <i className="left chevron icon"></i>
                 </a>
@@ -917,3 +987,5 @@ var DropDown = React.createClass({
 module.exports.Table = Table;
 module.exports.Column = Column;
 module.exports.DropDown = DropDown;
+module.exports.Select = Select;
+module.exports.Page = Page;

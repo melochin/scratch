@@ -2,6 +2,7 @@ body {
     overflow-y: scroll;
     font-family:Micrsoft Yahei, Arial;
     font-size: 18px;
+    background: rgba(233, 226, 226, 0.5);
 }
 
 li,ul{
@@ -13,6 +14,14 @@ li,ul{
 input[readonly=readonly] {
     border-style:none;
     margin:2px 2px;
+}
+
+.display{
+    display:block;
+}
+
+.hidden{
+    display:none;
 }
 
 .anime-focus .video-img {
@@ -28,6 +37,7 @@ input[readonly=readonly] {
 
 .comments {
     margin : 1rem 10rem 0 10rem;
+    padding : 5px;
 }
 
 .portrait {
@@ -40,6 +50,11 @@ input[readonly=readonly] {
     right: 45%;
     top: 35%;
     opacity : 0.8;
+}
+
+.anime-img {
+    width: 100%;
+    max-height: 180px;
 }
 
 
@@ -56,3 +71,35 @@ input[readonly=readonly] {
 .grey {
     background : #ccc;
 }
+
+.max-datetime-width {
+    max-width: 250px;
+}
+
+
+.example-enter {
+    opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+    opacity: 1;
+}
+
+.example-leave.example-leave-active {
+    opacity: 0.01;
+    transition: opacity 300ms ease-in;
+}
+
+#admin-content {
+    padding:2rem 3rem 3rem 18rem;
+    position: relative;
+    width: 95%;
+    height: 100%;
+}
+
+

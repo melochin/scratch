@@ -10,19 +10,19 @@ var message = function(mess, type) {
         color = 'red';
     };
 
-    $('body').append(
-        '<div class="alert">' +
+    var $alert = $('<div class="alert" style="display: none;">' +
         '<div class="ui ' + color +' message">\n' +
-            '        <p>' +　mess  + '</p>\n' +
-            '    </div>' +
-        '</div>'
-    );
+        '        <p>' +　mess  + '</p>\n' +
+        '    </div>' +
+        '</div>');
+    $('body').append($alert)
+    $alert.fadeIn(200);
 
     var cancel = function () {
-        $('.alert')
+        $alert
             .find('.message')
             .transition('fade');
-        $('.alert').remove();
+        $alert.remove();
         $(document).unbind('click');
     }
 
@@ -104,6 +104,7 @@ var Ajax = {
     },
 
     request : function (url, data, method, ajaxSetting) {
+        url = CONTEXT + url;
         ajaxSetting = (ajaxSetting == null) ?
             this.getDefaultAjaxSetting() :
             this.handleAjaxSetting(ajaxSetting);
@@ -135,7 +136,7 @@ var Ajax = {
 
     syncRequest : function (url, data, method) {
         var success = false;
-
+        url = CONTEXT + url;
         var setting = this.getDefaultAjaxSetting();
         // 考虑data 可能不存在
         if(data != null) {

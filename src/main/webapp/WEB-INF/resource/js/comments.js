@@ -1,7 +1,31 @@
-$(document).ready(function () {
-    ReactDOM.render(<Comments animeId={173}/>, document.getElementById("comments"));
+var Remarkable = require('remarkable');
+var moment = require('moment');
+var Page = require('./semantic-react/table').Page;
+var md = new Remarkable({
+    html:         false,        // Enable html tags in source
+    xhtmlOut:     false,        // Use '/' to close single tags (<br />)
+    breaks:       false,        // Convert '\n' in paragraphs into <br>
+    langPrefix:   'language-',  // CSS language prefix for fenced blocks
+    linkify:      false,        // Autoconvert url-like texts to links
+    typographer:  false,        // Enable smartypants and other sweet transforms
+    // Highlighter function. Should return escaped html,
+    // or '' if input not changed
+    highlight: function (/*str, , lang*/) { return ''; }
 });
 
+
+$(document).ready(function () {
+    var animeId = sessionStorage.getItem("animeId");
+    var desc = sessionStorage.getItem("desc");
+    console.debug(md.render(desc));
+    $('#desc').replaceWith(md.render(desc));
+    ReactDOM.render(<Comments animeId={animeId}/>, document.getElementById("comments"));
+
+});
+
+/**
+ * 1. 分页
+ */
 var Comments = React.createClass({
 
     getInitialState : function () {
@@ -65,7 +89,7 @@ var Comments = React.createClass({
         var login = this.state.isLogin;
 
         return (
-            <div className="comments">
+            <div>
                 <CommentInput isLogin={login}
                               onComment = {this.handleComment}/>
                 <CommentList comments={this.state.comments}
@@ -80,13 +104,31 @@ var Comments = React.createClass({
 
 var CommentList = React.createClass({
 
+    getInitialState : function () {
+        return ({
+            current : 1,
+            size : 5
+        })
+    },
+
+    componentWillReceiveProps : function (nextProps) {
+        var total= parseInt((nextProps.comments.length / (this.state.size + 1)) + 1);
+        if(this.state.current > total) {
+            this.setState({current : total});
+        }
+    },
+
+
+    handlePage : function (page) {
+        this.setState({current : page});
+    },
+
     renderList : function (animeComments) {
         var _this = this;
         return animeComments.map((animeComment, index) => {
-/*            var start = (_this.state.page - 1) * 10;
-            var end = _this.state.page * 10 - 1;
-            if(index < start || index > end) return null;*/
-            var date = new Date(animeComment.date).format('yyyy-mm-dd');
+            var start = (_this.state.current - 1) * this.state.size;
+            var end = _this.state.current * this.state.size - 1;
+            if(index < start || index > end) return null;
             return (
                 <div className="event">
                     <div className="label">
@@ -104,7 +146,7 @@ var CommentList = React.createClass({
                             {animeComment.comment}
                         </div>
                         <div className="meta">
-                            <h>{date}</h>
+                            <h>{moment(parseInt(animeComment.date)).format("YYYY-MM-DD hh:mm")}</h>
                             {animeComment.userId == _this.props.userId &&
                             <a onClick={()=>_this.props.onDelete(animeComment)}>删除</a>
                             }
@@ -115,13 +157,17 @@ var CommentList = React.createClass({
         });
     },
 
-
     render : function () {
         if(this.props.comments.length == 0) return null;
         var list = this.renderList(this.props.comments)
         return (
-            <div className="ui feed">
-                {list}
+            <div>
+                <Page current={this.state.current}
+                      total={(this.props.comments.length / (this.state.size + 1)) + 1}
+                    onPage={this.handlePage} />
+                <div className="ui feed">
+                    {list}
+                </div>
             </div>
         )
     }
@@ -145,8 +191,7 @@ var CommentInput = React.createClass({
        return (
            <div className="ui form">
                <div className="field">
-                   <label>评论<a href="/user/login">(请先登录)</a></label>
-                   <textarea rows="2" disabled="disabled"></textarea>
+                   <label>评论<a href={CONTEXT + "/user/login"}>(请先登录)</a></label>
                </div>
            </div>
        )
