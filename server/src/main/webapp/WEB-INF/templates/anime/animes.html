@@ -1,0 +1,30 @@
+<html xmlns:th="www.thymeleaf.org">
+<th:block th:replace="base/lib :: common" />
+<th:block th:replace="base/lib :: semantic" />
+<th:block th:replace="base/lib :: react" />
+
+<div class="ui container" th:fragment="cards(animes)"
+	style="padding: 10px 0 20px 0">
+	
+	<div class="ui five doubling special cards">
+		<div th:each="anime : ${animes}" class="ui card">
+			<a class="imgae" th:href="@{'/anime/episodes/' + ${anime.id}}">
+				<img src="https://semantic-ui.com/images/avatar2/large/kristy.png"
+						th:src="@{'/upload/' + ${anime.pic}}" class="anime-img" />
+			</a>
+			<div class="content">
+				<!-- header -->
+				<div class="header">
+					<a th:href="@{'/anime/episodes/' + ${anime.id}}"
+					   th:text="${anime.name}"></a>
+				</div>
+			</div>
+			<div class="extra content">
+				<div th:if="${session.user_g != null}">
+					<div class="anime-focus" th:focus="${anime.focus}" th:anime="${anime.id}">
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+</html>

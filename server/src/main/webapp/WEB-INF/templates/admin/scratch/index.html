@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+	<title>后台管理</title>
+	<th:block th:replace="base/lib :: common" />
+	<th:block th:replace="base/lib :: react" />
+	<th:block th:replace="base/lib :: semantic" />
+	<script th:src="@{/js/run.js}" type="text/babel"></script>
+</head>
+<body th:replace="base/layout/admin :: layout(~{::.container})">
+	<div class="ui aligned container" id="container">
+		<div id="runButton"></div>
+		<div id="timeForm"></div>
+	</div>
+</body>
+</html>

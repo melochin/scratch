@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="react">
+	<script type="text/javascript" src="http://cdn.bootcss.com/babel-core/5.3.1/browser.min.js"></script>
+	<script type="text/javascript" th:src="@{/js/tools/react.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tools/react-dom.js}"></script>
+</th:block>
+
+<th:block th:fragment="semantic">
+	<script type="text/javascript" th:src="@{/semantic/semantic.js}"></script>
+	<link rel="stylesheet" th:href="@{/semantic/semantic.css}" />
+</th:block>
+
+<th:block th:fragment="common">
+	<script type="text/javascript" th:src="@{/js/conf.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tools/jquery.js}"></script>
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tool.js}"></script>
+	<link rel="stylesheet" th:href="@{/css/common.css}" />
+	<link rel="stylesheet" th:href="@{/css/mycss.css}" />
+	<link rel="icon" th:href="@{/pic/favicon.ico}"/>
+
+	<meta th:name="${_csrf.headerName}" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</th:block>
+
+<th:block th:fragment="customer">
+	<script type="text/javascript" th:src="@{/js/common.js}"></script>
+</th:block>
+
+</html>

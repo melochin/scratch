@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="www.themeleaf.org">
+
+<head>
+	<title>番剧管理</title>
+	<th:block th:replace="base/lib :: common"></th:block>
+	<th:block th:replace="base/lib :: react"></th:block>
+	<th:block th:replace="base/lib :: semantic"></th:block>
+	<script type="text/javascript" th:src="@{/js/bundle/vendors.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bundle/table.js}"></script>
+	<script type="text/javascript" th:src="@{/js/semantic-custom.js}"></script>
+</head>
+
+<body th:replace="base/layout/admin :: layout(~{::#container})">
+	<div id="container">
+		<div id="anime-container">
+			<div class="ui active centered loader"></div>
+		</div>
+	</div>
+</body>
+</html>

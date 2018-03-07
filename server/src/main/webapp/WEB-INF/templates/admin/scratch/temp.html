@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="www.themeleaf.org">
+
+<head>
+	<title>数据审核</title>
+	<th:block th:remove="all">
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.cookie.js"></script>
+		<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+		<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+	</th:block>
+
+	<th:block th:replace="base/lib :: common"></th:block>
+	<th:block th:replace="base/lib :: semantic"></th:block>
+</head>
+
+<body th:replace="base/layout/admin :: layout(~{::#container})">
+	<div id="container">
+		<div class="ui top attached tabular menu">
+	  		<a class="item" th:classappend="${status == 0 ? 'active' : ''}"
+	  			th:href="@{'/admin/scratch/temp'}">
+	  			待审核
+	  			<div class="ui small red label" th:text="${waitCount}"></div>
+	  		</a>
+	  		<a class="item" th:classappend="${status == 1 ? 'active' : ''}"
+	  			th:href="@{'/admin/scratch/temp'(status='1')}">
+	  			已通过
+	  			<div class="ui small teal label" th:text="${passCount}"></div>
+	  		</a>
+	  		<a class="item" th:classappend="${status == -1 ? 'active' : ''}" 
+	  			th:href="@{'/admin/scratch/temp'(status='-1')}">
+	  			未通过
+	  			<div class="ui small teal label" th:text="${rejectCount}"></div>
+	  		</a>
+		</div>
+		<div class="ui bottom attached active tab segment">
+			<table class="ui celled padded table">
+				<colgroup>
+					<col style="width: 3%">
+					<col style="width: 15%">
+					<col style="width: 12%">
+					<col style="width: 7%">
+					<col style="width: 30%">
+					<col style="width: 15%">
+					<col style="width: 20%">
+				</colgroup>
+				<thead>
+					<tr>
+						<th><button class="ui blue icon button mini"><i class="checkmark box icon"></i></button></th>
+						<th>名称</th>
+						<th>集号</th>
+						<th>来源</th>
+						<th>链接</th>
+						<th>日期</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="episode : ${episodeScratchs}">
+						<td><input type="checkbox" /></td>
+						<td th:text="${episode.anime.name}"></td>
+						<td th:text="${episode.number}"></td>
+						<td th:text="${hostMap.get(#strings.toString(episode.hostId))}"></td>
+						<td>
+							<a th:href="${episode.url}" th:text="${episode.url}"></a>
+						</td>
+						<td th:text="${#dates.format(episode.scratchTime, 'yyyy-MM-dd HH:mm')}"></td>
+						<td>
+							<a class="ui green button" th:classappend="${status == 1 ? 'disabled' : ''}"
+								th:href="@{/admin/scratch/temp/pass(id=${episode.id})}">通过</a>
+							<a class="ui red button" th:classappend="${status == -1 ? 'disabled' : ''}"
+								th:href="@{/admin/scratch/temp//reject(id=${episode.id})}">不通过</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
