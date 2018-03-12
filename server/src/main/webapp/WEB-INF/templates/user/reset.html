@@ -3,26 +3,22 @@
 <meta http-equiv="Content-Type" content="text/html; UTF-8">
 
 <head>
-<title>密码重置</title>
-<th:block th:replace="base/lib :: common" />
-<th:block th:replace="base/lib :: semantic" />
+	<title>密码重置</title>
+	<th:block th:replace="base/lib :: common" />
+	<th:block th:replace="base/lib :: semantic" />
+	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
 	<div id="container" class="ui text container justified ">
 		<h4>密码重置申请</h4>
-		<form class="form-valid ui form" th:action="@{/user/reset/pwd/mail}"
+		<form id="reset-apply" class="form-valid ui form" th:action="@{/user/reset/pwd/mail}"
 			method="post">
 			<div class="ui field">
 				<label>用户名</label> <input name="username" placeholder="用户名" />
 			</div>
 			<div class="ui field">
-				<label>邮箱</label> <input name="email" placeholder="邮箱"
-					jerror="邮箱格式不正确"
-					jpattern="^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$" />
-			</div>
-			<div>
-				<label th:text="${error}"></label>
+				<label>邮箱</label> <input name="email" placeholder="邮箱"/>
 			</div>
 			<div class="ui field">
 				<input class="ui green button" type="submit" />

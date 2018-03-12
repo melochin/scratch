@@ -12,10 +12,14 @@
 
 	<th:block th:replace="base/lib :: common"></th:block>
 	<th:block th:replace="base/lib :: semantic"></th:block>
+	<th:block th:replace="base/lib :: react"></th:block>
+	<script type="text/javascript" th:src="@{/js/bundle/vendors.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bundle/table.js}"></script>
 </head>
 
 <body th:replace="base/layout/admin :: layout(~{::#container})">
 	<div id="container">
+
 		<div class="ui top attached tabular menu">
 	  		<a class="item" th:classappend="${status == 0 ? 'active' : ''}"
 	  			th:href="@{'/admin/scratch/temp'}">
@@ -66,10 +70,12 @@
 						</td>
 						<td th:text="${#dates.format(episode.scratchTime, 'yyyy-MM-dd HH:mm')}"></td>
 						<td>
-							<a class="ui green button" th:classappend="${status == 1 ? 'disabled' : ''}"
-								th:href="@{/admin/scratch/temp/pass(id=${episode.id})}">通过</a>
-							<a class="ui red button" th:classappend="${status == -1 ? 'disabled' : ''}"
-								th:href="@{/admin/scratch/temp//reject(id=${episode.id})}">不通过</a>
+							<div class="ui buttons">
+								<a class="ui mini green button" th:classappend="${status == 1 ? 'disabled' : ''}"
+								   th:href="@{/admin/scratch/temp/pass(id=${episode.id})}">通过</a>
+								<a class="ui mini red button" th:classappend="${status == -1 ? 'disabled' : ''}"
+								   th:href="@{/admin/scratch/temp//reject(id=${episode.id})}">不通过</a>
+							</div>
 						</td>
 					</tr>
 				</tbody>
