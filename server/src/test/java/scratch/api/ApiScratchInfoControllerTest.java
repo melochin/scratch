@@ -17,16 +17,8 @@ public class ApiScratchInfoControllerTest extends ContextTest {
 
 	@Rollback
 	@Test
-	public void getRunstatus() throws Exception {
-		mvc.perform(get("/api/admin/scratch/runstatus")
-				.with(getAdmin()))
-				.andExpect(status().isOk());
-	}
-
-	@Rollback
-	@Test
 	public void getRunMessage() throws Exception {
-		mvc.perform(get("/api/admin/scratch/runmessage")
+		mvc.perform(get("/api/admin/scratch/run/message")
 				.with(getAdmin()))
 				.andExpect(status().isOk());
 	}
