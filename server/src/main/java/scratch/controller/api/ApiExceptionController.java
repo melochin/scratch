@@ -1,4 +1,4 @@
-package scratch.api;
+package scratch.controller.api;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -13,11 +13,17 @@ import java.util.Map;
 @RestControllerAdvice(annotations = RestController.class)
 public class ApiExceptionController {
 
-	private final static String MESSAGE = "message";
+	private final static String MESSAGE = "error";
 
 	private final static Logger log = Logger.getLogger(ApiExceptionController.class);
 
 
+	/**
+	 * 处理api异常　返回 json {error : 'error'}
+	 *
+	 * @param e
+	 * @return
+	 */
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler
 	public Map internalError(Exception e) {

@@ -1,4 +1,4 @@
-package scratch.api;
+package scratch.controller.api;
 
 import scratch.support.web.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
