@@ -36,27 +36,25 @@ var Card = React.createClass({
 
   render : function() {
     return(
-      <div className="ui centered card" style={{minWidth:"20rem"}}>
-        <div className="content" onClick={this.handleClick}>
-          <div className="description center aligned" style={{fontSize : "20px"}} >
-          <div dangerouslySetInnerHTML={{__html:md.render(this.props.content[this.state.display])}}/>
+      <div className="ui centered card" style={{width:"100%"}}>
+        <div className="content ui grid" style={{fontSize: "2rem", padding: "0 rem 1rem", minHeight:　"10rem"}}>
+            <div className="two wide column" style={{padding: "6rem 0rem"}} onClick={this.props.onLeftClick}>
+                {!this.props.isFirst &&
+                  <button className="ui icon primary button">
+                    <i className="arrow left icon"></i>
+                  </button>
+                }
+            </div>
+              <div className="description center aligned twelve wide column" style={{padding: "6rem 0rem"}} onClick={this.handleClick} >
+                <div dangerouslySetInnerHTML={{__html:md.render(this.props.content[this.state.display])}}/>
+              </div>
+          <div className="two wide column" style={{padding: "6rem 0rem"}} onClick={this.props.onRightClick}>
+              {!this.props.isLast &&
+                <button className="ui icon primary button">
+                  <i className="arrow right icon"></i>
+                </button>
+              }
           </div>
-        </div>
-        <div className="extra content">
-        {!this.props.isFirst &&
-          <span className="left floated ">
-            <button className="ui icon primary button" onClick={this.props.onLeftClick}>
-              <i className="arrow left icon"></i>
-            </button>
-          </span>
-        }
-        {!this.props.isLast &&
-          <span className="right floated ">
-            <button className="ui icon primary button" onClick={this.props.onRightClick}>
-              <i className="arrow right icon"></i>
-            </button>
-          </span>
-        }
         </div>
       </div>
     )
@@ -302,11 +300,9 @@ var Box = React.createClass({
     var memoryMode = this.state.memoryMode;
     if(memoryMode) {
       return (
-        <div id="card-box" className="ui grid">
-          <div>
+        <div id="card-box">
             <button className="ui primary button"
               onClick={() => (this.setState({memoryMode : false}))}>退出</button>
-          </div>
           <Cards contents={this.state.contents}/>
         </div>
       )
