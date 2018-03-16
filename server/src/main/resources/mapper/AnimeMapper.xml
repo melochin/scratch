@@ -76,13 +76,14 @@
 		select
 			a.*
 		from
-			anime a,
+			anime a
+		left join
 			(
 				select anime_id, count(*) count
 				from anime_focus
 				group by anime_id
 			) b
-		where 
+		on
 			a.id = b.anime_id
 		order by
 			b.count desc;

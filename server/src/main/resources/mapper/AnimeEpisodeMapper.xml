@@ -89,6 +89,26 @@
 		where e.anime_id = a.id
 			and e.id = #{id}  
 	</select>
+
+	<select id="getByAnimeIdAndHostIdAndNo" resultMap="AnimeEpisodeMap">
+				select
+		 	e.id as id,
+		 	e.host_id as host_id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	e.save_time as save_time,
+		 	e.push_time as push_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+		from anime_episode e, anime a
+		where
+			e.anime_id = a.id
+			and e.anime_id = #{animeId}
+			and e.host_id = #{hostId}
+			and e.no = #{no}
+	</select>
+
 	
 	<insert id="save">
 		insert into anime_episode (
