@@ -9,7 +9,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class ListenerService {
 
-
 	private BlockingQueue<Listener> listeners;
 
 	public void addListener(Listener listener) {
@@ -21,7 +20,18 @@ public class ListenerService {
 	}
 
 	public void handle(Set data) {
-		listeners.stream().forEach(listener -> listener.handle(data));
+		listeners.stream().forEach(listener -> {
+			listener.handle(data);
+		});
+	}
+
+	public void remove(String sessionId) {
+		listeners.stream().forEach(listener -> {
+			if(listener.getName().equals(sessionId)) {
+				listeners.remove(listener);
+				System.out.println(listeners.size());
+			}
+		});
 	}
 
 }
