@@ -8,4 +8,8 @@ public class RedisKey {
 
 	public static final String DIC = "dictionary";
 
+	public static final String BROCHURES = "brochures";
+
+	public static final String CARDS = "cards";
+
 }
