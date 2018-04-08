@@ -1,5 +1,8 @@
 var Remarkable = require('remarkable');
 var ReactCSSTransitionGroup = require('react-addons-css-transition-group'); // ES5 with npm
+var Cards = require('./card/cards').Cards;
+import {Dropdown} from 'semantic-ui-react';
+
 
 // This values are default
 var md = new Remarkable({
@@ -14,98 +17,215 @@ var md = new Remarkable({
   highlight: function (/*str, , lang*/) { return ''; }
 });
 
-var Card = React.createClass({
+var Brouchures = React.createClass({
 
-  getInitialState : function() {
-    return {
-      display : "key"
-    }
-  },
+    getInitialState : function () {
+        return {
+          brouchures : new Array(),
+          searchOptions : new Array(),
+          showForm : false
+        }
+    },
 
-  componentWillReceiveProps : function() {
-    this.setState({display : "key"});
-  },
+    componentDidMount : function () {
+      this.list();
+    },
 
-  handleClick : function() {
-    if(this.state.display == "key") {
-      this.setState({display : "value"});
-    } else {
-      this.setState({display : "key"});
-    }
-  },
+    list : function () {
+        var _this = this;
+        Ajax.get("/api/brochures", null, {
+            success : function (brochures) {
+                var options = brochures.map(brochure => {
+                    var option = new Object();
+                    option.text = brochure.name;
+                    option.value = brochure;
+                    return option;
+                });
+                _this.setState({
+                    brouchures : brochures,
+                    searchOptions : options});
+            }
+        })
+    },
 
-  render : function() {
-    return(
-      <div className="ui centered card" style={{width:"100%"}}>
-        <div className="content ui grid" style={{fontSize: "2rem", padding: "0 rem 1rem", minHeight:　"10rem"}}>
-            <div className="two wide column" style={{padding: "6rem 0rem"}} onClick={this.props.onLeftClick}>
-                {!this.props.isFirst &&
-                  <button className="ui icon primary button">
-                    <i className="arrow left icon"></i>
-                  </button>
-                }
-            </div>
-              <div className="description center aligned twelve wide column" style={{padding: "6rem 0rem"}} onClick={this.handleClick} >
-                <div dangerouslySetInnerHTML={{__html:md.render(this.props.content[this.state.display])}}/>
+    delete : function (brochure) {
+        var _this = this;
+        Ajax.delete("/api/brochures/" + brochure.id, null, {
+            success : function() {
+                _this.list();
+            }
+        })
+    },
+
+    save : function (brochure) {
+        var _this = this;
+        Ajax.post("/api/brochures", brochure, {
+            success : function () {
+                _this.setState({showForm : false});
+                _this.list();
+                message("新增成功");
+            }
+        });
+    },
+
+    modify : function (brochure, success) {
+        var _this = this;
+        Ajax.put("/api/brochures", brochure, {
+            success : function () {
+                _this.list();
+            }
+        })
+    },
+
+    renderBrouchure : function () {
+      var _this = this;
+      return this.state.brouchures.map(brochure => {
+          return(
+              <Brochure key={brochure.id} brochure={brochure} delete={_this.delete} modify={_this.modify}/>
+          )
+      });
+    },
+
+    render : function () {
+        return (
+            <div className="ui container" id="card-box" >
+              <div className="ui grid">
+{/*                  <div className="ui three wide column">
+                      <Dropdown search fluid selection options={this.state.searchOptions} />
+                  </div>*/}
+                  <div className="ui six wide tablet two wide computer column">
+                      <button className="ui primary button"
+                              onClick={() => !this.state.showForm && this.setState({showForm : true})}>新增</button>
+                  </div>
+                  { this.state.showForm &&
+                      <div className="ui five wide column">
+                          <BrochureForm onSubmit={this.save}
+                                        onCancel={() => this.state.showForm && this.setState({showForm : false})}/>
+                      </div>
+                  }
               </div>
-          <div className="two wide column" style={{padding: "6rem 0rem"}} onClick={this.props.onRightClick}>
-              {!this.props.isLast &&
-                <button className="ui icon primary button">
-                  <i className="arrow right icon"></i>
-                </button>
-              }
-          </div>
-        </div>
-      </div>
-    )
-  }
+                  <div className="ui five stackable cards">
+                    {this.renderBrouchure()}
+                 </div>
+            </div>
+        )
+    }
+
 });
 
-var Cards = React.createClass({
-  getInitialState : function() {
-    return ({
-      current : 0
-    })
-  },
+/**
+ * props : brochure
+ *         delete(brochure)
+ * @type {*|Function}
+ */
+var Brochure = React.createClass({
 
-  handleClick : function() {
-    if(this.state.current < this.props.contents.length - 1) {
-      this.setState({current : this.state.current + 1});
+    getInitialState : function () {
+        return {
+            modify : false,
+        }
+    },
+
+    componentWillReceiveProps : function (nextProps) {
+        this.setState({modify : false})
+    },
+
+    renderDefault : function (brochure) {
+        return (
+            <div className="content">
+                <div className="center aligned header">
+                    <h1>{brochure.name}</h1>
+                </div>
+                <div className="center aligned description">
+                    <p>{brochure.description == null ? '无' : brochure.description}</p>
+                </div>
+                <div className="extra content">
+                    <div className="center aligned">
+                        <button className="ui teal button" onClick={() =>
+                            ReactDOM.render(<Box brochure={brochure}/>, document.getElementById("card"))}>开始学习</button>
+                    </div>
+                </div>
+            </div>
+        )
+    },
+
+    renderModify : function (brochure) {
+        return (
+            <div className="content ui form">
+                <div className="center aligned header">
+                    <input ref="name"></input>
+                </div>
+                <div className="center aligned description">
+                    <input ref="description"></input>
+                </div>
+                <div className="extra content">
+                    <div className="center aligned">
+                        <button className="ui primary mini button" onClick={() => {
+                            var submitBrochure = this.props.brochure;
+                            submitBrochure.name = this.refs.name.value;
+                            submitBrochure.description = this.refs.description.value;
+                            this.props.modify(submitBrochure);
+                        }}>保存</button>
+                        <button className="ui mini button" onClick={() => this.setState({modify : false})}>取消</button>
+                    </div>
+                </div>
+            </div>
+        )
+    },
+
+
+    render : function () {
+        var brochure = this.props.brochure;
+        var content = this.state.modify ? this.renderModify(brochure) : this.renderDefault(brochure);
+        return (
+            <div className="ui raised card " key={brochure.id}>
+                <div className="right aligned meta" >
+                    <i className="large edit icon" onClick={() => this.setState({modify : !this.state.modify})}></i>
+                    <i className="large trash alternate icon" onClick={() => this.props.delete(brochure)}></i>
+                </div>
+                {content}
+            </div>
+        );
     }
-  },
 
-  setCurrent : function(current) {
-    if(current < 0 || current >= this.props.contents.length) {
-      return;
-    }
-    this.setState({current : current});
-  },
-
-  renderCard : function(index) {
-    if(index >= this.props.contents.length || index < 0) return null;
-    var content = this.props.contents[index];
-    var isFirst = false;
-    var isLast = false;
-    if(index == 0) {
-      isFirst = true;
-    }
-    if(index == this.props.contents.length - 1) {
-      isLast = true;
-    }
-
-    return <Card content={content} isFirst = {isFirst} isLast = {isLast}
-      onLeftClick={() => (this.setCurrent(this.state.current - 1))}
-      onRightClick={()=> (this.setCurrent(this.state.current + 1))}/>
-  },
-
-  render : function() {
-    return (
-      <div className="ui container" style={{margin : "2rem"}}>
-          {this.renderCard(this.state.current)}
-      </div>
-    )
-  }
 })
+
+/**
+ * 册子——新增表单
+ *
+ * props: onSubmit(brouchure)   表单提交的处理
+ *        onCancel()            表单取消的处理
+ *
+ */
+var BrochureForm = React.createClass({
+
+    handleSubmit : function() {
+        var brouchure = new Object();
+        brouchure.name = this.refs.name.value ;
+        brouchure.description = this.refs.description.value;
+        this.props.onSubmit(brouchure);
+    },
+
+   render : function () {
+       return (
+           <div id="brochure-form" className="ui form" >
+               <div className="two fields">
+                   <div className="field">
+                       <label>名字</label>
+                       <input ref="name"/>
+                   </div>
+                   <div className="field">
+                       <label>描述</label>
+                       <input ref="description"/>
+                   </div>
+               </div>
+               <button className="ui primary button" onClick={this.handleSubmit}>提交</button>
+               <button className="ui button" onClick={this.props.onCancel}>取消</button>
+           </div>
+       )
+   }
+});
+
 
 var Button = React.createClass({
 
@@ -127,11 +247,9 @@ var Button = React.createClass({
       value : value
     }
     var _this = this;
-    Ajax.post("/api/cards", card, {
-      success : function (data) {
-          _this.props.onChange(data);
-      }
-    })
+    this.props.insertClick(card, function (data) {
+        _this.props.onChange(data);
+    });
     this.setState({isInsert : false});
   },
 
@@ -141,32 +259,32 @@ var Button = React.createClass({
 
   render : function() {
     return (
-    <div>
-    <div className="blue ui buttons">
-      <button className="ui small primary button" style={{margin : "10px 0 10px 0"}}
-        onClick={this.props.memoryclick}>记忆模式</button>
-      <button className="ui small primary button"style={{margin : "10px 0 10px 0"}}
-        onClick={this.onInsertClick}>新增</button>
-    </div>      <ReactCSSTransitionGroup
-        transitionName="example"
-        transitionEnterTimeout={500}
-        transitionLeaveTimeout={300}>
-      {this.state.isInsert &&
-        <div className="ui form" style={{maxWidth: "14rem", padding : "14px", border : "1px solid #ced6d5"}}>
-          <div className="field">
-            <label>正面</label>
-            <textarea rows="3" ref="key" style={{backgroundColor: "rgb(255, 255, 249)"}}></textarea>
-          </div>
-          <div className="field">
-            <label>反面</label>
-            <textarea rows="3" ref="value" style={{backgroundColor: "rgb(255, 255, 249)"}}></textarea>
-          </div>
-          <button className="ui small teal button" onClick={this.onConfirmClick}>提交</button>
-          <button className="ui small button" onClick={this.onCancelClick}>取消</button>
+        <div>
+            <div className="blue ui buttons">
+                <button className="ui small primary button" style={{margin: "10px 0 10px 0"}}
+                        onClick={this.onInsertClick}>新增
+                </button>
+            </div>
+            <ReactCSSTransitionGroup
+                transitionName="example"
+                transitionEnterTimeout={500}
+                transitionLeaveTimeout={300}>
+                {this.state.isInsert &&
+                <div className="ui form" style={{maxWidth: "14rem", padding: "14px", border: "1px solid #ced6d5"}}>
+                    <div className="field">
+                        <label>正面</label>
+                        <textarea rows="3" ref="key" style={{backgroundColor: "rgb(255, 255, 249)"}}></textarea>
+                    </div>
+                    <div className="field">
+                        <label>反面</label>
+                        <textarea rows="3" ref="value" style={{backgroundColor: "rgb(255, 255, 249)"}}></textarea>
+                    </div>
+                    <button className="ui small teal button" onClick={this.onConfirmClick}>提交</button>
+                    <button className="ui small button" onClick={this.onCancelClick}>取消</button>
+                </div>
+                }
+            </ReactCSSTransitionGroup>
         </div>
-      }
-    </ReactCSSTransitionGroup>
-    </div>
     )
   }
 })
@@ -175,33 +293,24 @@ var Button = React.createClass({
 
 var CardList = React.createClass({
 
-  renderCard : function(content) {
-    var _this = this;
-    var handleDelete = function() {
-      Ajax.delete("/api/cards", content, {
-        success : function(data) {
-          _this.props.onChange(data);
-        }
-      });
-    }
-
+  renderCard : function(card) {
     return (
-      <div className="card-item ui grid" key={content.id}>
-        <div className="fifteen wide column" style={{padding :"0 0 0 14px"}}>
-          <div className="title">
-            <span dangerouslySetInnerHTML={{__html:md.render(content.key)}}/>
+          <div className="item">
+              <div className="content">
+                  <div className="description">
+                      <span dangerouslySetInnerHTML={{__html:md.render(card.key)}}/>
+                  </div>
+              </div>
+              <div className="content">
+                  <div className="description">
+                      <span dangerouslySetInnerHTML={{__html:md.render(card.value)}} />
+                  </div>
+                  <button className="ui right floated icon button"
+                          style={{background : "white"}} onClick={() => this.props.onDelete(card, null)}>
+                      <i className="trash outline icon"></i>
+                  </button>
+              </div>
           </div>
-          <div className="content">
-            <span className="transition hidden" dangerouslySetInnerHTML={{__html:md.render(content.value)}} />
-          </div>
-        </div>
-        <div className="one wide column" style={{padding : "14px 0 14px 0"}}>
-          <button className="ui mini icon button"
-            style={{background : "white"}} onClick={handleDelete}>
-            <i className="trash outline icon"></i>
-          </button>
-        </div>
-      </div>
     )
   },
 
@@ -213,7 +322,7 @@ var CardList = React.createClass({
   render : function() {
     var cards = this.props.contents.map((content) => (this.renderCard(content)));
     return (
-      <div className="ui styled fluid accordion">
+      <div className="ui divided items">
         {cards}
       </div>
     )
@@ -233,100 +342,153 @@ var Box = React.createClass({
     return (
       {
         contents : this.props.contents,
-        memoryMode : false
+        memoryContents : new Array(),
+        mode : 0    // 0 普通 1 记忆 2 管理
       }
     )
   },
 
   // 加载数据
   componentDidMount : function() {
+    this.listManageContents();
+  },
+
+  listMemoryContents : function () {
+      var _this = this;
+      Ajax.get("/api/brochures/" + this.props.brochure.id + "/cards/memory", null, {
+          success : function (data) {
+              _this.setState({memoryContents : data});
+          }
+      });
+  },
+
+  listManageContents : function () {
+      var _this = this;
+      Ajax.get("/api/brochures/" + this.props.brochure.id + "/cards", null, {
+          success : function (data) {
+              _this.setState({contents : data});
+          }
+      });
+  },
+
+  openCardStream : function () {
+      var _this = this;
+      var last_response_data;
+
+      var source= new EventSource(CONTEXT + "/api/stream/brochures/" + this.props.brochure.id +  "/cards");
+      source.onmessage=function(event)
+      {
+          console.debug("event source");
+          if(event.data != last_response_data) {
+              console.debug("refresh");
+              _this.setState({contents : JSON.parse(event.data)})
+              last_response_data = event.data;
+          }
+      };
+  },
+
+  handleSave : function (card, success) {
     var _this = this;
-    var last_response_len = false;
-    var last_response_data;
-    var i = 0;
+    Ajax.post("/api/brochures/" + this.props.brochure.id + "/cards", card, {
+        success : function () {
+            _this.listManageContents();
+        }
+    });
+  },
 
-    var source= new EventSource(CONTEXT + "/api/stream/cards");
-    source.onmessage=function(event)
-    {
-      console.debug("event source");
-      if(event.data != last_response_data) {
-        console.debug("refresh");
-        _this.setState({contents : JSON.parse(event.data)})
-        last_response_data = event.data;
+  handleDelete : function (card, success) {
+    var _this = this;
+    Ajax.delete("/api/brochures/" + this.props.brochure.id + "/cards", card, {
+      success : function () {
+          _this.listManageContents();
       }
-    };
+    });
+  },
 
-/*
-    $.ajax("/api/cards", {
-      method : "get",
-      contentType : "application/json; charset=utf-8",
-      headers : getToken(),
-      success : function(data) {
-        //
-      },
-      xhrFields: {
-                onprogress: function(e)
-                {
-                    var this_response, response = e.currentTarget.response;
-                    console.log(e);
-                    console.log(i, response);
+  renderMenu : function() {
+      return (
+          <div className="ui menu">
+              <div className="item" onClick={() => ReactDOM.render(<Brouchures />, document.getElementById("card"))}>
+                  首页
+              </div>
+              <a className="item" onClick={() => this.setState({mode : 2})}>
+                  卡片管理
+              </a>
+          </div>
+      )
+  },
 
-                    i++;
-                    if(last_response_len === false)
-                    {
-                        this_response = response;
-                        last_response_len = response.length;
-                    }
-                    else
-                    {
-                        this_response = response.substring(last_response_len);
-                        last_response_len = response.length;
-                    }
-                    try{
-                      console.debug("{" + this_response +"}");
-                      var data = JSON.parse("{" + this_response +"}");
-                      if(!data.hasOwnProperty("data")) return;
-                      console.debug(data);
-                    } catch(error) {
-                      console.debug(this_response);
-                      console.debug(error);
-                    }
-                }
-            }
-    });*/
+  renderCardList : function() {
+    return (
+        <div>
+            <div>
+                <Button memoryclick={() => (this.setState({mode: 1}))}
+                        insertClick={this.handleSave}
+                        onChange={(data) => (this.setState({contents: data}))}/>
+            </div>
+            <div>
+                <div id="card-list">
+                    <div className="ui cotainer">
+                        <CardList contents={this.state.contents}
+                                  onDelete={this.handleDelete}
+                                  onChange={(data) => (this.setState({contents: data}))}/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
   },
 
   render : function() {
-    var memoryMode = this.state.memoryMode;
-    if(memoryMode) {
-      return (
-        <div id="card-box">
-            <button className="ui primary button"
-              onClick={() => (this.setState({memoryMode : false}))}>退出</button>
-          <Cards contents={this.state.contents}/>
-        </div>
-      )
-    } else {
-      return (
-        <div id="card-box" className="ui grid">
-          <div className="four wide column">
-            <Button memoryclick={() => (this.setState({memoryMode : true}))}
-              onChange={(data) => (this.setState({contents : data}))}/>
-          </div>
-          <div className="twelve wide column">
-            <div id="card-list">
-              <div className="ui cotainer">
-                <CardList contents={this.state.contents}
-                  onChange={(data) => (this.setState({contents:data}))}/>
-              </div>
+    var mode = this.state.mode;
+    var content = null;
+    if(mode == 1) {
+        content = (
+            <div>
+                <button className="ui primary button"
+                        onClick={() => (this.setState({mode : 0}))}>退出</button>
+                <Cards contents={this.state.memoryContents} brochure={this.props.brochure}
+                       onComplete={() => (this.setState({mode : 0}))}
+                />
             </div>
-          </div>
-        </div>
-      )
+        )
+
+    } else if(mode == 2)
+        content = this.renderCardList();
+    else {
+        content = (
+            <div className="ui fluid card">
+                <div className="center aligned content">
+                    <h1>{'⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅  '+ this.props.brochure.name + '  ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅'}</h1>
+                </div>
+                <div className="center aligned extra content">
+                    <div className="ui grid">
+                        <div className="ui three wide computer only column"></div>
+                        <div className="ui sixteen wide tablet ten wide computer column ">
+                            <button className="ui large teal fluid button"
+                                    onClick={() => {
+                                        this.listMemoryContents();
+                                        this.setState({mode : 1});
+                                    }}>开始学习</button>
+                        </div>
+                        <div className="ui three wide computer only column"></div>
+                    </div>
+                </div>
+            </div>
+        )
     }
+
+      return (
+          <div id="card-box" className="ui container">
+              {this.renderMenu()}
+              <div id="card-content" className="ui segment">
+                  {content}
+              </div>
+          </div>
+      )
   }
 })
 
 $(document).ready(function() {
-  ReactDOM.render(<Box />, document.getElementById("card"));
+  ReactDOM.render(<Brouchures />, document.getElementById("card"));
 })
