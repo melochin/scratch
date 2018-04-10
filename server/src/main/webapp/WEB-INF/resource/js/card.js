@@ -1,6 +1,7 @@
 var Remarkable = require('remarkable');
 var ReactCSSTransitionGroup = require('react-addons-css-transition-group'); // ES5 with npm
 var Cards = require('./card/cards').Cards;
+var ClipboardJS = require('clipboard');
 import {Dropdown} from 'semantic-ui-react';
 
 
@@ -290,37 +291,54 @@ var Button = React.createClass({
 })
 
 
+/**
+ * props : card
+ *         onDelete
+ * @type {*|Function}
+ */
+var Card = React.createClass({
+
+    componentDidMount : function () {
+        var _this = this;
+        new ClipboardJS(this.refs.key, {
+            text : function (trigger) {
+                return _this.props.card.key
+            }
+        });
+
+        new ClipboardJS(this.refs.value, {
+            text : function (trigger) {
+                return _this.props.card.value
+            }
+        });
+    },
+
+    render : function () {
+        return (
+            <div className="item" key={this.props.card.id}>
+                <div className="content">
+                    <div className="description">
+                      <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
+                    </div>
+                </div>
+                <div className="content">
+                    <div className="description">
+                        <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.value)}} ref="value"/>
+                    </div>
+                    <button className="ui right floated icon button"
+                            style={{background : "white"}} onClick={() => this.props.onDelete(this.props.card, null)}>
+                        <i className="trash outline icon"></i>
+                    </button>
+                </div>
+            </div>
+        )
+    }
+})
 
 var CardList = React.createClass({
 
-  renderCard : function(card) {
-    return (
-          <div className="item">
-              <div className="content">
-                  <div className="description">
-                      <span dangerouslySetInnerHTML={{__html:md.render(card.key)}}/>
-                  </div>
-              </div>
-              <div className="content">
-                  <div className="description">
-                      <span dangerouslySetInnerHTML={{__html:md.render(card.value)}} />
-                  </div>
-                  <button className="ui right floated icon button"
-                          style={{background : "white"}} onClick={() => this.props.onDelete(card, null)}>
-                      <i className="trash outline icon"></i>
-                  </button>
-              </div>
-          </div>
-    )
-  },
-
-  componentDidMount : function() {
-    $('.ui.accordion').accordion();
-  },
-
-
   render : function() {
-    var cards = this.props.contents.map((content) => (this.renderCard(content)));
+    var cards = this.props.contents.map((content) => <Card card={content} onDelete={this.props.onDelete}/> );
     return (
       <div className="ui divided items">
         {cards}
