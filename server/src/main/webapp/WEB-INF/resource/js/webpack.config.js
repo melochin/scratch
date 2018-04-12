@@ -7,7 +7,8 @@ module.exports = {
     comments : './comments.js',
     card: './card.js',
     table : "./table.js",
-    vendors : ['moment', 'remarkable', 'react-addons-css-transition-group']
+    semanticTable : './semantic-table.js',
+    vendors : ['moment', 'remarkable', 'react-addons-css-transition-group', 'clipboard', 'semantic-ui-react']
   },
   output: {
     path: 'bundle',
@@ -30,7 +31,7 @@ module.exports = {
     }),
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
       new CommonsChunkPlugin({name: 'vendors', filename: 'vendors.js'}),
-      new CompressionWebpackPlugin({ //gzip 压缩
+/*      new CompressionWebpackPlugin({ //gzip 压缩
           asset: '[path].gz[query]',
           algorithm: 'gzip',
           test: new RegExp(
@@ -38,7 +39,7 @@ module.exports = {
           ),
           threshold: 10240,
           minRatio: 0.8
-      })
+      })*/
 
   ]
 };
