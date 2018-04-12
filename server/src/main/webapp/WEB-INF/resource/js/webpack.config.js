@@ -8,7 +8,6 @@ module.exports = {
     card: './card.js',
     table : "./table.js",
     semanticTable : './semantic-table.js',
-    vendors : ['moment', 'remarkable', 'react-addons-css-transition-group', 'clipboard', 'semantic-ui-react']
   },
   output: {
     path: 'bundle',
@@ -24,13 +23,15 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/),
-      new CommonsChunkPlugin({name: 'vendors', filename: 'vendors.js'}),
+      new webpack.DllReferencePlugin({
+          context: __dirname,
+          manifest: require('./manifest.json'),
+      }),
+      new webpack.optimize.UglifyJsPlugin({
+          compress: {
+            warnings: false
+          }
+      })
 /*      new CompressionWebpackPlugin({ //gzip 压缩
           asset: '[path].gz[query]',
           algorithm: 'gzip',
