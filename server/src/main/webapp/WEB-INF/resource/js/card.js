@@ -265,6 +265,7 @@ var Button = React.createClass({
                 <button className="ui small primary button" style={{margin: "10px 0 10px 0"}}
                         onClick={this.onInsertClick}>新增
                 </button>
+                <a className="ui small primary button" style={{margin: "10px 0 10px 0"}} href={this.props.printLink} target="_blank">打印预览</a>
             </div>
             <ReactCSSTransitionGroup
                 transitionName="example"
@@ -311,11 +312,26 @@ var Card = React.createClass({
                 return _this.props.card.value
             }
         });
+
+    },
+
+    handleDrop : function (event) {
+      var id = event.dataTransfer.getData("Text");
+      if(id == null) return;
+      console.log(id);
+      //console.log(this.props.card); ???怎么可以放到　目标元素的props?
+      this.props.onSwap(this.props.card.id, id);
     },
 
     render : function () {
+        var _this = this;
         return (
-            <div className="item" key={this.props.card.id}>
+            <div className="item" ref="card" key={this.props.card.id}
+                 draggable={true} onDragOver={event => event.preventDefault()}
+                 onDragStart={(event) => event.dataTransfer.setData("Text", this.props.card.id)}
+                 onDragEnter={(event) => this.refs.card.style.background = "#bbeaf3" }
+                 onDragLeave={(event) => this.refs.card.style.background = ""}
+                 onDrop={(event) => this.handleDrop(event)}>
                 <div className="content">
                     <div className="description">
                       <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
@@ -338,7 +354,9 @@ var Card = React.createClass({
 var CardList = React.createClass({
 
   render : function() {
-    var cards = this.props.contents.map((content) => <Card card={content} onDelete={this.props.onDelete}/> );
+    var cards = this.props.contents.map((content) => <Card card={content}
+                                                           onDelete={this.props.onDelete}
+                                                           onSwap={this.props.onSwap}/> );
     return (
       <div className="ui divided items">
         {cards}
@@ -423,6 +441,15 @@ var Box = React.createClass({
     });
   },
 
+  handleSwap : function (firstId, secondId) {
+      var _this = this;
+      Ajax.put("/api/brochures/" + this.props.brochure.id + "/cards/swap/" + firstId + "/" + secondId , null, {
+          success : function () {
+              _this.listManageContents();
+          }
+      });
+  },
+
   renderMenu : function() {
       return (
           <div className="ui menu">
@@ -442,13 +469,15 @@ var Box = React.createClass({
             <div>
                 <Button memoryclick={() => (this.setState({mode: 1}))}
                         insertClick={this.handleSave}
-                        onChange={(data) => (this.setState({contents: data}))}/>
+                        onChange={(data) => (this.setState({contents: data}))}
+                        printLink={CONTEXT + "/card/print/" + this.props.brochure.id} />
             </div>
             <div>
                 <div id="card-list">
                     <div className="ui cotainer">
                         <CardList contents={this.state.contents}
                                   onDelete={this.handleDelete}
+                                  onSwap = {this.handleSwap}
                                   onChange={(data) => (this.setState({contents: data}))}/>
                     </div>
                 </div>
