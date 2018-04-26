@@ -35,28 +35,31 @@ const Card = React.createClass({
 
     render : function () {
         return (
-            <div className="item" ref="card" key={this.props.card.id}
+            <tr className="item" ref="card" key={this.props.card.id}
                  draggable={true} onDragOver={event => event.preventDefault()}
                  onDragStart={(event) => event.dataTransfer.setData("Text", this.props.card.id)}
                  onDragEnter={(event) => this.refs.card.style.background = "#bbeaf3" }
                  onDragLeave={(event) => this.refs.card.style.background = ""}
-                 onDrop={(event) => this.handleDrop(event)}>
-                {/*<div className="content">{this.props.no}</div>*/}
-                <div className="content">
-                    <div className="description">
-                        <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
-                    </div>
-                </div>
-                <div className="content">
-                    <div className="description">
-                        <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.value)}} ref="value"/>
-                    </div>
+                 onDrop={(event) => {
+                     this.handleDrop(event)
+                     this.refs.card.style.background = ""
+                 }}>
+                <td className="disabled">
+                    {this.props.no}
+                </td>
+                <td>
+                    <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
+                </td>
+                <td>
+                    <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.value)}} ref="value"/>
+                </td>
+                <td>
                     <button className="ui right floated icon button"
                             style={{background : "white"}} onClick={() => this.props.onDelete(this.props.card, null)}>
                         <i className="trash outline icon"></i>
                     </button>
-                </div>
-            </div>
+                </td>
+            </tr>
         )
     }
 })

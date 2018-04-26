@@ -100,10 +100,10 @@ const Form = React.createClass({
 
     render : function () {
         return(
-            <div className="ui form">
+            <div className="ui form" style={{padding: "14px", border: "1px solid #ced6d5"}}>
                 {this.renderInput()}
-                <button className="ui button" onClick={this.handleSaveClick}>提交</button>
-                <button className="ui button" onClick={this.handleCancelClick}>取消</button>
+                <button className="ui small teal button" onClick={this.handleSaveClick}>提交</button>
+                <button className="ui small  button" onClick={this.handleCancelClick}>取消</button>
             </div>
         )
     }

@@ -8,9 +8,19 @@ const CardList = React.createClass({
                                       onDelete={this.props.onDelete}
                                       onSwap={this.props.onSwap}/> );
         return (
-            <div className="ui divided items">
-                {cards}
-            </div>
+            <table className="ui selectable fixed table">
+                <thead>
+                    <tr>
+                        <th className="two wide">序号</th>
+                        <th className="six wide">正面</th>
+                        <th className="six wide">反面</th>
+                        <th className="two wide"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {cards}
+                </tbody>
+            </table>
         )
     },
 })
