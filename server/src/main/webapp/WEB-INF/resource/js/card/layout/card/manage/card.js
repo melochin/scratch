@@ -41,7 +41,7 @@ const Card = React.createClass({
                  onDragEnter={(event) => this.refs.card.style.background = "#bbeaf3" }
                  onDragLeave={(event) => this.refs.card.style.background = ""}
                  onDrop={(event) => this.handleDrop(event)}>
-                <div className="content">{this.props.no}</div>
+                {/*<div className="content">{this.props.no}</div>*/}
                 <div className="content">
                     <div className="description">
                         <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
