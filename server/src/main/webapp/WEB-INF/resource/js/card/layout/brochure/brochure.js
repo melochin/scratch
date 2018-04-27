@@ -1,5 +1,4 @@
-import {CardLayout} from "../card/layout";
-
+import {Link} from "react-router";
 /**
  * props : brochure
  *         delete(brochure)
@@ -28,8 +27,9 @@ var Brochure = React.createClass({
                 </div>
                 <div className="extra content">
                     <div className="center aligned">
-                        <button className="ui teal button" onClick={() =>
-                            ReactDOM.render(<CardLayout brochure={brochure}/>, document.getElementById("container"))}>开始学习</button>
+                        <Link className="ui teal button" to={`/brochures/${brochure.id}`} state={{brochure : brochure}}>
+                            开始学习
+                        </Link>
                     </div>
                 </div>
             </div>

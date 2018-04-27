@@ -1,32 +1,17 @@
-import {Brochures} from "./brochure/brochures";
-
+import {Link} from "react-router";
 const containerId = "container";
 
 const Menu = React.createClass({
-
     render : function () {
         return (
             <div className="ui container" style={{padding: "0px 20px"}}>
                 <div className="ui text menu">
-                    <div className="active item"
-                         onClick={() => ReactDOM.render(<Brochures />, document.getElementById(containerId))}>
-                        首页
-                    </div>
+                    <Link  className="active item" to={'/'}>首页</Link>
                 </div>
             </div>
         )
     }
 
-})
-
-const Container = React.createClass({
-    render : function () {
-        return (
-            <div id={containerId}>
-                <Brochures />
-            </div>
-        )
-    }
 })
 
 const Layout = React.createClass({
@@ -35,7 +20,9 @@ const Layout = React.createClass({
         return (
             <div>
                 <Menu/>
-                <Container/>
+                <div id={containerId}>
+                    {this.props.children}
+                </div>
             </div>
         );
     }

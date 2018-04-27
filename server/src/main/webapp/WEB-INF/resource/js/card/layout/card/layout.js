@@ -172,34 +172,35 @@ const CardLayout = React.createClass({
 
     // 加载数据
     componentDidMount : function() {
+        console.log(this.props.location.state.brochure);
         this.listManageContents();
     },
 
     listMemoryContents : function () {
-        cardAction.listRemeber(this.props.brochure.id,
+        cardAction.listRemeber(this.props.location.state.brochure.id,
             (data) => this.setState({memoryCards : data}));
     },
 
     listManageContents : function () {
-        cardAction.list(this.props.brochure.id,
+        cardAction.list(this.props.location.state.brochure.id,
             (data) => this.setState({contents : data}));
     },
 
     handleSave : function (card, success) {
-        cardAction.save(this.props.brochure.id, card, this.listManageContents)
+        cardAction.save(this.props.location.state.brochure.id, card, this.listManageContents)
     },
 
     handleSaveList : function (cards, success) {
-        cardAction.saveList(this.props.brochure.id, cards, this.listManageContents)
+        cardAction.saveList(this.props.location.state.brochure.id, cards, this.listManageContents)
     },
 
 
     handleDelete : function (card, success) {
-        cardAction.remove(this.props.brochure.id, card, this.listManageContents)
+        cardAction.remove(this.props.location.state.brochure.id, card, this.listManageContents)
     },
 
     handleSwap : function (firstId, secondId) {
-        cardAction.swap(this.props.brochure.id, firstId, secondId,
+        cardAction.swap(this.props.location.state.brochure.id, firstId, secondId,
             this.listManageContents)
     },
 
@@ -231,7 +232,7 @@ const CardLayout = React.createClass({
                     <Button memoryclick={() => (this.setState({mode: 1}))}
                             insertClick={this.handleSaveList}
                             onChange={(data) => (this.setState({contents: data}))}
-                            printLink={CONTEXT + "/card/print/" + this.props.brochure.id} />
+                            printLink={CONTEXT + "/card/print/" + this.props.location.state.brochure.id} />
                 </div>
                 <div>
                     <div id="card-list">
@@ -252,7 +253,7 @@ const CardLayout = React.createClass({
             <div>
                 <button className="ui primary button"
                         onClick={() => (this.setState({mode : 0}))}>退出</button>
-                <Cards contents={this.state.memoryCards} brochure={this.props.brochure}
+                <Cards contents={this.state.memoryCards} brochure={this.props.location.state.brochure}
                        onComplete={() => (this.setState({mode : 0}))}
                 />
             </div>
@@ -263,7 +264,7 @@ const CardLayout = React.createClass({
         return (
             <div className="ui fluid card">
                 <div className="center aligned content">
-                    <h1>{'⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅  '+ this.props.brochure.name + '  ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅'}</h1>
+                    <h1>{'⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅  '+ this.props.location.state.brochure.name + '  ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅'}</h1>
                 </div>
                 <div className="center aligned extra content">
                     <div className="ui grid">
