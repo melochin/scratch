@@ -1,5 +1,5 @@
 import {Brochure} from './brochure'
-import {BrochureForm} from './brochureForm'
+import {BrochureModal} from './brochureForm'
 import * as brochureAction from '../../action/brochureAction'
 
 var Brochures = React.createClass({
@@ -7,8 +7,7 @@ var Brochures = React.createClass({
     getInitialState : function () {
         return {
             brochures : new Array(),
-            searchOptions : new Array(),
-            showForm : false
+            searchOptions : new Array()
         }
     },
 
@@ -28,12 +27,12 @@ var Brochures = React.createClass({
         brochureAction.remove(brochure, () => _this.list());
     },
 
-    save : function (brochure) {
+    save : function (brochure, callback) {
         var _this = this;
-        brochureAction.remove(brochure, () => {
-            _this.setState({showForm : false});
+        brochureAction.save(brochure, () => {
             _this.list();
             message("新增成功");
+            callback();
         })
     },
 
@@ -62,16 +61,7 @@ var Brochures = React.createClass({
                     {/*                  <div className="ui three wide column">
                       <Dropdown search fluid selection options={this.state.searchOptions} />
                   </div>*/}
-                    <div className="ui six wide tablet two wide computer column">
-                        <button className="ui primary button"
-                                onClick={() => !this.state.showForm && this.setState({showForm : true})}>新增</button>
-                    </div>
-                    { this.state.showForm &&
-                    <div className="ui five wide column">
-                        <BrochureForm onSubmit={this.save}
-                                      onCancel={() => this.state.showForm && this.setState({showForm : false})}/>
-                    </div>
-                    }
+                    <BrochureModal onSubmit={this.save} />
                 </div>
                 <div className="ui five stackable cards">
                     {this.renderBrouchure()}
