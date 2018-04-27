@@ -7,13 +7,11 @@ const Card = React.createClass({
     },
 
     componentDidMount : function () {
-        var _this = this;
-        document.addEventListener("keydown", function(event) {
+        document.addEventListener("keydown", (event) => {
             if(event.code == "ArrowDown") {
-                $(_this.refs.btn).find("button").click();
+                $(this.refs.btn).find("button").click();
             }
         });
-
     },
 
     // 每次接受到新属性，初始化为正面
@@ -51,10 +49,12 @@ const Card = React.createClass({
     },
 
     render : function() {
-        var button = this.renderButton();
+        const button = this.renderButton();
+        const descriptionStyle = {fontSize: "2rem", padding: "6rem 0rem"};
         return(
             <div className="ui centered card" style={{width:"100%"}}>
-                <div className="description center aligned twelve wide column" style={{fontSize: "2rem", padding: "6rem 0rem"}} onClick={this.handleClick} >
+                <div className="description center aligned twelve wide column"
+                     style={descriptionStyle} onClick={this.handleClick} >
                     <div dangerouslySetInnerHTML={{__html:md.render(this.getContent())}}/>
                 </div>
                 <div className="extra content">
@@ -65,12 +65,10 @@ const Card = React.createClass({
                         </div>
                         <div className="ui five wide computer only column"></div>
                     </div>
-
-
                 </div>
             </div>
         )
     }
 });
 
-module.exports.Card = Card;
+export {Card}

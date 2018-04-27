@@ -3,10 +3,12 @@ const containerId = "container";
 
 const Menu = React.createClass({
     render : function () {
+        const menuStyle = {padding : "0px 20px"};
+
         return (
-            <div className="ui container" style={{padding: "0px 20px"}}>
+            <div className="ui container" style={menuStyle}>
                 <div className="ui text menu">
-                    <Link  className="active item" to={'/'}>首页</Link>
+                    <Link className="active item" to={'/'}>首页</Link>
                 </div>
             </div>
         )
@@ -28,4 +30,4 @@ const Layout = React.createClass({
     }
 });
 
-module.exports.Layout = Layout;
+export {Layout}

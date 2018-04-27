@@ -2,6 +2,7 @@ var ReactCSSTransitionGroup = require('react-addons-css-transition-group'); // E
 import * as cardAction from '../../action/cardAction';
 import {Cards} from "./memory/cards";
 import {CardList} from "./manage/cardlist";
+import {Link} from "react-router";
 
 var generateRandomId = function() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -136,7 +137,9 @@ const Button = React.createClass({
                     <button className="ui small primary button" style={{margin: "10px 0 10px 0"}}
                             onClick={this.onInsertClick}>新增
                     </button>
-                    <a className="ui small primary button" style={{margin: "10px 0 10px 0"}} href={this.props.printLink} target="_blank">打印预览</a>
+                    <Link to={`/print/${this.props.brochureId}`} target="_blank">
+                        <a className="ui small primary button" style={{margin: "10px 0 10px 0"}}>打印预览</a>
+                    </Link>
                 </div>
                 <ReactCSSTransitionGroup
                     transitionName="example"
@@ -232,7 +235,7 @@ const CardLayout = React.createClass({
                     <Button memoryclick={() => (this.setState({mode: 1}))}
                             insertClick={this.handleSaveList}
                             onChange={(data) => (this.setState({contents: data}))}
-                            printLink={CONTEXT + "/card/print/" + this.props.location.state.brochure.id} />
+                            brochureId={this.props.location.state.brochure.id}/>
                 </div>
                 <div>
                     <div id="card-list">
