@@ -17,13 +17,16 @@ var Brochure = React.createClass({
     },
 
     renderDefault : function (brochure) {
+
+        const description = brochure.description == null ? '无' : brochure.description;
+
         return (
             <div className="content">
                 <div className="center aligned header">
                     <h1>{brochure.name}</h1>
                 </div>
                 <div className="center aligned description">
-                    <p>{brochure.description == null ? '无' : brochure.description}</p>
+                    <p>{description}</p>
                 </div>
                 <div className="extra content">
                     <div className="center aligned">
@@ -37,6 +40,14 @@ var Brochure = React.createClass({
     },
 
     renderModify : function (brochure) {
+
+        const handleSave = () => {
+            var submitBrochure = brochure;
+            submitBrochure.name = this.refs.name.value;
+            submitBrochure.description = this.refs.description.value;
+            this.props.modify(submitBrochure);
+        }
+
         return (
             <div className="content ui form">
                 <div className="center aligned header">
@@ -47,12 +58,7 @@ var Brochure = React.createClass({
                 </div>
                 <div className="extra content">
                     <div className="center aligned">
-                        <button className="ui primary mini button" onClick={() => {
-                            var submitBrochure = this.props.brochure;
-                            submitBrochure.name = this.refs.name.value;
-                            submitBrochure.description = this.refs.description.value;
-                            this.props.modify(submitBrochure);
-                        }}>保存</button>
+                        <button className="ui primary mini button" onClick={handleSave}>保存</button>
                         <button className="ui mini button" onClick={() => this.setState({modify : false})}>取消</button>
                     </div>
                 </div>
@@ -62,8 +68,11 @@ var Brochure = React.createClass({
 
 
     render : function () {
-        var brochure = this.props.brochure;
-        var content = this.state.modify ? this.renderModify(brochure) : this.renderDefault(brochure);
+        const {brochure} = this.props;
+        const content = this.state.modify ?
+            this.renderModify(brochure) :
+            this.renderDefault(brochure);
+
         return (
             <div className="ui raised card " key={brochure.id}>
                 <div className="right aligned meta" >

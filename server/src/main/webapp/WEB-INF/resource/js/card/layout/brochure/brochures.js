@@ -16,45 +16,33 @@ var Brochures = React.createClass({
     },
 
     list : function () {
-        var _this = this;
         brochureAction.list((data) => {
-            _this.setState({brochures: data.brochures, searchOptions : data.options});
+            this.setState({brochures: data.brochures, searchOptions : data.options});
         });
     },
 
     delete : function (brochure) {
-        var _this = this;
-        brochureAction.remove(brochure, () => _this.list());
+        brochureAction.remove(brochure, () => this.list());
     },
 
     save : function (brochure, callback) {
-        var _this = this;
         brochureAction.save(brochure, () => {
-            _this.list();
+            this.list();
             message("新增成功");
             callback();
         })
     },
 
     modify : function (brochure, success) {
-        var _this = this;
-        Ajax.put("/api/brochures", brochure, {
-            success : function () {
-                _this.list();
-            }
-        })
-    },
-
-    renderBrouchure : function () {
-        var _this = this;
-        return this.state.brochures.map(brochure => {
-            return(
-                <Brochure key={brochure.id} brochure={brochure} delete={_this.delete} modify={_this.modify}/>
-            )
-        });
+        brochureAction.modify(brochure, () => this.list());
     },
 
     render : function () {
+
+        const brochures = this.state.brochures.map(brochure =>
+            <Brochure key={brochure.id} brochure={brochure} delete={this.delete} modify={this.modify}/>
+        );
+
         return (
             <div className="ui container" id="card-box" >
                 <div className="ui grid">
@@ -64,7 +52,7 @@ var Brochures = React.createClass({
                     <BrochureModal onSubmit={this.save} />
                 </div>
                 <div className="ui five stackable cards">
-                    {this.renderBrouchure()}
+                    {brochures}
                 </div>
             </div>
         )

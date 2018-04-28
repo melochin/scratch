@@ -1,11 +1,3 @@
-function save(brochure, callback) {
-    Ajax.post("/api/brochures", brochure, {
-        success : function () {
-            callback();
-        }
-    });
-}
-
 function list(callback) {
     Ajax.get("/api/brochures", null, {
         success : function (brochures) {
@@ -20,6 +12,22 @@ function list(callback) {
     });
 }
 
+function save(brochure, callback) {
+    Ajax.post("/api/brochures", brochure, {
+        success : function () {
+            callback();
+        }
+    });
+}
+
+function modify(brochure, callback) {
+    Ajax.put("/api/brochures", brochure, {
+        success : function () {
+            callback();
+        }
+    })}
+
+
 function remove(brochure, callback) {
     Ajax.delete("/api/brochures/" + brochure.id, null, {
         success : function() {
@@ -28,6 +36,5 @@ function remove(brochure, callback) {
     });
 }
 
-module.exports.save = save;
-module.exports.list = list;
-module.exports.remove = remove;
+export {save, list, modify, remove}
+
