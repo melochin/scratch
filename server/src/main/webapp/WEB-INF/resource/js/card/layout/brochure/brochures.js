@@ -1,6 +1,7 @@
 import {Brochure} from './brochure'
 import {BrochureModal} from './brochureForm'
 import * as brochureAction from '../../action/brochureAction'
+import brochureStore from "./brochureStore"
 
 var Brochures = React.createClass({
 
@@ -11,36 +12,21 @@ var Brochures = React.createClass({
         }
     },
 
-    componentDidMount : function () {
-        this.list();
-    },
-
-    list : function () {
-        brochureAction.list((data) => {
-            this.setState({brochures: data.brochures, searchOptions : data.options});
-        });
-    },
-
-    delete : function (brochure) {
-        brochureAction.remove(brochure, () => this.list());
-    },
-
-    save : function (brochure, callback) {
-        brochureAction.save(brochure, () => {
-            this.list();
-            message("新增成功");
-            callback();
+    componentWillMount : function () {
+        brochureStore.on("change", () => {
+            console.log("re-render");
+            this.setState({brochures : brochureStore.list()});
         })
     },
 
-    modify : function (brochure, success) {
-        brochureAction.modify(brochure, () => this.list());
+    componentDidMount : function () {
+        brochureAction.list();
     },
 
     render : function () {
 
         const brochures = this.state.brochures.map(brochure =>
-            <Brochure key={brochure.id} brochure={brochure} delete={this.delete} modify={this.modify}/>
+            <Brochure key={brochure.id} brochure={brochure} />
         );
 
         return (
@@ -49,7 +35,7 @@ var Brochures = React.createClass({
                     {/*                  <div className="ui three wide column">
                       <Dropdown search fluid selection options={this.state.searchOptions} />
                   </div>*/}
-                    <BrochureModal onSubmit={this.save} />
+                    <BrochureModal  />
                 </div>
                 <div className="ui five stackable cards">
                     {brochures}

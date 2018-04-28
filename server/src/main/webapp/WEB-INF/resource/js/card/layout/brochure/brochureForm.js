@@ -1,4 +1,5 @@
-
+import * as brochureAction from "../../action/brochureAction"
+import brochureStore from "./brochureStore"
 /**
  * 册子——新增表单
  *
@@ -12,13 +13,16 @@ const BrochureModal = React.createClass({
         var brouchure = new Object();
         brouchure.name = this.refs.name.value ;
         brouchure.description = this.refs.description.value;
-        this.props.onSubmit(brouchure, () => {
+        brochureAction.save(brouchure);
+    },
+
+    componentWillMount : function () {
+        brochureStore.on("change", () => {
             $(this.refs.modal).modal('hide');
             this.refs.name.value = "";
             this.refs.description.value = "";
         });
     },
-
 
     renderModal : function () {
         return (

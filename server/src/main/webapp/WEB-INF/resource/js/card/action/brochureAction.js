@@ -1,37 +1,37 @@
-function list(callback) {
+import dispatcher from '../layout/brochure/dispatcher';
+
+function list() {
     Ajax.get("/api/brochures", null, {
-        success : function (brochures) {
-            var options = brochures.map(brochure => {
-                var option = new Object();
-                option.text = brochure.name;
-                option.value = brochure;
-                return option;
-            });
-            callback({brochures : brochures, options : options});
+        success : (brochures) => {
+            console.log("dispatch action");
+            dispatcher.dispatch({type : "list", brochures})
         }
     });
 }
 
-function save(brochure, callback) {
+function save(brochure) {
     Ajax.post("/api/brochures", brochure, {
-        success : function () {
-            callback();
+          success : (brochure) => {
+            message("新增成功");
+            dispatcher.dispatch({type : "save", brochure});
         }
     });
 }
 
 function modify(brochure, callback) {
     Ajax.put("/api/brochures", brochure, {
-        success : function () {
-            callback();
+        success : () => {
+            message("修改成功");
+            list();
         }
-    })}
+    });
+}
 
-
-function remove(brochure, callback) {
-    Ajax.delete("/api/brochures/" + brochure.id, null, {
-        success : function() {
-            callback();
+function remove(brochureId) {
+    Ajax.delete("/api/brochures/" + brochureId, null, {
+        success : (brochure) => {
+            message("删除成功")
+            dispatcher.dispatch({type : "delete", brochure});
         }
     });
 }

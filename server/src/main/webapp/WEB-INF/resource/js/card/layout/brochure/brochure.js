@@ -1,4 +1,7 @@
 import {Link} from "react-router";
+import * as brochureAction from "../../action/brochureAction"
+
+
 /**
  * props : brochure
  *         delete(brochure)
@@ -45,7 +48,7 @@ var Brochure = React.createClass({
             var submitBrochure = brochure;
             submitBrochure.name = this.refs.name.value;
             submitBrochure.description = this.refs.description.value;
-            this.props.modify(submitBrochure);
+            brochureAction.modify(submitBrochure);
         }
 
         return (
@@ -77,7 +80,7 @@ var Brochure = React.createClass({
             <div className="ui raised card " key={brochure.id}>
                 <div className="right aligned meta" >
                     <i className="large edit icon" onClick={() => this.setState({modify : !this.state.modify})}></i>
-                    <i className="large trash alternate icon" onClick={() => this.props.delete(brochure)}></i>
+                    <i className="large trash alternate icon" onClick={() => brochureAction.remove(brochure.id)}></i>
                 </div>
                 {content}
             </div>
