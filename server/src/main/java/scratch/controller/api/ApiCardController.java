@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import scratch.dao.BrochureRepository;
-import scratch.dao.CardRepository;
+import scratch.dao.ICardRepository;
 import scratch.model.entity.Card;
 import scratch.service.Listener;
 import scratch.service.ListenerService;
@@ -17,7 +17,7 @@ import java.util.*;
 public class ApiCardController {
 
 	@Autowired
-	private CardRepository cardRepository;
+	private ICardRepository cardRepository;
 
 	@Autowired
 	private BrochureRepository brochureRepository;
@@ -29,6 +29,14 @@ public class ApiCardController {
 	@PostMapping("/api/brochures/{brochureId}/cards")
 	public void save(@PathVariable("brochureId") String brochureId, @RequestBody Card card) {
 		cardRepository.save(brochureId, card);
+		return;
+	}
+
+	@PostMapping("/api/brochures/{brochureId}/cards/list")
+	public void saveList(@PathVariable("brochureId") String brochureId, @RequestBody Card[] cards) {
+		for(Card card : cards) {
+			cardRepository.save(brochureId, card);
+		}
 		return;
 	}
 
@@ -50,22 +58,29 @@ public class ApiCardController {
 
 	@GetMapping(value="/api/brochures/{brochureId}/cards/memory")
 	public List<Card> memory(@PathVariable("brochureId") String brochureId) {
-
-		Integer size = brochureRepository.findMemory(brochureId);
-		if(size == null) {
-			return cardRepository.list(brochureId);
-		}
-
-		return cardRepository.list(brochureId, size-1);
+		return cardRepository.listMemory(brochureId);
 	}
 
 	@PutMapping("/api/brochures/{brochureId}/cards/memory")
 	public void modifyMemory(@PathVariable("brochureId") String brochureId, @RequestBody Card card) {
-		Integer memory = Optional.ofNullable(brochureRepository.findMemory(brochureId))
-				.orElse(cardRepository.count(brochureId));
-		brochureRepository.modifyMemory(brochureId, memory-1);
-		cardRepository.deleteAndSave(brochureId, card);
+		cardRepository.memory(brochureId, card.getId());
 	}
+
+	@PutMapping("/api/brochures/{brochureId}/cards/swap/{firstId}/{secondId}")
+	public void swap(@PathVariable("brochureId") String brochureId,
+					 @PathVariable("firstId") String firstId,
+					 @PathVariable("secondId") String secondId) {
+		cardRepository.swap(brochureId, firstId, secondId);
+	}
+
+	@PutMapping("/api/brochures/{brochureId}/cards/swap/before/{firstId}/{secondId}")
+	public void swapBefore(@PathVariable("brochureId") String brochureId,
+					 @PathVariable("firstId") String firstId,
+					 @PathVariable("secondId") String secondId) {
+		cardRepository.swapBefore(brochureId, firstId, secondId);
+	}
+
+
 
 
 	@DeleteMapping("/api/brochures/{brochureId}/cards")

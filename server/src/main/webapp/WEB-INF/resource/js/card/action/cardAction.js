@@ -43,7 +43,7 @@ function remove(brochureId, card, callback) {
 }
 
 function swap(brochureId, firstId, secondId, callback) {
-    Ajax.put("/api/brochures/" + brochureId + "/cards/swap/" + firstId + "/" + secondId , null, {
+    Ajax.put("/api/brochures/" + brochureId + "/cards/swap/before/" + firstId + "/" + secondId , null, {
         success : function () {
             callback();
         }

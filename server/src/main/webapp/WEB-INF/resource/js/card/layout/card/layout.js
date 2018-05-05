@@ -87,7 +87,8 @@ const Form = React.createClass({
                                   key={data.seqId} value={data.value}
                                   onKeyDown={(event) => {
                                       this.handleDelete(event, index);
-                                      this.handleTab(event, index);
+                                      index == this.state.datas.length -1 ?
+                                          this.handleTab(event, index) : null;
                                   }}
                                   onChange={(event) => this.handleModify(event,data, "value")}>
                         </textarea>

@@ -22,7 +22,7 @@ const Card = React.createClass({
     handleDrop : function (event) {
         var id = event.dataTransfer.getData("Text");
         if(id == null) return;
-        this.props.onSwap(this.props.card.id, id);
+        this.props.onSwap(id, this.props.card.id);
     },
 
     render : function () {
