@@ -1,5 +1,6 @@
 import {Progress} from './progress'
 import {Card} from './card'
+import * as cardAction from '../../../action/cardAction';
 
 var Cards = React.createClass({
     getInitialState : function() {
@@ -35,15 +36,20 @@ var Cards = React.createClass({
         }
 
         return <Card content={content} isFirst = {isFirst} isLast = {isLast}
+                     onRember = {() =>
+                         cardAction.memoryRember(this.props.brochure.id, content,
+                            () => this.setCurrent(this.state.current + 1)
+                         )
+                     }
+                     onForget = {() =>
+                         cardAction.memoryForget(this.props.brochure.id, content,
+                             () => this.setCurrent(this.state.current + 1)
+                         )
+                     }
                      onComplete = {this.props.onComplete}
-                     onLeftClick={() => (this.setCurrent(this.state.current - 1))}
-                     onRightClick={()=> {
-                         Ajax.put("/api/brochures/" + _this.props.brochure.id + "/cards/memory", content, {
-                             success : function () {
-                                 _this.setCurrent(_this.state.current + 1)
-                             }
-                         });
-                     }}/>
+                />
+
+
     },
 
     render : function() {

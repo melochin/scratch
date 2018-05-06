@@ -61,9 +61,14 @@ public class ApiCardController {
 		return cardRepository.listMemory(brochureId);
 	}
 
-	@PutMapping("/api/brochures/{brochureId}/cards/memory")
-	public void modifyMemory(@PathVariable("brochureId") String brochureId, @RequestBody Card card) {
-		cardRepository.memory(brochureId, card.getId());
+	@PutMapping("/api/brochures/{brochureId}/cards/memory/rember")
+	public void memoryRember(@PathVariable("brochureId") String brochureId, @RequestBody Card card) {
+		cardRepository.memoryRember(brochureId, card.getId());
+	}
+
+	@PutMapping("/api/brochures/{brochureId}/cards/memory/forget")
+	public void memoryForget(@PathVariable("brochureId") String brochureId, @RequestBody Card card) {
+		cardRepository.memoryForget(brochureId, card.getId());
 	}
 
 	@PutMapping("/api/brochures/{brochureId}/cards/swap/{firstId}/{secondId}")

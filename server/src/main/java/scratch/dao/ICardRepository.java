@@ -10,7 +10,9 @@ public interface ICardRepository {
 
 	List<Card> listMemory(String brochureId);
 
-	void memory(String brochureId, String cardId);
+	void memoryRember(String brochureId, String cardId);
+
+	void memoryForget(String brochureId, String cardId);
 
 	void save(String brochureId, Card card);
 

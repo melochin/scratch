@@ -1,5 +1,12 @@
 var md = require('../../../markdown').markdown;
 
+/**
+ * props : content
+ *         onRember
+ *         onForget
+ *         onComplete
+ *
+ */
 const Card = React.createClass({
 
     getInitialState : function() {
@@ -9,8 +16,17 @@ const Card = React.createClass({
     componentDidMount : function () {
         document.addEventListener("keydown", (event) => {
             if(event.code == "ArrowDown") {
-                $(this.refs.btn).find("button").click();
+                $(this.refs.btn).find("#down").click();
             }
+
+            if(event.code == "ArrowLeft") {
+                $(this.refs.btn).find("#left").click();
+            }
+
+            if(event.code == "ArrowRight") {
+                $(this.refs.btn).find("#right").click();
+            }
+
         });
     },
 
@@ -32,19 +48,23 @@ const Card = React.createClass({
         var btn = null;
         // 如果是正面　button：翻转卡片
         if(this.state.front) {
-            btn = <button className="ui fluid button" onClick={this.handleClick}>翻转卡片</button>
+            btn = <button id="down" className="ui fluid button" onClick={this.handleClick}>翻转卡片</button>
             return btn;
         }
         // 如果是反面且不是最后一张卡　button:下一张卡片
-        if(!this.props.isLast) {
-            btn = <button className="ui fluid button" onClick={this.props.onRightClick}>下一张卡片</button>
-            return btn;
-        }
-
-        // 反面且最后一张　button:完成
-        btn  = <button className="ui teal fluid button" onClick={() => {
-            this.props.onRightClick();
-            this.props.onComplete();}}>完成</button>
+        btn =
+            <div className = "ui buttons">
+                <button id="left" className="ui fluid teal button" onClick={() => {
+                        this.props.onRember();
+                        this.props.isLast && this.props.onComplete();
+                    }
+                }>正确</button>
+                <button id="right" className="ui fluid red button" onClick={() => {
+                        this.props.onForget();
+                        this.props.isLast && this.props.onComplete();
+                    }
+                }>错误</button>
+            </div>
         return btn;
     },
 

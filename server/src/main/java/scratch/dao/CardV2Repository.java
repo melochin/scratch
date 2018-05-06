@@ -1,5 +1,6 @@
 package scratch.dao;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.collections.*;
@@ -7,9 +8,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import scratch.model.RedisKey;
 import scratch.model.entity.Card;
+import scratch.model.entity.MemoryCardInfo;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Repository
@@ -17,6 +22,8 @@ public class CardV2Repository implements ICardRepository {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
+
+	private final static Logger log = Logger.getLogger(CardV2Repository.class);
 
 	/**
 	 * key:brochure:{id}:cards value:zset
@@ -34,6 +41,11 @@ public class CardV2Repository implements ICardRepository {
 	private RedisList<String> memoryCards(String brochureId) {
 		return new DefaultRedisList<String>(RedisKey.memoryCards(brochureId), redisTemplate);
 	}
+
+	private RedisMap<String, MemoryCardInfo> memoryCardsInfo(String brochureId) {
+		return new DefaultRedisMap<String, MemoryCardInfo>(RedisKey.memoryCardsInfo(brochureId) , redisTemplate);
+	}
+
 
 	@Override
 	public List<Card> list(String brochureId) {
@@ -58,7 +70,54 @@ public class CardV2Repository implements ICardRepository {
 
 	private RedisList<String> copyForMemory(String brochureId) {
 		RedisList<String> memoryCards = memoryCards(brochureId);
-		memoryCards.addAll(cards(brochureId).range(0, -1));
+
+		// 选取所有brochure关联的cardId
+		// 再进行过滤
+		// 过滤条件：
+		// 1.记忆次数 = 记住次数 + 忘记次数 <= 5 或者 记住次数 / 记忆次数 <= 0.85
+		// 2.上次记忆时间 距离目前 超过一礼拜
+		// 附加：若经过过滤后数量小于10, 则不过滤
+
+		RedisMap<String, MemoryCardInfo> memoryCardInfoMap =  memoryCardsInfo(brochureId);
+		Long now = new Date().getTime();
+
+		Set<String> cardIds = cards(brochureId).range(0, -1);
+
+		Set<String> filterCardIds = cardIds.stream().filter(cardId -> {
+			MemoryCardInfo memoryCardInfo = memoryCardInfoMap.get(cardId);
+			log.debug("[选取判断]carId:" + cardId);
+			if(memoryCardInfo == null) {
+				log.debug("[选取]记忆卡片信息不存在");
+				return true;
+			}
+
+			Long availableTime = memoryCardInfo.getLastTime().getTime() + 7*24*60*60*1000;
+
+			if(availableTime <= now) {
+				log.debug("[选取]记忆卡片长久没有记忆 记忆时间:" + memoryCardInfo.getLastTime()
+						+ " 有效时间:" + new Date(availableTime));
+				return true;
+			}
+
+			int count = memoryCardInfo.getRemeber() + memoryCardInfo.getForget();
+			if(count <= 5) {
+				log.debug("[选取]总记忆次数小于5次");
+				return true;
+			}
+
+			double percent = (double)memoryCardInfo.getRemeber() / (double) count;
+			if(percent <= 0.8) {
+				log.debug("[选取]总记住比例低于0.85 目前比例:" + percent + " 记住次数:" + memoryCardInfo.getRemeber());
+				return true;
+			}
+			return false;
+		}).collect(Collectors.toSet());
+
+		if(filterCardIds.size() <= 10) {
+			filterCardIds = cardIds;
+		}
+
+		memoryCards.addAll(filterCardIds);
 		redisTemplate.expire(RedisKey.memoryCards(brochureId), 1, TimeUnit.DAYS);
 		return memoryCards;
 	}
@@ -70,11 +129,37 @@ public class CardV2Repository implements ICardRepository {
 		return cards;
 	}
 
-	@Override
-	public void memory(String brochureId, String cardId) {
+	private void removeFromMemoryList(String brochureId, String cardId) {
 		memoryCards(brochureId).remove(cardId);
 		if(memoryCards(brochureId).size() == 0) {
 			redisTemplate.delete(RedisKey.memoryCards(brochureId));
+		}
+	}
+
+	public void memoryRember(String brochureId, String cardId) {
+		updateMemoryCardsInfo(brochureId, cardId, (memoryCardInfo -> memoryCardInfo.increRemeber()));
+		removeFromMemoryList(brochureId, cardId);
+	}
+
+	public void memoryForget(String brochureId, String cardId) {
+		updateMemoryCardsInfo(brochureId, cardId, (memoryCardInfo -> memoryCardInfo.increForget()));
+		removeFromMemoryList(brochureId, cardId);
+	}
+
+	private void updateMemoryCardsInfo(String brochureId, String cardId, Consumer<MemoryCardInfo> consumer) {
+		MemoryCardInfo memoryCardInfo = memoryCardsInfo(brochureId).get(cardId);
+		if(memoryCardInfo == null) {
+			memoryCardInfo = new MemoryCardInfo();
+		}
+
+		log.debug("记忆卡片信息："   + memoryCardInfo);
+
+		consumer.accept(memoryCardInfo);
+
+		memoryCardsInfo(brochureId).put(cardId, memoryCardInfo);
+
+		if (log.isDebugEnabled()) {
+			log.debug("更新记忆卡片信息："   + memoryCardsInfo(brochureId).get(cardId));
 		}
 	}
 
@@ -132,9 +217,6 @@ public class CardV2Repository implements ICardRepository {
 			System.out.println("id:" + cards.score(id));
 		});
 	}
-
-
-
 
 
 	public Card find(String cardId) {

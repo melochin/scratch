@@ -50,6 +50,19 @@ function swap(brochureId, firstId, secondId, callback) {
     });
 }
 
+function memoryRember(brochureId, card, callback) {
+    Ajax.put("/api/brochures/" + brochureId + "/cards/memory/rember", card, {
+        success : () => callback()
+    });
+
+}
+
+function memoryForget(brochureId, card, callback) {
+    Ajax.put("/api/brochures/" + brochureId + "/cards/memory/forget", card, {
+        success : () => callback()
+    });
+}
+
 
 module.exports.list = list;
 module.exports.listRemeber = listRemeber;
@@ -57,3 +70,5 @@ module.exports.save = save;
 module.exports.saveList = saveList;
 module.exports.remove = remove;
 module.exports.swap = swap;
+module.exports.memoryRember = memoryRember;
+module.exports.memoryForget = memoryForget;
