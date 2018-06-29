@@ -1,4 +1,4 @@
-package scratch.dao;
+package scratch.dao.redis;
 
 import scratch.model.entity.Brochure;
 

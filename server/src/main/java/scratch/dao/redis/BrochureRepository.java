@@ -1,21 +1,15 @@
-package scratch.dao;
+package scratch.dao.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import org.springframework.data.redis.support.collections.RedisMap;
 import org.springframework.stereotype.Repository;
 import scratch.model.RedisKey;
 import scratch.model.entity.Brochure;
 
-import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 

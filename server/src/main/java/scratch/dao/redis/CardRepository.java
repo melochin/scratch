@@ -1,4 +1,4 @@
-package scratch.dao;
+package scratch.dao.redis;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
-public class CardV2Repository implements ICardRepository {
+public class CardRepository implements ICardRepository {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
 
-	private final static Logger log = Logger.getLogger(CardV2Repository.class);
+	private final static Logger log = Logger.getLogger(CardRepository.class);
 
 	/**
 	 * key:brochure:{id}:cards value:zset
