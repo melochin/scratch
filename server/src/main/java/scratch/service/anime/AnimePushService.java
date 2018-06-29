@@ -51,7 +51,7 @@ public class AnimePushService {
 		List<User> userList = userDao.findAll();
 		userList.forEach(user -> {
 			//获取用户关注的Anime列表
-			List<AnimeFocus> animeFocusList = focusDao.findByUserId(user.getUserId());
+			List<AnimeFocus> animeFocusList = focusDao.listByUserId(user.getUserId());
 			if (!hasFocusList(animeFocusList)) return;
 			List<AnimeEpisode> episodeList = findNeedPushEpisode(animeFocusList);
 

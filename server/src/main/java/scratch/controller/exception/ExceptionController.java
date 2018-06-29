@@ -1,4 +1,4 @@
-package scratch.controller.user;
+package scratch.controller.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.support.web.spring.ModelUtils;
@@ -19,7 +18,6 @@ import scratch.support.web.spring.ModelUtils;
 @ControllerAdvice(
 		basePackages = {
 			"scratch.controller.admin",
-			"scratch.controller.anime",
 			"scratch.controller.user"
 		})
 public class ExceptionController {

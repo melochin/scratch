@@ -3,7 +3,6 @@ package scratch.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageRowBounds;
 
+import scratch.dao.inter.IAnimeAliasDao;
 import scratch.dao.inter.IAnimeDao;
+import scratch.dao.inter.IAnimeFocusDao;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.support.FileUtils;
@@ -37,90 +38,70 @@ public class AnimeService {
 	private static final String UPLOAD_ANIME = "/upload/anime";
 	
 	private static final String SEARCH_HISTORY = "searchHistory";
-	
-	private RedisTemplate<String, Object> redisTemplate;
-	
-	private IAnimeDao animeDao;
-	
+
 	@Autowired
-	public AnimeService(IAnimeDao animeDao, RedisTemplate<String, Object> redisTemplate) {
-		this.animeDao = animeDao;
-		this.redisTemplate = redisTemplate;
-	}
+	private RedisTemplate<String, Object> redisTemplate;
+
+	@Autowired
+	private IAnimeDao animeDao;
+
+	@Autowired
+	private IAnimeAliasDao aliasDao;
+
+	@Autowired
+	private IAnimeFocusDao focusDao;
 	
 	public List<Anime> list() {
 		return animeDao.list();
 	}
-	
-	public List<Anime> listByType(String type) {
-		String key = "mostFocuseds:" + type;
-		List<Anime> mostFocuseds = (List<Anime>) redisTemplate.opsForValue().get(key);
-		if(mostFocuseds != null) return mostFocuseds;
 
-		mostFocuseds = animeDao.listByTypeLeftJointFocus(type);
-		redisTemplate.opsForValue().set(key, mostFocuseds, 6, TimeUnit.HOURS);
-		return mostFocuseds;
-	}
-	
-	public List<Anime> listByName(String name, Long userId) {
-		if(userId != null) {
-			String key = SEARCH_HISTORY + ":" + userId;
-			SetOperations<String, Object> ops = redisTemplate.opsForSet();
-			if(ops.size(key) >= 5) {
-				ops.pop(key);
-			}
-			ops.add(key, name);
-		}
-		return animeDao.listByNameLeftJoinFocus(name);
-	}
-	
-	/** 查询最受关注的Anime **/
-	public List<Anime> listMostFocused() {
-		return animeDao.listMostFocused();
-	}
-	
-	/** 查询最受关注的Anime
-	 *	@param limit 限制显示个数
+	/**
+	 * 根据类型查询 anime,
+	 * 排序：按照关注数量 Desc
+	 * @param type
+	 * @see scratch.model.DictType.ANIMETYPE
+	 * @return
 	 */
-	public List<Anime> listMostFocused(int limit) {
-
-		String key = "mostFocuseds" + ":" + limit;
-		List<Anime> mostFocuseds = (List<Anime>) redisTemplate.opsForValue().get(key);
-		if(mostFocuseds != null) return mostFocuseds;
-
-		List<Anime> animes = listMostFocused();
-		animes = animes.size() > limit ? animes.subList(0, limit) : animes;
-		redisTemplate.opsForValue().set(key, animes, 6, TimeUnit.HOURS);
-
+	public List<Anime> listByType(String type) {
+		List<Anime> animes = animeDao.listIf(type, null);
+		animes.sort(this::focusCompare);
 		return animes;
 	}
 	
-	/** 将最受关注的Anime，根据类型分组 **/
-	public Map<String,List<Anime>> listMostFcousedGroupByType() {
-		List<Anime> animes = listMostFocused();
-		return animes.stream().collect(Collectors.groupingBy(Anime::getType));
+	public List<Anime> listByName(String name) {
+		List<Anime> animes = animeDao.listByName(name);
+		animes.sort(this::focusCompare);
+		return animes;
+	}
+
+	/** 查询最受关注的Anime
+	 *	@param limit 限制显示个数
+	 */
+	public List<Anime> listMostFocused(Integer limit) {
+		List<Anime> animes = animeDao.listMostFocused();
+		if(limit == null) return animes;
+		return animes.stream().limit(limit).collect(Collectors.toList());
 	}
 	
 	/**
 	 * 将最受关注的Anime，根据类型分组
 	 * @param limit 限制每组显示个数
 	 */
-	public Map<String,List<Anime>> listMostFcousedGroupByType(int limit) {
+	public Map<String,List<Anime>> listMostFcousedGroupByType(Integer limit) {
 
-		String key = "mostFcousedMap" + ":" + limit;
-		Map<String, List<Anime>> mostFcousedMap = (Map<String, List<Anime>>) redisTemplate.opsForValue().get(key);
-		if(mostFcousedMap != null) return mostFcousedMap;
+		List<Anime> animes = listMostFocused(null);
+		Map<String, List<Anime>> animeMap = animes.stream()
+				.collect(Collectors.groupingBy(Anime::getType));
 
-		Map<String, List<Anime>> map = listMostFcousedGroupByType();
-		// 遍历分组的animes，对数量进行限制调整
-		map.entrySet().forEach(entry -> {
-			List<Anime> animes = entry.getValue();
-			animes = animes.size() > limit ? animes.subList(0, limit) : animes;
-			entry.setValue(animes);
-		});
+		if(limit != null) {
+			animeMap.entrySet().forEach(entry -> {
+				List<Anime> limits = entry.getValue().stream()
+						.limit(limit).collect(Collectors.toList());
+				entry.setValue(limits);
+			});
+		}
 
-		redisTemplate.opsForValue().set(key, mostFcousedMap, 6, TimeUnit.HOURS);
-		return map;
+		return animeMap;
 	}
 	
 	public PageBean pageByType(String type, Integer page) {
@@ -209,38 +190,63 @@ public class AnimeService {
 	}
 
 	public Anime findByIdWithAlias(Long id) {
-		return animeDao.getByIdWithAlias(id);
+		Anime anime = animeDao.getById(id);
+		anime.setAliass(aliasDao.list(id));
+		return anime;
 	}
 
-	@Transactional
-	public void saveAlias(AnimeAlias alias) {
-		animeDao.saveAlias(alias);
-	}
+	/*-------------------------别名操作--------------------------------*/
 
-	@Transactional
-	public void modifyAlias(AnimeAlias alias) {
-		animeDao.modifyAlias(alias);
-	}
-
-	@Transactional
-	public void deleteAlias(AnimeAlias alias) {
-		animeDao.deleteAlias(alias);
-	}
-	
 	/**
-	 * alias不存在时，执行新增
-	 * 反之更新
+	 * 1. alias存在时，更新
+	 * 2. alias不存在时，新增
 	 * @param alias
 	 */
 	@Transactional
 	public void saveOrModifyAlias(AnimeAlias alias) {
-		if(animeDao.getAliasById(alias.getAnimeId(), alias.getHostId()) == null) {
+		if(aliasDao.find(alias.getAnimeId(), alias.getHostId()) != null) {
 			saveAlias(alias);
 		} else {
 			modifyAlias(alias);
 		}
 	}
-	
+
+	@Transactional
+	public void saveAlias(AnimeAlias alias) {
+		aliasDao.save(alias);
+	}
+
+	@Transactional
+	public void modifyAlias(AnimeAlias alias) {
+		aliasDao.modify(alias);
+	}
+
+	@Transactional
+	public void deleteAlias(AnimeAlias alias) {
+		aliasDao.delete(alias);
+	}
+
+	/*-------------------------搜索记录--------------------------------*/
+
+	/**
+	 * 新增搜索记录（最多每人5条记录）
+	 * @param name
+	 * @param userId
+	 */
+	public void addSearchHistory(String name, Long userId) {
+		String key = SEARCH_HISTORY + ":" + userId;
+		SetOperations<String, Object> ops = redisTemplate.opsForSet();
+		if(ops.size(key) >= 5) {
+			ops.pop(key);
+		}
+		ops.add(key, name);
+	}
+
+	/**
+	 * 显示搜索历史记录
+	 * @param userId
+	 * @return
+	 */
 	public Set<String> listSearchHistory(Long userId) {
 		if(userId == null) return null;
 		String key = "searchHistory" + ":" + userId;
@@ -248,4 +254,7 @@ public class AnimeService {
 				.stream().map(s -> s.toString()).collect(Collectors.toSet());
 	}
 
+	private int focusCompare(Anime first, Anime second) {
+		return focusDao.count(first.getId()) >= focusDao.count(second.getId()) ? 1 : 0;
+	}
 }

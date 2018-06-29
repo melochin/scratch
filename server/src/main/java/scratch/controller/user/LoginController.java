@@ -2,6 +2,7 @@ package scratch.controller.user;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,15 +16,20 @@ import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
+import scratch.support.FileUtils;
 import scratch.support.web.spring.ModelUtils;
 import scratch.support.web.spring.SessionUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 
 /** 在session中暂时存放request header referer */
 @SessionAttributes("referer")
 @RequestMapping("/user")
 @Controller
 public class LoginController {
-	
+
+	public static final String WEB_INF_RESOURCE_PIC_HOME = "/WEB-INF/resource/pic/home";
 	private static Logger log = Logger.getLogger(LoginController.class);
 
 	private final static String DEFAULT_REDIRECT_URL = "/";
@@ -38,7 +44,7 @@ public class LoginController {
 	 */
 	@GetMapping("/login")
 	public String loginForm(@RequestHeader(name="referer", required=false, defaultValue="/") String referer,
-							Model model) {
+							Model model, HttpServletRequest request) {
 		//判断referer是不是含有/user，防止/user路径重定向/user路径
 		if(!StringUtils.isEmpty(referer) && referer.indexOf("/user") > 0) {
 			referer = DEFAULT_REDIRECT_URL;
@@ -46,7 +52,11 @@ public class LoginController {
 
 		// session attribute中存入referer,便于登录成功时重定向
 		model.addAttribute("referer", referer);
-		
+		String path = request.getServletContext().getRealPath(WEB_INF_RESOURCE_PIC_HOME);
+		String backgroundPic = FileUtils.getRandomFile(path);
+		if(backgroundPic != null) {
+			model.addAttribute("backgroundPic", backgroundPic);
+		}
 		return "/user/login";
 	}
 
@@ -74,6 +84,7 @@ public class LoginController {
 		}
 		return "redirect:" + url;
 	}
+
 
 	/**
 	 * 账号登出

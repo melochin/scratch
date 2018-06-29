@@ -43,7 +43,7 @@ public class HomeController {
 	@Autowired
 	private DictService dictService;
 
-	private final static int LIMIT = 10;
+	private final static int LIMIT = 5;
 
 	@ModelAttribute
 	public void setModel(Model model,
@@ -75,7 +75,12 @@ public class HomeController {
 		model.addAttribute("mostFocusAnimes", ifUserPresentConvertAnime(mostFocuseds, userAdapter));
 		model.addAttribute("typeAndAnimes", ifUserPresentConvertAnime(mostFcousedMap, userAdapter));
 		model.addAttribute("module", "home");
-		return "index";
+		model.addAttribute("episodes", episodeService.listOrderByTime(10));
+
+		if(userAdapter != null) {
+			model.addAttribute("updatedEpisodes", episodeService.listOrderByUser(userAdapter.getUserId()));
+		}
+		return "update";
 	}
 
 	/**
@@ -96,6 +101,7 @@ public class HomeController {
 		List<Anime> animes = animeService.listByType(typeCode);
 		model.addAttribute("animes", ifUserPresentConvertAnime(animes, userAdapter));
 		model.addAttribute("module", typeCode);
+		model.addAttribute("episodes", episodeService.listOrderByTime(10, typeCode));
 		return "index";
 	}
 
@@ -141,10 +147,23 @@ public class HomeController {
 	 * @param userAdapter
 	 * @return
 	 */
-	private Object ifUserPresentConvertAnime(List<Anime> animes, UserAdapter userAdapter) {
-		if (userAdapter == null) return animes;
-		return animeFocusService.getAnimeFocus(animes, userAdapter.getUserId());
+	private List<AnimeDisplay> ifUserPresentConvertAnime(List<Anime> animes, UserAdapter userAdapter) {
+		List<AnimeDisplay> animeDisplays = new ArrayList<>();
+		// 转换为AnimeDisplay
+		if(userAdapter != null) {
+			animeDisplays = animeFocusService.getAnimeFocus(animes, userAdapter.getUserId());
+		} else {
+			animeDisplays = animes.stream().map(anime -> new AnimeDisplay(anime)).collect(Collectors.toList());
+		}
+		// 获取上次更新时间
+		animeDisplays.stream().map(animeDisplay -> {
+			Date updateTime = episodeService.getLastUpdatedTime(animeDisplay.getId());
+			animeDisplay.setUpdateTime(updateTime);
+			return animeDisplay;
+		}).collect(Collectors.toList());
+		return animeDisplays;
 	}
+
 
 	/**
 	 * 用户处于登录状态，读取关注属性
@@ -154,14 +173,11 @@ public class HomeController {
 	 * @return
 	 */
 	private Object ifUserPresentConvertAnime(Map<String, List<Anime>> animesMap, UserAdapter userAdapter) {
-		if (userAdapter == null) return animesMap;
-
-		Map<String, List<AnimeDisplay>> animeDisplaysMap = animesMap.entrySet()
-				.stream()
+		Map<String, List<AnimeDisplay>> animeDisplaysMap = animesMap.entrySet().stream()
 				.collect(Collectors.toMap(
 						entry -> entry.getKey(),
-						entry -> animeFocusService.getAnimeFocus(entry.getValue(), userAdapter.getUserId())
-				));
+						entry -> ifUserPresentConvertAnime(entry.getValue(), userAdapter))
+				);
 		return animeDisplaysMap;
 	}
 

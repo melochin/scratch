@@ -1,10 +1,7 @@
 package scratch.service.anime;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,7 @@ public class AnimeFocusService {
 	 */
 	public Map<Anime, Integer> findAllAnime(Long userId, String type, Integer focus) {
 		Map<Anime, Integer> map = new LinkedHashMap<Anime, Integer>();
-		List<AnimeFocus> focusList = focusDao.findByUserId(userId);
+		List<AnimeFocus> focusList = focusDao.listByUserId(userId);
 		List<Anime> animeList = null;
 		animeList = animeDao.listIf(type, null);
 		for(Anime anime : animeList) {
@@ -51,25 +48,23 @@ public class AnimeFocusService {
 		}
 		return map;
 	}
-	
+
 	public List<AnimeDisplay> getAnimeFocus(List<Anime> animes, Long userId) {
-		List<AnimeDisplay> animeDisplays = new ArrayList<AnimeDisplay>();
-		List<AnimeFocus> focuss = focusDao.findByUserId(userId);
-		for(Anime anime : animes) {
-			AnimeDisplay animeDisplay = new AnimeDisplay(anime);
-			boolean focus = false;
-			for(AnimeFocus animeFocus : focuss) {
-				if(animeFocus.getAnime().getId().equals(anime.getId())) {
-					focus = true;
-					break;
-				}
-			}
-			animeDisplay.setFocus(focus);
-			animeDisplays.add(animeDisplay);
-		}
+		// 获取用户关注的所有animeId
+		Set<Long> focusAnimeIds = focusDao.listByUserId(userId).stream()
+				.map(focus -> focus.getAnime().getId())
+				.collect(Collectors.toSet());
+		// 从List<Anime>中对比是否存在用户关注的
+		List<AnimeDisplay> animeDisplays = animes.stream()
+				.map(anime -> {
+					AnimeDisplay animeDisplay = new AnimeDisplay(anime);
+					boolean focus = focusAnimeIds.contains(anime.getId());
+					animeDisplay.setFocus(focus);
+					return animeDisplay;
+				}).collect(Collectors.toList());
 		return animeDisplays;
 	}
-	
+
 	public void save(Long  animeId, Long userId) {
 		User user = new User(userId);
 		Anime anime = new Anime(animeId);

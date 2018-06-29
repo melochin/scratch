@@ -4,24 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
-import scratch.dao.BrochureRepository;
-import scratch.dao.ICardRepository;
+import scratch.dao.redis.ICardRepository;
 import scratch.model.entity.Card;
+import scratch.model.entity.MemoryCardInfo;
+import scratch.model.view.CardDisplay;
 import scratch.service.Listener;
 import scratch.service.ListenerService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ApiCardController {
 
 	@Autowired
 	private ICardRepository cardRepository;
-
-	@Autowired
-	private BrochureRepository brochureRepository;
-
 
 	@Autowired
 	private ListenerService listenerService;
@@ -52,9 +50,25 @@ public class ApiCardController {
 	}
 
 	@GetMapping(value="/api/brochures/{brochureId}/cards")
-	public List<Card> list(@PathVariable("brochureId") String brochureId) {
-		return cardRepository.list(brochureId);
+	public List<CardDisplay> list(@PathVariable("brochureId") String brochureId) {
+		return cardRepository.list(brochureId).stream()
+				.map(card -> this.wrapCardDisplay(brochureId, card))
+				.collect(Collectors.toList());
 	}
+
+	@GetMapping(value="/api/cards/{word}")
+	public List<CardDisplay> listByWord(@PathVariable("word") String word) {
+		return cardRepository.listByWord(word).stream()
+				.map(card -> new CardDisplay(card))
+				.collect(Collectors.toList());
+	}
+
+	private CardDisplay wrapCardDisplay(String brochureId, Card card) {
+		MemoryCardInfo memoryCardInfo = cardRepository.findMemoryCardInfo(brochureId, card.getId());
+		if(memoryCardInfo == null) memoryCardInfo = new MemoryCardInfo();
+		return new CardDisplay(card, memoryCardInfo);
+	};
+
 
 	@GetMapping(value="/api/brochures/{brochureId}/cards/memory")
 	public List<Card> memory(@PathVariable("brochureId") String brochureId) {

@@ -2,6 +2,7 @@ package scratch.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,8 +11,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.dao.inter.IAnimeEpisodeScratchDao;
+import scratch.dao.inter.IAnimeFocusDao;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
 
@@ -19,10 +22,16 @@ import scratch.model.entity.AnimeEpisodeScratch;
 public class AnimeEpisodeService {
 
 	@Autowired
+	private IAnimeDao animeDao;
+
+	@Autowired
 	private IAnimeEpisodeDao episodeDao;
 	
 	@Autowired
 	private IAnimeEpisodeScratchDao episodeScratchDao;
+
+	@Autowired
+	private IAnimeFocusDao focusDao;
 	
 	@Autowired
 	private ConversionService conversionService;
@@ -38,7 +47,36 @@ public class AnimeEpisodeService {
 		Date endTime = Date.from(nowTime.withHour(23).withMinute(59).withSecond(59).atZone(zone).toInstant());
 		return episodeDao.findByTime(beginTime, endTime);
 	}
-	
+
+	@Transactional
+	public List<AnimeEpisode> listOrderByTime(int limit) {
+		return episodeDao.listOrderByTime(limit, null);
+	}
+
+	@Transactional
+	public List<AnimeEpisode> listOrderByTime(int limit, String animeType) {
+		return episodeDao.listOrderByTime(limit, animeType);
+	}
+
+	public List<AnimeEpisode> listOrderByUser(long userId) {
+
+		List<AnimeEpisode> episodes = new ArrayList<>();
+
+		focusDao.listByUserId(userId).stream()
+				.forEach(focus -> episodes.addAll(episodeDao.listByAnimeId(focus.getAnime().getId())));
+
+		episodes.forEach(e -> {
+			e.setAnime(animeDao.getById(e.getAnime().getId()));
+		});
+
+		if(episodes.size() > 0) {
+			episodes.sort((e1, e2) -> e1.getScratchTime().after(e2.getScratchTime())  ? -1 : 1);
+		}
+
+		return episodes;
+	}
+
+
 	public List<AnimeEpisode> list() {
 		return episodeDao.list();
 	}
@@ -46,7 +84,15 @@ public class AnimeEpisodeService {
 	public List<AnimeEpisode> listByAnimeId(Long animeId) {
 		return episodeDao.listByAnimeId(animeId);
 	}
-	
+
+	public AnimeEpisode listByUrl(String url) {
+		return episodeDao.findByUrl(url);
+	}
+
+	public AnimeEpisode getByAnimeIdAndHostIdAndNo(Long animeId, Long hostId, String no) {
+		return episodeDao.getByAnimeIdAndHostIdAndNo(animeId, hostId, no);
+	}
+
 	public List<AnimeEpisodeScratch> listScratch(Integer status) {
 		return episodeScratchDao.listByStatus(status);
 	}
@@ -80,7 +126,16 @@ public class AnimeEpisodeService {
 		modifyScratchStatus(episodeScratch.getId(), new Integer(1));
 		save(episode);
 	}
-	
+
+	@Transactional
+	public void cover(Long scratchId, Long episodeId) {
+		AnimeEpisode animeEpisode = episodeDao.getById(episodeId);
+		AnimeEpisodeScratch animeEpisodeScratch = episodeScratchDao.getById(scratchId);
+		animeEpisode.setUrl(animeEpisodeScratch.getUrl());
+		modifyScratchStatus(animeEpisodeScratch.getId(), new Integer(1));
+		episodeDao.modify(animeEpisode);
+	}
+
 	@Transactional
 	public void rejectScratch(Long scratchId) {
 		AnimeEpisodeScratch episodeScratch = episodeScratchDao.getById(scratchId);
@@ -121,5 +176,8 @@ public class AnimeEpisodeService {
 		return episodeDao.modify(episode) == 1;
 	}
 
-	
+
+	public Date getLastUpdatedTime(Long animeId) {
+		return episodeDao.getLastUpdatedTime(animeId);
+	}
 }

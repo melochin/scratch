@@ -13,12 +13,14 @@ public class Card implements Serializable {
 
 	private String value;
 
-	public Card(){}
+	public Card(){
+		this.id = UUID.randomUUID().toString();
+	}
 
 	public Card(String key, String value) {
+		this();
 		this.key = key;
 		this.value = value;
-		this.id = UUID.randomUUID().toString();
 	}
 
 	public void generateId() {

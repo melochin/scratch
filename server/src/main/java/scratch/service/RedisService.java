@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -97,4 +98,9 @@ public class RedisService {
 	public void hashPut(Object key, Object hashKey, Object value) {
 		redisTemplate.opsForHash().put(key, hashKey, value);
 	}
+
+	public Map hash(String key) {
+		return redisTemplate.opsForHash().entries(key);
+	}
+
 }

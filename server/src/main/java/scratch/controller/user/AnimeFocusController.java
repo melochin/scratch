@@ -1,4 +1,4 @@
-package scratch.controller.anime;
+package scratch.controller.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

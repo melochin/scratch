@@ -55,7 +55,7 @@ public class DictController {
 
 	@Deprecated
 	@GetMapping(value="/validate/code", produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Map<String, Object> validateCode(Dict dict) {
+	public @ResponseBody JsonResult validateCode(Dict dict) {
 		JsonResult result = new JsonResult();
 		try{
 			Dict newDict = dictService.findByCodeAndParentCode(dict.getCode(), dict.getParentCode());

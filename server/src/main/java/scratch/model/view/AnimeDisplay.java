@@ -3,6 +3,8 @@ package scratch.model.view;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 
@@ -11,6 +13,8 @@ public class AnimeDisplay {
 	private Anime anime;
 
 	private boolean focus;
+
+	private Date updateTime;
 	
 	public AnimeDisplay(Anime anime) {
 		super();
@@ -57,6 +61,15 @@ public class AnimeDisplay {
 		return anime.getAliass();
 	}
 
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	public boolean isFocus() {
 		return focus;
 	}
@@ -64,5 +77,6 @@ public class AnimeDisplay {
 	public void setFocus(boolean focus) {
 		this.focus = focus;
 	}
-	
+
+
 }

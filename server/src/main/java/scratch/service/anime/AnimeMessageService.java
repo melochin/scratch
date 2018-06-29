@@ -103,7 +103,7 @@ public class AnimeMessageService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	private int saveList(List<AnimeEpisode> episodes) {
+	public int saveList(List<AnimeEpisode> episodes) {
 		int saveCount = 0;
 		saveCount = episodes.stream()
 				.filter(this::isNotExistInDB)

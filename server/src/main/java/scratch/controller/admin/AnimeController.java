@@ -122,7 +122,8 @@ public class AnimeController {
 
 	@GetMapping("anime/upload/{animeId}")
 	public ModelAndView uploadForm(@PathVariable("animeId") Long animeId, Model model) {
-		model.addAttribute(animeId);
+		Anime anime = service.getById(animeId);
+		model.addAttribute(anime);
 		return new ModelAndView("/admin/anime/upload");
 	}
 

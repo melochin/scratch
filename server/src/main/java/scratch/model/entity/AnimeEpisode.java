@@ -22,11 +22,14 @@ public class AnimeEpisode implements Serializable {
 	//链接
 	private String url;
 	
-	// 抓取时间
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	/**
+	 * 抓取时间
+	 */
 	private Date scratchTime;
 	
-	// 保存时间
+	/**
+	 * 保存时间
+	 */
 	private Date saveTime; 
 	
 	// 最近一次推送时间
