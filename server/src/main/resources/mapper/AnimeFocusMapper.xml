@@ -16,7 +16,7 @@
 		</association>		
 	</resultMap>
 	
-	<select id="findByUserId" resultMap="AnimeFocusMap" >
+	<select id="listByUserId" resultMap="AnimeFocusMap" >
 		select f.id as id, 
 			f.anime_id as anime_id, 
 			a.name as anime_name, 
@@ -63,5 +63,9 @@
 	<delete id="deleteByAnimeAndUser">
 		delete from anime_focus where anime_id = #{animeId} and user_id = #{userId} 
 	</delete>
-	
+
+	<select id="count" resultType="int">
+		select count(*) from anime_focus where anime_id = #{animeId};
+	</select>
+
 </mapper>  

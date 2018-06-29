@@ -17,7 +17,8 @@
 	</resultMap>
 	
 	<resultMap id="AnimeTypeWithAlias" type="Anime" extends="AnimeMap">
-		<collection property="aliass" ofType="AnimeAlias" >
+		<collection property="aliass" ofType="AnimeAlias" select="scratch.dao.inter.IAnimeAliasDao.list"
+			column="{animeId=a.id}">
 			<result property="hostId" column="host_id"/>
 			<result property="alias" column="host_alias"/>
 		</collection>
@@ -39,11 +40,7 @@
 	<select id="getById" resultMap="AnimeMap">
 		select * from anime where id = #{id}
 	</select>
-	
-	<select id="getByAlias" resultMap="AnimeMap">
-		select * from anime where alias = #{alias} or name = #{alias}
-	</select>
-	
+
 	<select id="getByIdWithAlias" resultMap="AnimeTypeWithAlias">
 		select a.*, b.host_id as host_id, b.alias as host_alias 
 				from anime a left JOIN anime_alias b 
@@ -65,11 +62,15 @@
 			</if>
 		</where>
 	</select>
+
+	<select id="listByName" resultMap="AnimeMap">
+		select * from anime where name  like concat('%',#{name},'%');
+	</select>
+
 	
 	<select id="listWithAlias" resultMap="AnimeTypeWithAlias">
-		select a.*, b.host_id as host_id, b.alias as host_alias 
-			from anime a, anime_alias b 
-			where a.id = b.anime_id and a.finished = '0';
+		select a.*
+			from anime a where a.finished = '0';
 	</select>
 	
 	<select id="listMostFocused" resultMap="AnimeMap">
@@ -130,6 +131,11 @@
 	</delete>
 
 	<insert id="save">
+
+		<selectKey keyProperty="anime.id" resultType="long">
+			select LAST_INSERT_ID()
+		</selectKey>
+
 		insert into anime (
 			name, alias, pic, description, publish_month, finished, episode_no, type
 		)

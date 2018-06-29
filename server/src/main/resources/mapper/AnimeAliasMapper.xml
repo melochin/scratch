@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IAnimeAliasDao">
+
+    <select id="find" resultType="AnimeAlias">
+        select anime_id as animeId, host_id as hostId, alias from anime_alias
+        where anime_id = #{animeId} and host_id = #{hostId}
+    </select>
+
+    <select id="list" resultType="AnimeAlias">
+        select anime_id as animeId, host_id as hostId, alias from anime_alias
+        where anime_id = #{animeId};
+    </select>
+
+    <insert id="save">
+        insert into
+        anime_alias(anime_id, host_id, alias)
+        values(#{alias.animeId},#{alias.hostId}, #{alias.alias});
+    </insert>
+
+    <update id="modify">
+        update anime_alias set alias = #{alias.alias}
+        where anime_id = #{alias.animeId} and host_id = #{alias.hostId}
+    </update>
+
+    <delete id="delete">
+        delete from anime_alias
+        where anime_id = #{alias.animeId} and host_id = #{alias.hostId}
+    </delete>
+
+</mapper>

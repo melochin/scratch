@@ -18,6 +18,12 @@
 			<result property="name" column="anime_name"/>
 		</association>
 	</resultMap>
+
+	<select id="listByFocusUser" resultMap="AnimeEpisodeMap">
+		select a.* from anime_episode a , anime b , anime_focus c
+			where c.user_id = #{userId} and a.anime_id = b.id and b.id = c.anime_id order by save_time desc;
+	</select>
+
 	
 	<select id="listByAnimeId" resultMap="AnimeEpisodeMap">
 		select * from anime_episode where anime_id = #{animeId} order by sequence desc;
@@ -36,10 +42,30 @@
 		 	a.id as anime_id,
 		 	a.name as anime_name
 			from anime_episode e, anime a 
-			where e.anime_id = #{anime.id} 
+			where e.anime_id = #{anime.id}
 				and e.scratch_time > #{time}
 				and e.anime_id = a.id;
 	</select>
+
+	<select id="listOrderByTime" resultMap="AnimeEpisodeMap">
+		select
+		 	e.id as id,
+		 	e.no as no,
+		 	e.url as url,
+		 	e.scratch_time as scratch_time,
+		 	a.id as anime_id,
+		 	a.name as anime_name
+			from anime_episode e, anime a
+			where e.anime_id = a.id
+
+			<if test="animeType != null">
+				and a.type = #{animeType}
+			</if>
+
+				order by e.save_time desc
+				limit #{limit};
+	</select>
+
 	
 	<select id="findByTime" resultMap="AnimeEpisodeMap">
 			select 
@@ -135,5 +161,10 @@
 		 	save_time = #{episode.saveTime}
 		 where id = #{episode.id}
 	</update>
+
+
+	<select id="getLastUpdatedTime" resultType="Date">
+		select max(save_time) from anime_episode where anime_id = #{animeId};
+	</select>
 
 </mapper>  
