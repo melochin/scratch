@@ -1,6 +1,7 @@
 package scratch.dao;
 
 import scratch.model.entity.Card;
+import scratch.model.entity.MemoryCardInfo;
 
 import java.util.List;
 
@@ -8,7 +9,13 @@ public interface ICardRepository {
 
 	List<Card> list(String brochureId);
 
+	List<Card> listByWord(String word);
+
 	List<Card> listMemory(String brochureId);
+
+	Card find(String cardId);
+
+	MemoryCardInfo findMemoryCardInfo(String brochureId, String cardId);
 
 	void memoryRember(String brochureId, String cardId);
 

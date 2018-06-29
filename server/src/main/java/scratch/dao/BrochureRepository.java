@@ -1,7 +1,11 @@
 package scratch.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.support.collections.DefaultRedisMap;
+import org.springframework.data.redis.support.collections.RedisMap;
 import org.springframework.stereotype.Repository;
 import scratch.model.RedisKey;
 import scratch.model.entity.Brochure;
@@ -16,52 +20,41 @@ import java.util.stream.Collectors;
 
 
 @Repository
-public class BrochureRepository {
+public class BrochureRepository implements IBrochureRepository {
 
-	@Resource(name="redisTemplate")
-	private HashOperations<String, String, Brochure> operations;
+	@Autowired
+	private RedisTemplate redisTemplate;
 
-	@Resource(name="redisTemplate")
-	private ValueOperations<String, Integer> valueOperations;
+	private RedisMap<String, Brochure> brochures() {
+		return new DefaultRedisMap<String, Brochure>(RedisKey.BROCHURES, redisTemplate);
+	}
+
+	public Brochure find(String brochureId) {
+		return brochures().get(brochureId);
+	}
 
 	public List<Brochure> list() {
-		List<Brochure> brochures = operations.entries(RedisKey.BROCHURES)
-				.entrySet().stream()
-				.map(Map.Entry::getValue)
-				.collect(Collectors.toList());
+		List<Brochure> brochures = brochures().values()
+				.stream().collect(Collectors.toList());
 		brochures.sort(Comparator.comparing(Brochure::getName));
 		return brochures;
 	}
 
-	public Brochure find(String brochureId) {
-		return operations.get(RedisKey.BROCHURES, brochureId);
+	public Brochure save(Brochure brochure) {
+		brochures().putIfAbsent(brochure.getId(), brochure);
+		return brochures().get(brochure.getId());
 	}
 
-
-	public void save(Brochure brochure) {
-		operations.putIfAbsent(RedisKey.BROCHURES,
-				brochure.getId(), brochure);
+	public Brochure modify(Brochure brochure) {
+		brochures().put(brochure.getId(), brochure);
+		return brochures().get(brochure.getId());
 	}
 
-	public void modify(Brochure brochure) {
-		operations.put(RedisKey.BROCHURES,
-				brochure.getId(), brochure);
-	}
-
-	public Integer findMemory(String brochureId) {
-		return valueOperations.get(RedisKey.memory(brochureId));
-	}
-
-	public void modifyMemory(String brochureId, Integer remainSize) {
-		if(remainSize == 0) {
-			valueOperations.getOperations().delete(RedisKey.memory(brochureId));
-			return;
-		}
-		valueOperations.set(RedisKey.memory(brochureId),remainSize, 1, TimeUnit.DAYS);
-	}
-
-	public void delete(String brochureId) {
-		operations.delete(RedisKey.BROCHURES, brochureId);
+	public Brochure delete(String brochureId) {
+		Brochure brochure = brochures().get(brochureId);
+		if (brochure == null) return null;
+		brochures().remove(brochureId);
+		return brochure;
 	}
 
 }

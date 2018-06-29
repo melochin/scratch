@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 
+import org.springframework.security.access.method.P;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 
@@ -16,17 +17,14 @@ public interface IAnimeDao {
 	
 	Anime getById(@Param("id") Long id);
 	
-	Anime getByAlias(@Param("alias") String alias, Boolean finished);
-	
-	/**关联查询：查询的anime带有alias数据**/
-	Anime getByIdWithAlias(@Param("id") Long id);
-	
 	/**查询所有的anime**/
 	List<Anime> list();
-	
+
 	/**条件查询:按类型和是否完结查询，如果参数为null,则不起条件限制作用**/
 	List<Anime> listIf(@Param("type") String type, @Param("finished") Boolean finished);
-	
+
+	List<Anime> listByName(@Param("name") String name);
+
 	/**关联查询：查询的anime带有alias数据**/
 	List<Anime> listWithAlias();
 	
@@ -48,16 +46,5 @@ public interface IAnimeDao {
 	void update(@Param("anime") Anime anime);
 	
 	void delete(@Param("id") Long id);
-
-	/**--------------------------更新Alias--------------------------------------**/
-
-	AnimeAlias getAliasById(@Param("animeId") Long animeId,
-							@Param("hostId") Long hostId);
-
-	void saveAlias(@Param("alias") AnimeAlias alias);
-	
-	void modifyAlias(@Param("alias") AnimeAlias alias);
-	
-	void deleteAlias(@Param("alias") AnimeAlias alias);
 
 }

@@ -8,19 +8,19 @@ import scratch.model.entity.AnimeFocus;
 
 public interface IAnimeFocusDao {
 
-	List<AnimeFocus> findAll();
-	
-	List<AnimeFocus> findByUserId(@Param("userId") Long userId);
-
 	AnimeFocus findByAnimeAndUser(
 			@Param("animeId") Long animeId, @Param("userId") Long userId);
 
+	List<AnimeFocus> listByUserId(@Param("userId") Long userId);
+
 	void save(@Param("focus") AnimeFocus focus);
-	
+
 	void update(@Param("focus") AnimeFocus focus);
-	
-	void delete(@Param("id") Long id);
-	
+
+	void delete(@Param("id") Long focusId);
+
 	void deleteByAnimeAndUser(@Param("animeId") Long animeId, @Param("userId") Long userId);
-	
+
+	int count(@Param("animeId") Long animeId);
+
 }

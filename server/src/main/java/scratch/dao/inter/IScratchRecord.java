@@ -7,5 +7,7 @@ import scratch.model.entity.ScratchRecord;
 public interface IScratchRecord {
 
 	List<ScratchRecord> list();
+
+	void add(ScratchRecord record);
 	
 }
