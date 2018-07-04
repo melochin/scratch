@@ -20,9 +20,9 @@ import scratch.support.web.spring.ModelUtils;
 			"scratch.controller.admin",
 			"scratch.controller.user"
 		})
-public class ExceptionController {
+public class ExceptionControllerAdivce {
 
-	private static Logger log = Logger.getLogger(ExceptionController.class);
+	private static Logger log = Logger.getLogger(ExceptionControllerAdivce.class);
 
 	private final static String VIEW_ERROR = "/base/404";
 
@@ -66,13 +66,13 @@ public class ExceptionController {
 	}
 
 	/**
-	 * 其余异常，全部判定为404
+	 * 其余异常，全部判定为500
 	 * 避免用户看到系统内部错误信息，错误不输出到页面，只输出到日志文件和控制台
 	 *
 	 * @param e
 	 * @return
 	 */
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler
 	public String handleException(Exception e) {
 		String error = e.getMessage();

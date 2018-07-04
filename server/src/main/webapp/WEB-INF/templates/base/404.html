@@ -1,36 +1,43 @@
-<html xmlns:th="www.thymeleaf.org">
-<th:block th:replace="~{base/lib :: common}"></th:block>
-<th:block th:replace="~{base/lib :: semantic}"></th:block>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>404</title>
+    <th:block th:replace="~{base/lib :: common}"></th:block>
+    <th:block th:replace="~{base/lib :: semantic}"></th:block>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
+
+</head>
 <body>
 
-	<div th:if="${error != null}">
-		<div class="ui text container" style="margin-top:5%">
-			<div class="ui two column stackable grid">
-				<div class="center aligned column">
-					<img class="ui image" alt="404" th:src="@{/pic/404.jpeg}">
-					<span class="">404</span>
-				</div>
-				<div class="top aligned column">
-					<h4>页面出错</h4>
-					<div class="ui divider"></div>
-					<div class="ui secondary inverted red segment" th:text="${error}">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div th:unless="${error != null}">
-		<div class="ui text container" style="margin-top:5%">
-			<div class="ui one column stackable grid">
-				<div class="center aligned column">
-					<h4>页面出错</h4>
-					<img class="ui image" alt="404" th:src="@{/pic/404.jpeg}">
-					<span class="">404</span>
-				</div>
-			</div>
-		</div>
-	</div>
-	
+
+<div class="ui grid" style="display: flex;height: 75%;justify-content: center;">
+    <div style="align-self: center;flex: 100%;text-align: center;color: white">
+        <h1>( ﾟДﾟ)σ</h1>
+        <h4>找不到页面</h4>
+        <div style="margin-top: 2rem">
+            <a href="/" class="ui button">主页</a>
+        </div>
+    </div>
+</div>
+
+<div id="home_background">
+    <canvas style="background-color: darkblue;width: 100%;height: 100%"></canvas>
+</div>
+
+<script>
+    window.onload = function () {
+        Particles.init({
+            selector:
+                'canvas',
+            color:
+                '#fff',
+            minDistance:
+                '200',
+            sizeVariations:
+                '4'
+        });
+    };
+</script>
 </body>
 </html>

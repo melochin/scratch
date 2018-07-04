@@ -15,11 +15,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 @RestControllerAdvice(annotations = RestController.class)
-public class ApiExceptionController {
+public class ApiExceptionControllerAdivce {
 
-	private final static String MESSAGE = "error";
-
-	private final static Logger log = Logger.getLogger(ApiExceptionController.class);
+	private final static Logger log = Logger.getLogger(ApiExceptionControllerAdivce.class);
 
 	@Autowired
 	private ListenerService service;
@@ -31,8 +29,9 @@ public class ApiExceptionController {
 	}
 
 	/**
-	 * 处理api异常　返回 json {error : 'error'}
-	 *
+	 * 处理api异常　
+	 * 返回json: {error : 'error'}
+	 * HTTP错误代码: 500
 	 * @param e
 	 * @return
 	 */
