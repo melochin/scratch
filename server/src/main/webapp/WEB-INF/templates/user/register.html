@@ -1,48 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>新用户注册</title>
-	<th:block th:replace="~{base/lib :: common}"></th:block>
-	<th:block th:replace="~{base/lib :: semantic}"></th:block>
-	<th:block th:replace="~{base/lib :: customer}"></th:block>
-	<script type="text/javascript" th:src="@{/js/semantic-custom.js}"></script>
-	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+    <title>新用户注册</title>
+    <th:block th:replace="~{base/lib :: common}"></th:block>
 </head>
 
-<body th:replace="base/layout/user :: layout(~{::#container})">
-	<div class="ui doubling three column centered grid" id="container">
-		<div class="column">
-			<div class="ui segment ">
-				<form class="ui form" action="register" method="post" id="userRegisterForm" role="login">
+<body th:replace="base/index :: layout(~{::#container})">
+<div id="container" style="height: 100%">
+    <div class="ui centered grid" style="height:100%;display: flex;">
+        <div class="ui container sixteen wide tablet four wide computer column" style="align-self: center;background-color: white">
+            <form class="ui form" action="register" method="post" id="userRegisterForm" role="login">
 
-					<div class="field">
-						<label>账号</label>
-						<input id ="username" class="form-control" name="username" th:value="${user.username }"
-							   placeholder="账号" />
-					</div>
-					<div class="field">
-						<label>邮箱</label>
-						<input class="form-control" name="email" th:value="${user.email }"
-							   placeholder="邮箱" />
-					</div>
-					<div class="field">
-						<label>密码</label>
-						<input class="form-control" name="password" type="password"
-							   placeholder="密码" />
-					</div>
-					<div class="field">
-						<label>确认密码</label>
-						<input class="form-control" name="rePassword" type="password"
-							   placeholder="确认密码" />
-					</div>
-					<input type="hidden" th:id="${_csrf.parameterName}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"　/>
-					<div class="row">
-						<input class="ui primary button" type="submit" value="注册" />
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                <div class="field">
+                    <label>账号</label>
+                    <input id="username" class="form-control" name="username" th:value="${user.username }"
+                           placeholder="账号"/>
+                </div>
+                <div class="field">
+                    <label>邮箱</label>
+                    <input class="form-control" name="email" th:value="${user.email }"
+                           placeholder="邮箱"/>
+                </div>
+                <div class="field">
+                    <label>密码</label>
+                    <input class="form-control" name="password" type="password"
+                           placeholder="密码"/>
+                </div>
+                <div class="field">
+                    <label>确认密码</label>
+                    <input class="form-control" name="rePassword" type="password"
+                           placeholder="确认密码"/>
+                </div>
+                <input type="hidden" th:id="${_csrf.parameterName}" th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" 　/>
+                <div class="row">
+                    <input class="ui primary button" type="submit" value="注册"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

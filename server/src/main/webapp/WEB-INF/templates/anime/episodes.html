@@ -1,66 +1,43 @@
 <html xmlns:th="www.thymeleaf.org">
 <head>
-    <title>首页—Scratch</title>
+    <title th:text="${anime.name}"></title>
 
-    <th:block th:replace="base/lib :: semantic" />
-    <th:block th:replace="base/lib :: common" />
-    <th:block th:replace="base/lib :: react" />
+    <th:block th:replace="base/lib :: common"/>
+    <th:block th:replace="base/lib :: react"/>
     <script type="text/javascript" th:src="@{/js/bundle/vendors.js}"></script>
-    <script type="text/javascript" th:src="@{/js/bundle/comments.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bundle/common.js}"></script>
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
-<div id="container">
+<div id="container" class="ui container">
 
-    <div class="ui segment" style="margin: 0 10rem 0 10rem; min-height: 260px">
+    <div class="ui segment" style="height: 260px;padding:1rem">
         <h1 th:text="${anime.name}"></h1>
-        <img class="ui  left floated image" style="min-height: 90px; max-height: 180px" th:src="@{'/upload/' + ${anime.pic}}">
+        <img class="ui  left floated image" style="min-height: 90px; max-height: 180px"
+             th:src="@{'/upload/' + ${anime.pic}}">
         <p id="desc" th:text="${anime.description}"></p>
+
+    </div>
+    <div class="ui segment anime-focus" th:focus="${anime.focus}" th:anime="${anime.id}">
+        <button class="ui primary button">关注</button>
     </div>
 
-    <div class="ui segment" style="margin: 1rem 10rem 1rem 10rem">
-        <p>
-            <i class="table icon" onclick="showCards()"></i>
-            <i class="list icon" onclick="showBoxs()"></i>
-        </p>
-        <div class="ui five stackable cards">
-            <a class="ui card"  target="_blank" th:each="episode : ${episodes}"
-                 th:href="${episode.url}">
-                <div class="content">
-                    <div class="description">
-                        <p th:text="${episode.number}"></p>
+    <div class="ui segment" style="margin: 1rem 0rem 1rem 0rem">
+
+        <div class="ui grid">
+            <div class="ui two wide column" th:each="episode : ${episodes}">
+                <div class="ui left labeled button" tabindex="0">
+                    <a class="ui basic label" th:text="${episode.number}"
+                       th:href="@{'/episode/' + ${episode.id} + '/redirect?url=' + ${episode.url} }">
+                    </a>
+                    <div class="ui icon button" th:data-anime="${episode.anime.id}" th:data-episode="${episode.id}">
+                        <i class="comment outline icon"></i>
                     </div>
                 </div>
-                <div class="extra content">
-                    <!--<span class="right floated" th:text="${episode.saveTime}"></span>-->
-                </div>
-            </a>
+            </div>
         </div>
-        <p class="boxs" style="display: none">
-            <a class="ui primary basic button" th:each="episode : ${episodes}"
-               th:href="${episode.url}" th:text="${episode.number}"></a>
-        </p>
+
     </div>
-
-    <div id="comments" class="ui segment" style="margin: 1rem 10rem 1rem 10rem"/>
-
-    <script type="text/javascript" th:inline="javascript">
-
-        function showCards() {
-            $(".cards").attr("style", "");
-            $(".boxs").attr("style", "display:none");
-        }
-
-        function showBoxs() {
-            $(".boxs").attr("style", "");
-            $(".cards").attr("style", "display:none");
-        }
-
-        var animeId = /*[[${anime.id}]]*/;
-        var desc = /*[[${anime.description}]]*/
-        sessionStorage.setItem("animeId", animeId);
-        sessionStorage.setItem("desc", desc);
-    </script>
 
 </div>
 

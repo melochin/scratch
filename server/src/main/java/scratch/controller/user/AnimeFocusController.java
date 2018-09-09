@@ -5,10 +5,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import scratch.controller.api.ApiAnimeFocusController;
 import scratch.model.DictType;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
@@ -17,7 +16,10 @@ import scratch.service.anime.AnimeFocusService;
 @RequestMapping("/anime")
 @Controller
 public class AnimeFocusController {
-	
+
+	@Autowired
+	private ApiAnimeFocusController apiAnimeFocusController;
+
 	@Autowired
 	private AnimeFocusService service;
 	
@@ -41,6 +43,13 @@ public class AnimeFocusController {
 		model.addAttribute("type", type);
 		model.addAttribute("focus", focus);
 		return "/anime/focus";
+	}
+
+	@GetMapping(value="/unfocus/{id}")
+	public String unFocus(@PathVariable("id") Long animeId, @AuthenticationPrincipal UserAdapter userAdapter,
+						@RequestHeader(name="referer", required=false, defaultValue="/") String referer) {
+		apiAnimeFocusController.unFocus(animeId, userAdapter);
+		return "redirect:" + referer;
 	}
 
 }

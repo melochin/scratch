@@ -1,0 +1,14 @@
+= Anime
+
+
+= 查询
+operation::animes-list[snippets='http-request,http-response,response-body,response-fields']
+
+= 新增
+operation::animes-save[]
+
+= 修改
+operation::animes-modify[]
+
+= 删除
+operation::animes-delete[]

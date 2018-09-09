@@ -1,42 +1,78 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <th:block th:remove="all">
-	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
-	<script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
-	<link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
+    <script type="text/javascript" src="C:/Users/Admin/.m2/javascript/jquery.js"></script>
+    <script type="text/javascript" src="C:/Users/Admin/.m2/javascript/semantic/semantic.js"></script>
+    <link rel="stylesheet" href="C:/Users/Admin/.m2/javascript/semantic/semantic.css"></link>
 </th:block>
 
 <!--1.去掉 margin?-->
 <!--2.更改inverted颜色-->
-<div class="ui inverted stackable menu" id="nav-header">
-	<div class="ui container">
-		<div class="item">
-			<a th:href="@{/}">Scratch</a>
-		</div>
-		<!--没有用户时-->
-		<div class="right item" th:if="${session.user_g == null}">
-			<div class="black ui buttons">
-				<a class="ui button" th:href="@{/user/login}">Login</a>
-			</div>
-		</div>
-		<!--存在用户时-->
-		<div class="right item" th:unless="${session.user_g == null}">
-			<img class="ui mini circular image portrait"
-				 src="https://semantic-ui.com/images/avatar2/small/elyse.png">
-			<span th:text="${session.user_g.username}"></span>
-			<div th:object="${session.user_g}" class="black ui buttons">
-				<a class="ui  button" th:href="@{/user/info}">
-					账号</a>
-				<a class="ui  button"
-				   th:if="*{role == 1}" th:href="@{/admin}">
-					Admin
-				</a>
-				<a class="ui  button" th:href="@{/user/logout}">
-					登出
-				</a>
-			</div>
-		</div>
-	</div>
-</div>
+<div class="ui inverted fixed stackable menu" id="nav-header">
+    <canvas style="position: absolute;left: auto"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
+    <div class="item">
+        <a th:href="@{/}">Scratch</a>
+    </div>
+    <div class="item">
+        <form style="margin: 0" action="/search">
+            <div class="ui icon input" style="padding: 2px">
+                <input type="text" placeholder="Search..." name="word">
+                <i class="search large link icon"></i>
+            </div>
+        </form>
+    </div>
+
+    <!--没有用户时-->
+    <div class="right item" th:if="${session.user_g == null}">
+        <div class="black ui buttons">
+            <a class="ui button" th:href="@{/user/login}">Login</a>
+        </div>
+    </div>
+    <!--存在用户时-->
+    <th:block th:unless="${session.user_g == null}">
+        <div class="right item" th:object="${session.user_g}" style="padding:0px">
+            <div class="ui menu" id="nav-header-menu">
+                <a class="item" th:href="@{/}">
+                    <i class="home large icon"></i>
+                </a>
+                <div class="ui pointing dropdown icon item">
+                    <i class="user large icon"></i>
+                    <div class="menu">
+                        <a class="item" th:href="@{/user/info}">个人资料</a>
+                    </div>
+                </div>
+
+                <a class="item"
+                   th:if="*{role == 1}" th:href="@{/admin}">
+                    Admin
+                </a>
+                <a class="item" th:href="@{/user/logout}">
+                    <i class="sign out alternate large icon"></i>
+                </a>
+            </div>
+
+
+            <!--				<img class="computer only ui mini circular image portrait"
+                                 src="https://semantic-ui.com/images/avatar2/small/elyse.png">
+                            <span class="computer only" th:text="${session.user_g.username}"></span>-->
+
+        </div>
+    </th:block>
+    <script>
+        window.onload = function () {
+            Particles.init({
+                selector:
+                    'canvas',
+                color:
+                    '#fff',
+                minDistance:
+                    '1000',
+                sizeVariations:
+                    '3'
+            });
+        };
+    </script>
+</div>
 </html>

@@ -1,6 +1,7 @@
 package scratch.api.renren;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,24 +14,24 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import scratch.support.web.net.Flow;
 
 public class RenrenImpl implements Renren {
 
 	private final static String HOST = "http://www.zimuzu.tv";
-	
-	private final static String SEARCH_URL = 
-			"http://www.zimuzu.tv/search/index?keyword=";
-	
-	private final static String DOWNLOADLIST_URL = 
-			"http://xiazai002.com/";
-	
+
+	private final static String SEARCH_URL = HOST + "/search/index?keyword={1}";
+
+	private final static String RESOURCE_URL = HOST + "/resource/index_json/rid/{1}/channel/tv";
+
 	/**
-	 * 根据关键字获取影视信息
+	 * 发起搜索请求
+	 * 1. 获取请求结果列表
+	 * 2. 对每个元素进行遍历，获取具体的下载地址
 	 */
 	@Override
 	public List<Video> search(String keyword) {
-		String url = SEARCH_URL + keyword;
-		String html = new HttpConnection().connect(url);
+		String html = new HttpConnection().connect(SEARCH_URL, keyword);
 		
 		Document document = Jsoup.parse(html);
 		Elements searchItems = document.select(".search-item");
@@ -43,7 +44,7 @@ public class RenrenImpl implements Renren {
 	}
 	
 	/**
-	 * 解析DOM元素，获取Video基本信息
+	 * 解析'.search-item'，获取Video基本信息
 	 * @param ele
 	 * @return
 	 */
@@ -63,32 +64,33 @@ public class RenrenImpl implements Renren {
 		video.setPublishAt(date);
 
 		int index = video.getResourceUrl().indexOf("resource/");
-		if(index > 0) {
-			long id = Long.parseLong(video.getResourceUrl().substring(index + "resource/".length()));
-			String url = HOST + "/resource/index_json/rid/" + id + "/channel/tv";
-			try {
-				String downloadListUrl = getDownloadlistUrl(url);
-				video.setDownloadListUrl(downloadListUrl);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if(index <= 0) return video;
+
+		long id = Long.parseLong(video.getResourceUrl().substring(index + "resource/".length()));
+		try {
+			String downloadListUrl = getDownloadlistUrl(id);
+			video.setDownloadListUrl(downloadListUrl);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return video;
 	}
 
 	/**
 	 * 从javascript中，获取资源分享地址
-	 * @param url
+	 * @param id
 	 * @return
 	 * @throws IOException
 	 */
-	private String getDownloadlistUrl(String url) throws IOException {
+	private String getDownloadlistUrl(Long id) throws IOException {
+		String js = new HttpConnection().connect(RESOURCE_URL, id);
+		// 从js中获取json
 		String target = "index_info=";
-		String html = new HttpConnection().connect(url);
-		int index = html.indexOf(target);
-		String json = html.substring(index + target.length());
+		String json = js.substring(js.indexOf(target) + target.length());
+		// 转换json -> map
 		ObjectMapper mapper = new ObjectMapper();
 		Map map = mapper.readValue(json, Map.class);
+		// 获取资源分享地址
 		return parseResourceUrl((String) map.get("resource_content"));
 	}
 
@@ -116,16 +118,24 @@ public class RenrenImpl implements Renren {
 		List<VideoEpisode> videoEpisodes = lis.stream()
 				.map(ele -> doEpisodeUrl(ele))
 				.collect(Collectors.toList());
-		videoEpisodes = videoEpisodes.stream().filter((v) ->{
-			if(v!=null) {
-				return true;
-			}
-			return false;
-		}).collect(Collectors.toList());
+		videoEpisodes = videoEpisodes.stream()
+				.filter((v) -> v != null)
+				.collect(Collectors.toList());
 
 		return videoEpisodes;
 	}
-	
+
+	@Override
+	public boolean isValidate(String url) {
+		boolean validate = false;
+		try {
+			validate = new Flow().get(url).result(html -> !html.contains("链接不存在"));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return validate;
+	}
+
 	/**
 	 * 解析资源分享页面的DOM元素，提取百度云的下载链接
 	 * @param ele

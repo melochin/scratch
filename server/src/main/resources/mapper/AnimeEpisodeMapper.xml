@@ -24,6 +24,11 @@
 			where c.user_id = #{userId} and a.anime_id = b.id and b.id = c.anime_id order by save_time desc;
 	</select>
 
+	<select id="pageByFocusUser" resultMap="AnimeEpisodeMap">
+		select a.* from anime_episode a , anime b , anime_focus c
+			where c.user_id = #{userId} and a.anime_id = b.id and b.id = c.anime_id order by save_time desc
+	</select>
+
 	
 	<select id="listByAnimeId" resultMap="AnimeEpisodeMap">
 		select * from anime_episode where anime_id = #{animeId} order by sequence desc;
@@ -137,6 +142,9 @@
 
 	
 	<insert id="save">
+		<selectKey keyProperty="episode.id" resultType="long">
+			select LAST_INSERT_ID()
+		</selectKey>
 		insert into anime_episode (
 			anime_id, no, url, scratch_time, host_id, save_time
 		) 

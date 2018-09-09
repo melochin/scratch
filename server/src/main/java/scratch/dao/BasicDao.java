@@ -218,11 +218,12 @@ public class BasicDao<E> {
 		if(page != null) {
 			//先获取总记录数
 			c.setProjection(Projections.rowCount());
-			page.setTotalItem(Long.valueOf(c.uniqueResult().toString()));
+			page.setTotalItems(Long.valueOf(c.uniqueResult().toString()));
 			c.setProjection(null);
 			//过滤记录数
-			c.setFirstResult(page.getFirstIndex())
-				.setMaxResults(page.getPerPageItem());
+			int firstIndex = (page.getCurrent() - 1) * page.getSize();
+			c.setFirstResult(firstIndex)
+				.setMaxResults(page.getSize());
 		}
 		return c.list();
 	}

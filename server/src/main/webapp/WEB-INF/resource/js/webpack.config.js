@@ -1,36 +1,38 @@
 var webpack = require("webpack");
-var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");
 var CompressionWebpackPlugin = require('compression-webpack-plugin');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: {
-    comments : './comments.js',
+    run : './run.js',
     card: './card.js',
     table : "./table.js",
     semanticTable : './semantic-table.js',
+    post : './center/post.js',
+    common : './common/common.js'
   },
   output: {
-    path: 'bundle',
+    path: __dirname + '/bundle',
     filename: '[name].js'
   },
-  module: {
-    loaders:[
-      {
-        test: /\.js[x]?$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader?presets[]=es2015&presets[]=react',
-      },
+module: {
+    rules: [
+          {
+            test: /\.js[x]?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['babel-preset-es2015', 'babel-preset-react']
+                }
+            }
+          }
     ]
-  },
+    },
   plugins: [
       new webpack.DllReferencePlugin({
           context: __dirname,
           manifest: require('./manifest.json'),
-      }),
-      new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            warnings: false
-          }
       })
 /*      new CompressionWebpackPlugin({ //gzip 压缩
           asset: '[path].gz[query]',
@@ -42,5 +44,14 @@ module.exports = {
           minRatio: 0.8
       })*/
 
-  ]
+  ],
+   // optimization: {
+   //      minimizer: [
+   //          new UglifyJsPlugin({
+   //              uglifyOptions: {
+   //                  compress: false
+   //                  }
+   //              })
+   //      ]
+   //  }
 };

@@ -10,8 +10,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.SessionContext;
-import scratch.controller.UserGenerator;
 import scratch.test.ContextTest;
 
 public class AnimeFocusControllerTest extends ContextTest{
@@ -19,7 +17,7 @@ public class AnimeFocusControllerTest extends ContextTest{
 	@Test
 	public void queryTest() throws Exception {
 		mvc.perform(get("/anime/focus")
-				.sessionAttr(SessionContext.USER, UserGenerator.get()))
+				.with(getUser()))
 		.andExpect(view().name("/anime/focus"))
 		.andExpect(model().attributeExists("animeList"));
 	}
@@ -30,7 +28,7 @@ public class AnimeFocusControllerTest extends ContextTest{
 	public void addTest() throws Exception {
 		mvc.perform(post("/anime/focus/add")
 				.param("animeId", "1")
-				.sessionAttr(SessionContext.USER, UserGenerator.get()))
+				.with(getUser()))
 		.andExpect(view().name("redirect:/anime/focus"));
 	}
 	
@@ -40,7 +38,7 @@ public class AnimeFocusControllerTest extends ContextTest{
 	public void deleteTest() throws Exception {
 		mvc.perform(post("/anime/focus/delete")
 				.param("animeId", "1")
-				.sessionAttr(SessionContext.USER, UserGenerator.get()))
+				.with(getUser()))
 		.andExpect(view().name("redirect:/anime/focus"));
 	}
 

@@ -24,7 +24,21 @@ public class AnimeEpisodeScratch {
 	
 	// 状态
 	private Integer status;
-	
+
+	public AnimeEpisodeScratch() {
+
+	}
+
+	public AnimeEpisodeScratch(AnimeEpisode animeEpisode) {
+		this.setHostId(animeEpisode.getHostId());
+		this.setHostId(animeEpisode.getHostId());
+		this.setAnime(animeEpisode.getAnime());
+		this.setNumber(animeEpisode.getNumber());
+		this.setUrl(animeEpisode.getUrl());
+		this.setScratchTime(animeEpisode.getScratchTime());
+		this.setStatus(0);
+	}
+
 	public Long getId() {
 		return id;
 	}

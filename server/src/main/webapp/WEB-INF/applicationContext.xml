@@ -18,7 +18,6 @@
 	<import resource="redis-config.xml"/>
 	
 	<context:component-scan base-package="scratch.dao" />
-	<context:component-scan base-package="scratch.aspect" />
 	<context:component-scan base-package="scratch.service" />
 	<context:component-scan base-package="scratch.support" />
 	<context:component-scan base-package="scratch.api" />
@@ -73,7 +72,7 @@
    	</bean>	
 
 	<bean id="page" class="scratch.support.service.Page">
-		<property name="perPageItem" value="20" />
+		<property name="size" value="20" />
 	</bean>
    
    <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
@@ -90,6 +89,10 @@
 	<beans profile="default">
 		<context:property-placeholder location="classpath:config-dev.properties"/>
 	</beans>
+
+	<beans profile="test">
+		<context:property-placeholder location="classpath:config-test.properties"/>
+	</beans>
 	
 	<beans profile="product">
 		<context:property-placeholder location="classpath:config-pro.properties"/>
@@ -97,6 +100,4 @@
  		<task:annotation-driven scheduler="myScheduler"/>
 	</beans>
 
-
-	
 </beans>

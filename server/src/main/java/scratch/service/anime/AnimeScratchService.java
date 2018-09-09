@@ -5,14 +5,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import scratch.dao.inter.IScratchRecord;
 import scratch.model.entity.ScratchDateRecord;
 import scratch.model.entity.ScratchRecord;
-import scratch.service.FileService;
+import scratch.service.WebFileService;
 
 @Service
 public class AnimeScratchService {
@@ -21,7 +20,7 @@ public class AnimeScratchService {
 	private IScratchRecord recordDao;
 	
 	@Autowired
-	private FileService fileService;
+	private WebFileService fileService;
 
 	@Autowired
 	private AnimeScratchTask scratchTask;

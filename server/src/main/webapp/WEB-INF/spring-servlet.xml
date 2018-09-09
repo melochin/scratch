@@ -22,14 +22,24 @@
 
 	<context:component-scan base-package="scratch.controller" />
 
+<!--	<mvc:cors>
+		<mvc:mapping path="/**" />
+	</mvc:cors>-->
+
 	<!-- 配置拦截器 -->
 	<mvc:interceptors>
-		<mvc:interceptor>
+<!--		<mvc:interceptor>
 			<mvc:mapping path="/**" />
-				<bean class="scratch.interceptor.SessionInterceptor">
-					<property name="autoLogin" value="${setting.autologin}"></property>
+				<bean class="scratch.interceptor.AutoLoginInterceptor">
+					<property name="username" value="${autologin.username}"></property>
+					<property name="password" value="${autologin.password}"></property>
+					<property name="auto" value="${autologin.auto}"></property>
 				</bean>
-			</mvc:interceptor>
+			</mvc:interceptor>-->
+		<mvc:interceptor>
+			<mvc:mapping path="/api/**" />
+			<bean class="scratch.interceptor.TokenInterceptor" />
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	<mvc:annotation-driven>
@@ -100,5 +110,4 @@
  		<task:annotation-driven scheduler="myScheduler"/> -->
 	</beans>
 
-	
 </beans>

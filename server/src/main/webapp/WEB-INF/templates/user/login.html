@@ -3,39 +3,47 @@
 <head>
     <title>用户登录</title>
     <th:block th:replace="~{base/lib :: common}"></th:block>
-    <th:block th:replace="~{base/lib :: semantic}"></th:block>
-
-    <link th:remove="all" href="../resource/semantic/semantic.css" rel="stylesheet"></link>
-    <script th:remove="all" type="text/javascript" src="../resource/js/tools/jquery.js"></script>
-    <script th:remove="all" type="text/javascript" src="../resource/semantic/semantic.js"></script>
 </head>
-<body class="grey">
-<div class="ui doubling three column centered grid" style="padding-top:100px;">
-    <div class="column">
-        <div role="login" class="ui segment" style="background:rgba(255,255,255,0.5);">
-            <form class="ui form" method="post" id="userLoginForm">
-                <div class="ui field fluid input left icon">
-                    <input class="form-control" type="text" name="username"
-                           placeholder="用户名"/>
-                    <i class="user icon"></i>
-                </div>
-                <div class="ui field fluid input left icon">
-                    <input class="form-control" type="password" name="password"
-                           placeholder="密码"/>
-                    <i class="hide icon"></i>
-                </div>
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                <div class="ui doubling two column grid">
-                    <div class="ui column">
-                        <input class="ui fluid green button" type="submit" value="登录"/>
-                    </div>
-                    <div class="ui column">
-                        <a class="ui fluid button" th:href="@{/user/register}">注册</a>
-                    </div>
-                </div>
-            </form>
+<body th:replace="base/index :: layout(~{::#container})">
+
+<div id="container" style="height: 100%">
+<div style="position:fixed;width: 100%">
+    <div class="ui padded grid">
+        <div class="ui row" style="margin:1rem">
+            <div class="six wide tablet two wide computer column" style="margin-left: auto;">
+                <a class="ui small button" th:href="@{/user/register}">注册</a>
+            </div>
         </div>
+
+    </div>
+</div>
+
+
+<div class="ui centered grid" style="height:100%;display: flex">
+    <div class="ui container sixteen wide tablet four wide computer column" style="align-self: center;">
+
+        <div class="ui header">
+            <h1 style="text-align: center;color: white;">Scratch</h1>
+        </div>
+
+        <form class="ui form" method="post" id="userLoginForm" style="font-size:15px">
+            <div class="ui field fluid input left icon">
+                <input class="form-control" type="text" name="username"
+                       placeholder="用户名"/>
+                <i class="user icon"></i>
+            </div>
+            <div class="ui field fluid input left icon">
+                <input class="form-control" type="password" name="password"
+                       placeholder="密码"/>
+                <i class="hide icon"></i>
+            </div>
+            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+            <div class="ui  error message"></div>
+            <div class="ui column">
+                <input class="ui fluid green button" type="submit" value="登录"/>
+            </div>
+        </form>
 
         <div class="ui message">
             忘记密码？<a th:href="@{/user/reset/password/apply}"><span>找回密码</span></a>
@@ -55,7 +63,6 @@
     </div>
 </div>
 
-<th:block th:replace="~{base/alert}"></th:block>
-
+</div>
 </body>
 </html>

@@ -36,6 +36,21 @@ public class EmailSupport {
 		mailSender.send(message);
 	}
 
+	public void sendMail(String subject, String content, String toMail) throws MailException, MessagingException {
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper messHelper = new MimeMessageHelper(message);
+
+		System.out.println(content);
+		messHelper.setFrom("398299262@qq.com");
+		messHelper.setTo(toMail);
+		messHelper.setSubject(subject);
+		messHelper.setText(content, true);
+
+		mailSender.send(message);
+	}
+
+
+
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}

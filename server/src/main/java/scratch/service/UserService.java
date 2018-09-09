@@ -20,7 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import scratch.controller.user.RegisterController;
+import scratch.controller.home.RegisterController;
 import scratch.controller.user.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.AuthenException;
@@ -148,7 +148,7 @@ public class UserService {
 	public void modifyPassword(String username, String oldPassword, String newPassword) {
 		Authentication authentication = authen(username, oldPassword);
 		if(authentication == null) {
-			throw new RuntimeException("密码错误");
+			throw new RuntimeException("旧密码错误");
 		}
 		User user = getByName(username);
 		user.setPassword(newPassword);

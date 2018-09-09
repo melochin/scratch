@@ -12,4 +12,10 @@
 		from scratch_record where end_time is not null; 
 	</select>
 
+	<select id="groupByDate" resultType="ScratchDateRecord">
+		select count(*) as times , date(start_time) as 'date'
+			from scratch_record
+			group by  date(start_time)
+	</select>
+
 </mapper>  

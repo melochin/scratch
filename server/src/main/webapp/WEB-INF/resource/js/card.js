@@ -2,6 +2,7 @@ import {Layout} from "./card/layout/layout";
 import {Router, Route, IndexRoute, hashHistory} from "react-router";
 import {Brochures} from "./card/layout/brochure/brochures";
 import {CardLayout} from "./card/layout/card/layout";
+import {CardList} from "./card/layout/card/manage/cardlist";
 import {Print} from "./card/layout/card/manage/print";
 
 $(document).ready(function() {
@@ -10,6 +11,7 @@ $(document).ready(function() {
         <Route path="/" component={Layout}>
           <IndexRoute component={Brochures}> </IndexRoute>
           <Route path="brochures/:brochureId" component={CardLayout}/>
+          <Route path="search/:word" component={CardList}/>
         </Route>
         <Route path="/print/:brochureId" component={Print}/>
       </Router>,

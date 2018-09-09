@@ -22,13 +22,10 @@ import scratch.model.entity.Dict;
 import scratch.model.ohter.DictList;
 import scratch.service.AnimeService;
 import scratch.service.DictService;
-import sun.misc.Request;
 
 @RequestMapping("/admin")
 @Controller
 public class AnimeController {
-
-	private static final String WEB_INF_RESOURCE = "/WEB-INF/resource";
 
 	@Autowired
 	private AnimeService service;
@@ -60,8 +57,7 @@ public class AnimeController {
 		if(file == null || file.getSize() == 0) {
 			service.save(anime);
 		} else {
-			String realPath = request.getServletContext().getRealPath(WEB_INF_RESOURCE);
-			service.saveWithPicFile(anime, file, realPath);
+			service.saveWithPicFile(anime, file);
 		}
 		
 		return new ModelAndView("redirect:/admin/anime");
@@ -75,8 +71,7 @@ public class AnimeController {
 		if(file == null || file.getSize() == 0) {
 			service.update(anime);
 		} else {
-			String realPath = request.getServletContext().getRealPath(WEB_INF_RESOURCE);
-			service.updateWithFile(anime, file, realPath);
+			service.updateWithFile(anime, file);
 		}
 		
 		return new ModelAndView("redirect:/admin/anime");
@@ -85,44 +80,43 @@ public class AnimeController {
 	/**	删除处理	*/
 	@RequestMapping(value="/anime/delete/{animeId}", method=RequestMethod.GET )
 	public ModelAndView delete(@PathVariable("animeId") Long animeId, HttpServletRequest request) {
-		String realPath = request.getServletContext().getRealPath(WEB_INF_RESOURCE);
-		service.deleteWithFile(animeId, realPath);
+		service.deleteWithFile(animeId);
 		return new ModelAndView("redirect:/admin/anime");
 	}
 	
-	/** 关联站点界面 **/
-	@RequestMapping(value="/anime/link/{animeId}", method=RequestMethod.GET)
-	public ModelAndView animeLink(@PathVariable("animeId") Long animeId, Model model) {
-		Anime anime = service.findByIdWithAlias(animeId);
-		List<AnimeAlias> aliass= anime.getAliass();
-		if(aliass == null) {
-			aliass = new ArrayList<AnimeAlias>();
-		}
-		DictList dictList = dictService.findByType(DictType.HOST);
-		for(Dict dict : dictList) {
-			boolean find = false;
-			for(AnimeAlias a : aliass) {
-				if(dict.getCode().equals(a.getHostId().toString())) {
-					find = true;
-				}
-			}
-			if(!find) {
-				AnimeAlias animeAlias = new AnimeAlias() ;
-				animeAlias.setHostId(Long.valueOf(dict.getCode()));
-				animeAlias.setAlias("");
-				animeAlias.setAnimeId(anime.getId());
-				aliass.add(animeAlias);
-			}
-		}
-		model.addAttribute("anime", anime);
-		model.addAttribute("hosts", dictService.findByType(DictType.HOST));
-		return new ModelAndView("/admin/anime/link");
-	}
+//	/** 关联站点界面 **/
+//	@RequestMapping(value="/anime/link/{animeId}", method=RequestMethod.GET)
+//	public ModelAndView animeLink(@PathVariable("animeId") Long animeId, Model model) {
+//		Anime anime = service.findByIdWithAlias(animeId);
+//		List<AnimeAlias> aliass= anime.getAliass();
+//		if(aliass == null) {
+//			aliass = new ArrayList<AnimeAlias>();
+//		}
+//		DictList dictList = dictService.findByType(DictType.HOST);
+//		for(Dict dict : dictList) {
+//			boolean find = false;
+//			for(AnimeAlias a : aliass) {
+//				if(dict.getCode().equals(a.getHostId().toString())) {
+//					find = true;
+//				}
+//			}
+//			if(!find) {
+//				AnimeAlias animeAlias = new AnimeAlias() ;
+//				animeAlias.setHostId(Long.valueOf(dict.getCode()));
+//				animeAlias.setAlias("");
+//				animeAlias.setAnimeId(anime.getId());
+//				aliass.add(animeAlias);
+//			}
+//		}
+//		model.addAttribute("anime", anime);
+//		model.addAttribute("hosts", dictService.findByType(DictType.HOST));
+//		return new ModelAndView("/admin/anime/link");
+//	}
 
 
 	@GetMapping("anime/upload/{animeId}")
 	public ModelAndView uploadForm(@PathVariable("animeId") Long animeId, Model model) {
-		Anime anime = service.getById(animeId);
+		Anime anime = service.findById(animeId);
 		model.addAttribute(anime);
 		return new ModelAndView("/admin/anime/upload");
 	}
@@ -130,29 +124,28 @@ public class AnimeController {
 	@PostMapping(value = "/anime/upload/{animeId}")
 	public @ResponseBody String upload(@RequestParam("picFile") MultipartFile file,
 			@PathVariable("animeId") Long animeId, HttpServletRequest request) throws IOException {
-		String realPath = request.getServletContext().getRealPath(WEB_INF_RESOURCE);
-		Anime anime = service.getById(animeId);
-		service.updateWithFile(anime, file, realPath);
+		Anime anime = service.findById(animeId);
+		service.updateWithFile(anime, file);
 		return "success";
 	}
 
 	/** 关联站点  **/
-	@RequestMapping(value="/anime/link", method=RequestMethod.POST)
-	public @ResponseBody void link(Anime anime) {
-		
-		anime.getAliass().forEach(a -> {
-			String alias = a.getAlias();
-			a.setAnimeId(anime.getId());
-			// 更新或修改
-			if(!StringUtils.isEmpty(alias)) {
-				service.saveOrModifyAlias(a);
-			} else {				
-			// 删除或不变
-				service.deleteAlias(a);
-			}
-		});
-		return;
-	}
+//	@RequestMapping(value="/anime/link", method=RequestMethod.POST)
+//	public @ResponseBody void link(Anime anime) {
+//
+//		anime.getAliass().forEach(a -> {
+//			String alias = a.getAlias();
+//			a.setAnimeId(anime.getId());
+//			// 更新或修改
+//			if(!StringUtils.isEmpty(alias)) {
+//				service.saveOrModifyAlias(a);
+//			} else {
+//			// 删除或不变
+//				service.deleteAlias(a);
+//			}
+//		});
+//		return;
+//	}
 
 
 	

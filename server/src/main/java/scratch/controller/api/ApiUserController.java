@@ -2,12 +2,14 @@ package scratch.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import scratch.exception.NotFoundException;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
+import scratch.service.TokenService;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
 import scratch.support.web.JsonResult;
@@ -20,6 +22,32 @@ public class ApiUserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private TokenService tokenService;
+
+	@PostMapping("/api/authen/admin")
+	public JsonResult authen(@RequestParam("username") String username,
+							 @RequestParam("password") String password) {
+		JsonResult result = new JsonResult();
+		try {
+			Authentication authentication = userService.authen(username, password);
+			UserAdapter userAdapter = (UserAdapter)authentication.getPrincipal();
+			if(userAdapter.getRole() != 1) {
+				return result.setError("无效账号");
+			} else {
+				result.put("token", tokenService.sign(userAdapter.getUserId()));
+				return result;
+			}
+		} catch (Exception e) {
+			return new JsonResult().setError("无效账号");
+		}
+	}
+
+	@GetMapping("/api/token")
+	public String token(@AuthenticationPrincipal UserAdapter userAdapter) {
+		return tokenService.sign(userAdapter.getUserId());
+	}
 
 	@GetMapping(value = "/api/admin/users", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Object list(@RequestParam(value="page", required = false) Integer page) {
@@ -58,7 +86,7 @@ public class ApiUserController {
 	}
 
 	@DeleteMapping("/api/admin/users/{userId}")
-	public void delete(@PathVariable(value = "userId", required = true) Long userId) {
+	public void delete(@PathVariable(value = "userId") Long userId) {
 		userService.deleteById(userId);
 		return;
 	}
@@ -68,7 +96,7 @@ public class ApiUserController {
 	 * @param username
 	 * @return validate true : 校验通过，不重名
 	 */
-	@RequestMapping(path="/api/validate/username", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path="/api/validate/username", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	JsonResult existUser(@RequestParam("username") String username) {
 		JsonResult result = new JsonResult();

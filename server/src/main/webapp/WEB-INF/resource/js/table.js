@@ -1,3 +1,5 @@
+var React =  require('react');
+var ReactDOM = require('react-dom');
 var Table = require("./semantic-react/table").Table;
 var Column = require("./semantic-react/table").Column;
 var DropDown = require("./semantic-react/table").DropDown;
@@ -22,6 +24,7 @@ var Episode = React.createClass({
 
     componentWillMount : function () {
         this.animeMap = this.getAnimeMap();
+        this.hostMap = this.getHostMap();
     },
 
     componentDidMount : function () {
@@ -31,6 +34,17 @@ var Episode = React.createClass({
                 _this.setState({datas : data});
             }
         });
+    },
+
+    getHostMap : function () {
+        var map = new Object();
+        Ajax.get("/api/dics/01", null, {
+            async : false,
+            success : function (data) {
+                map = data;
+            }
+        });
+        return map;
     },
 
     getAnimeMap : function() {
@@ -66,13 +80,14 @@ var Episode = React.createClass({
 
     renderTable : function () {
         return (
-            <Table datas={this.state.datas} titles={["名称","集号","链接", "更新时间","推送时间"]}
+            <Table datas={this.state.datas} titles={["名称","集号","链接", "来源","更新时间","推送时间"]}
                    onSave={(data) => Ajax.syncPost("/api/admin/episodes", data)}
                    modify={(data) => Ajax.syncPut("/api/admin/episodes", data)}
                    delete={(data) => Ajax.syncDelete("/api/admin/episodes/" + data.id)}>
                 <Column name="anime.id" type="select" map={this.animeMap} width="250px"></Column>
                 <Column name="number" width="150px"></Column>
                 <Column name="url" width="150px"></Column>
+                <Column name="hostId" width="150px" type="select" map={this.hostMap}></Column>
                 <Column name="scratchTime" type="datetime" width="150px"></Column>
                 <Column name="pushTime" type="datetime" width="150px"></Column>
             </Table>
@@ -135,8 +150,8 @@ var userInfo = {
             success : function(data) {
                 result.data = data.data;
                 result.page = {
-                    total : data.page.totalPage,
-                    current : data.page.curPage
+                    total : data.page.total,
+                    current : data.page.current
                 }
             }
         });
@@ -179,8 +194,8 @@ var animeInfo = {
                 result.data = data.data;
                 result.page = new Object();
                 result.page = {
-                    current : data.page.curPage,
-                    total : data.page.totalPage
+                    current : data.page.current,
+                    total : data.page.total
                 }
             }
         });
@@ -207,12 +222,17 @@ var animeInfo = {
 
     // 做一层filter
     render : function (id) {
-        ReactDomRender(<Table titles={["名称\t", "描述", "开始连载月份", "是否完结", "类型"]}
+        ReactDomRender(<Table title="番剧管理"
+                              titles={["名称\t", "描述", "开始连载月份", "是否完结", "类型"]}
                               onPage = {this.page} rule = {ANIME_RULE}
                               onSave = {(data) => (Ajax.syncPost("/api/admin/animes", data))}
                               modify= {(data) => (Ajax.syncPut("/api/admin/animes", data))}
                               delete = {(data) => (Ajax.syncDelete("/api/admin/animes/" + data.id))}
-                              onRenderButtons={this.renderButtons}>
+                              onRenderButtons={this.renderButtons}
+                              onAfterSave = {() => {
+                                  initModals();
+                                  $('.ui.dropdown').dropdown();
+                              }} >
             <Column name="name" width="150px"/>
             <Column name="description" width="150px" type="textarea" />
             <Column name="publishMonth" type="datetime" />

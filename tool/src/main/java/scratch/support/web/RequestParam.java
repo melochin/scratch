@@ -48,6 +48,16 @@ public class RequestParam {
 		this.param.putAll(map);
 	}
 
+	private boolean isEmpty() {
+		if(param != null && param.size() > 0) {
+			return false;
+		}
+		if(content != null && content.isEmpty() == false) {
+			return false;
+		}
+		return true;
+	}
+
 
 	/**
 	 * 默认采用content
@@ -57,7 +67,7 @@ public class RequestParam {
 	 */
 	@Override
 	public String toString() {
-		if (param == null && content == null) return null;
+		if(isEmpty()) return "";
 		if (content != null) return content;
 		return toParamString();
 	}

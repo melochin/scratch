@@ -6,7 +6,7 @@ $.fn.api.settings.api = {
 	'update dictionary data' : 'dict/update',
 	'validate dictionary code' : 'dict/validate/code',
 	'delete dictionary data' : 'dict/delete',
-	'validate user data' : '/user/api/validate/username'
+	'validate user data' : '/api/validate/username'
 };
 
 /**
@@ -27,7 +27,6 @@ $.fn.form.settings.prompt.url = '{name}不符合链接规则';
 // 新增ajax规则
 $.fn.form.settings.rules.ajax = function(value, settings) {
 
-	const TOKEN_NAME = "_csrf";
 	const POST = "post";
 	const GET = "get";
 
@@ -71,17 +70,8 @@ $.fn.form.settings.rules.ajax = function(value, settings) {
             }
 		}
 
-		if(settings.type == POST) {
-            // 获取Token数据
-            var csrf = document.getElementById(TOKEN_NAME);
-            if(csrf != null) {
-                map[TOKEN_NAME] = csrf.value;
-            }
-		}
-
         if(settings.dataType == "json") {
             map = JSON.stringify(map);
-
         }
 
         settings.data = map;
@@ -98,20 +88,18 @@ $.fn.form.settings.rules.ajax = function(value, settings) {
 	var validate = false;
 
     settings.async = false;
-
-    // 默认ajax请求为get方法
-    if(settings.type == null) {
-        settings.type = GET;
-    }
-	if(settings.type == POST) {
-		settings.contentType = "application/x-www-form-urlencoded";
-	}
     settings.success = function (data) {
         validate = data.validate;
     }
 
-	// send sync ajax get request
-	$.ajax(settings);
+    // 默认ajax请求为get方法
+    if(settings.type == null || settings.type == GET) {
+        Ajax.get(settings.url, null, settings);
+    }
+	if(settings.type == POST) {
+		settings.contentType = "application/x-www-form-urlencoded";
+        Ajax.post(settings.url, null, settings);
+	}
 	return validate;
 };
 /**
@@ -153,55 +141,34 @@ $(document).ready(function() {
     initModals();
 });
 
-// 初始化modal事件
+/**
+ * 属性：data-href 的标签 添加modal功能 自动加载href页面
+ */
 function initModals() {
 
-	const DEFAULT_ATTACH_CONTROLERS = [
+	const selectors = [
 			'img[data-href]',
 			'a[data-href]',
 			'.ui.button[data-href]',
             'div[data-href]'
 		];
 
-    var attchControlers = [];
-    var isModalExist = false;
     var $modal = $(".ui.modal");
 
-    function isNeedCreateModal() {
-		return attchControlers.length >0 && isModalExist == false;
-    }
-
-    function createModal() {
+    // create modal
+    if($modal.length == 0) {
         var $div = $("<div class=\"ui modal\"></div>");
         $div.appendTo($("body").get(0));
-        $modal = $(".ui.modal");
-        isModalExist = true;
+        $modal = $div;
     }
 
-    function attchEvent() {
-        for(var j=0; j<attchControlers.length; j++) {
-            $modal.modal('attach events', attchControlers[j]);
-        }
-    }
-
-    // 判断modal是否存在
-    if($modal.length > 0) {
-        isModalExist = true;
-    }
-
-	// 寻找符合条件的控件
-    for(var i=0; i<DEFAULT_ATTACH_CONTROLERS.length; i++) {
-        var selector = DEFAULT_ATTACH_CONTROLERS[i];
+    // bind event
+    for(var i=0; i<selectors.length; i++) {
+        var selector = selectors[i];
         if($(selector).length > 0) {
-            attchControlers.push(selector);
+            $modal.modal('attach events', selector[j]);
         }
     }
-
-    if(isNeedCreateModal()) {
-        createModal();
-	}
-
-    attchEvent();
 
 }
 

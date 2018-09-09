@@ -2,8 +2,7 @@ package scratch.support.web;
 
 import java.util.HashMap;
 
-@SuppressWarnings("serial")
-public class JsonResult extends HashMap<String, Object>{
+public class JsonResult extends HashMap<Object, Object>{
 	
 	private final static String SUCCESS = "success";
 	
@@ -17,13 +16,17 @@ public class JsonResult extends HashMap<String, Object>{
 	}
 	
 	public JsonResult setError(String error) {
-		this.put(SUCCESS, false);
 		this.put(ERROR, error);
 		return this;
 	}
 	
 	public JsonResult setValidate(boolean validate) {
 		this.put(VALIDATE, validate);
+		return this;
+	}
+
+	public JsonResult setAttribute(Object key, Object value) {
+		this.put(key, value);
 		return this;
 	}
 	

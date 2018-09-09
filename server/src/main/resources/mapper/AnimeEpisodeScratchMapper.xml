@@ -1,31 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>  
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="scratch.dao.inter.IAnimeEpisodeScratchDao">
-	
-	<resultMap type="AnimeEpisodeScratch" id="AnimeEpisodeMap">
-		<id property="id" column="id"/>
-		<result property="number" column="no"/>
-		<result property="url" column="url"/>
-		<result property="scratchTime" column="scratch_time"/>
-		<result property="status" column="status" />
-		<result property="hostId" column="host_id"/>
-		<association property="anime" javaType="Anime">
-			<id property="id" column="anime_id"/>
-			<result property="name" column="anime_name"/>
-		</association>
-	</resultMap>
-	
-	<select id="getById" resultMap="AnimeEpisodeMap">
+
+    <resultMap type="AnimeEpisodeScratch" id="AnimeEpisodeMap">
+        <id property="id" column="id"/>
+        <result property="number" column="no"/>
+        <result property="url" column="url"/>
+        <result property="scratchTime" column="scratch_time"/>
+        <result property="status" column="status"/>
+        <result property="hostId" column="host_id"/>
+        <association property="anime" javaType="Anime">
+            <id property="id" column="anime_id"/>
+            <result property="name" column="anime_name"/>
+        </association>
+    </resultMap>
+
+    <select id="getById" resultMap="AnimeEpisodeMap">
 		select * from anime_episode_scratch where id = #{id};
 	</select>
-	
-	<select id="findByUrl" resultMap="AnimeEpisodeMap">
+
+    <select id="findByUrl" resultMap="AnimeEpisodeMap">
 		select * from anime_episode_scratch where url = #{url};
 	</select>
-	
-	<select id="findByAnimeAndTime" resultMap="AnimeEpisodeMap">
+
+    <select id="isExistUrl" resultType="boolean">
+		select if(count(*)>=1, 1, 0) as result from anime_episode_all
+			where url = #{url}
+	</select>
+
+
+    <select id="findByAnimeAndTime" resultMap="AnimeEpisodeMap">
 		select 
 		 	e.id as id,
 		 	e.no as no,
@@ -40,27 +46,27 @@
 				and e.scratch_time > #{time}
 				and e.anime_id = a.id;
 	</select>
-	
-		<select id="listByStatus" resultMap="AnimeEpisodeMap">
-			select 
-		 	e.id as id,
-		 	e.no as no,
-		 	e.host_id as host_id,
-		 	e.url as url,
-		 	e.scratch_time as scratch_time,
-		 	a.id as anime_id,
-		 	a.name as anime_name
-			from anime_episode_scratch e, anime a 
-			where  
-				e.anime_id = a.id
-				<if test="status != null">
-					and e.status = #{status}
-				</if>
-			order by
-				e.scratch_time desc, e.anime_id desc ;
-	</select>
-	
-	<insert id="save">
+
+    <select id="listByStatus" resultMap="AnimeEpisodeMap">
+        select
+        e.id as id,
+        e.no as no,
+        e.host_id as host_id,
+        e.url as url,
+        e.scratch_time as scratch_time,
+        a.id as anime_id,
+        a.name as anime_name
+        from anime_episode_scratch e, anime a
+        where
+        e.anime_id = a.id
+        <if test="status != null">
+            and e.status = #{status}
+        </if>
+        order by
+        e.scratch_time desc, e.anime_id desc ;
+    </select>
+
+    <insert id="save">
 		insert into anime_episode_scratch (
 			anime_id, no, url, scratch_time, host_id
 		) 
@@ -68,16 +74,24 @@
 			#{episode.anime.id}, #{episode.number} , #{episode.url}, #{episode.scratchTime}, #{episode.hostId}
 		)
 	</insert>
-	
-	<select id="countByStatus" resultType="java.lang.Integer" >
+
+    <select id="countByStatus" resultType="java.lang.Integer">
 		select count(*) from anime_episode_scratch where status = #{status}
 	</select>
 
+    <select id="listCountByStatus" resultType="java.util.HashMap" >
+        select count(*) as size, status from anime_episode_scratch group by status;
+    </select>
+    
 
-	<update id="modifyStatus">
+    <update id="modifyStatus">
 		update anime_episode_scratch
 			set status = #{status} 
 			where id = #{id}
 	</update>
+
+    <delete id="delete">
+		delete from anime_episode_scratch where id = #{id};
+	</delete>
 
 </mapper>  

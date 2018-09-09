@@ -1,7 +1,5 @@
 package scratch.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -34,6 +32,18 @@ public class AnimeEpisode implements Serializable {
 	
 	// 最近一次推送时间
 	private Date pushTime;
+
+
+	public AnimeEpisode() {}
+
+	public AnimeEpisode(AnimeEpisodeScratch animeEpisodeScratch) {
+		this.hostId = animeEpisodeScratch.getHostId();
+		this.anime = animeEpisodeScratch.getAnime();
+		this.number = animeEpisodeScratch.getNumber();
+		this.url = animeEpisodeScratch.getUrl();
+		this.scratchTime = animeEpisodeScratch.getScratchTime();
+	}
+
 	
 	public Long getId() {
 		return id;

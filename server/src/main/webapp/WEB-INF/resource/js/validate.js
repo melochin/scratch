@@ -5,6 +5,13 @@ $(document).ready(function() {
     $('#userRegisterForm').form(USER_RULE.REGISTER);
 
     $('#form-dicdata').form(DIC_RULE);
+
+    $('#editAnimeForm').form(ANIME_PIC_RULE);
+
+    // 密码重置
+    $('#reset-apply').form(USER_RULE.RESET);
+
+    $('#reset-pwd').form(USER_RULE.RESET_PWD);
 /*
     $('#userEditForm').formValidation(userRegisterValidate);
     
@@ -22,6 +29,7 @@ $(document).ready(function() {
 var RULE = new Object();
 
 RULE = {
+
     USERNAME_NOT_EMPTY : {
         type : 'empty',
         prompt : '用户名不能为空'
@@ -39,6 +47,12 @@ RULE = {
         },
         prompt : '用户名已经存在'
     },
+
+    EMAIL_FORM : {
+        type : 'email',
+        prompt : "无效邮箱地址"
+    },
+
     PASSWORD_NOT_EMPTY : {
         type : 'empty',
         prompt : '密码不能为空'
@@ -62,18 +76,14 @@ var USER_RULE = {
                 ]
             },
             email : {
-                rules : [{
-                    type : 'email',
-                    prompt : "无效邮箱地址"
-                }]
+                rules : [RULE.EMAIL_FORM]
             }
         }
     },
 
 
 	LOGIN : {
-        on : 'blur',
-        inline : true,
+        transition : 'fade up',
         fields : {
             username : {
                 rules: [RULE.USERNAME_NOT_EMPTY]
@@ -83,6 +93,42 @@ var USER_RULE = {
             }
         }
 	},
+
+    RESET : {
+        on : 'blur',
+        inline : true,
+        fields : {
+            username : {
+                rules: [RULE.USERNAME_NOT_EMPTY]
+            },
+            email : {
+                rules: [RULE.EMAIL_FORM]
+            }
+        }
+    },
+
+    RESET_PWD : {
+        on : 'blur',
+        inline : true,
+        fields : {
+            password : {
+                rules: [
+                    RULE.PASSWORD_NOT_EMPTY,
+                    RULE.PASSWORD_FORM
+                ]
+            },
+
+            repassword : {
+                rules : [
+                    {
+                        type : "match[password]",
+                        prompt : "两次输入密码不一致"
+                    }
+                ]
+            }
+        }
+    },
+
 	REGISTER : {
 		on : "blur",
         inline : true,
@@ -96,10 +142,7 @@ var USER_RULE = {
             },
 
             email : {
-                rules: [{
-                    type : 'email',
-                    prompt : "无效邮箱地址"
-                }]
+                rules : [RULE.EMAIL_FORM]
             },
 
             password : {
@@ -152,28 +195,40 @@ var DIC_RULE = {
     }
 }
 
+
+var ANIME_PIC_RULE = {
+    on : 'blur',
+    inline:true,
+    fields : {
+        picFile : {
+            rules: [{
+                type : 'regExp',
+                value : '\w*(png|jpg|jpeg)$',
+                prompt : '请上传png或者jpg文件'
+            }]
+        }
+    }
+}
+
 var ANIME_RULE = {
     on : 'blur',
     fields : {
 
         name : {
-            rules: [{type : 'empty'}]
+            rules: [
+                {
+                    type : 'empty',
+                    prompt : '名称不能为空'
+                }
+            ]
         },
 
         type : {
-            rules: [{type : 'empty'}]
+            rules: [{type : 'empty', prompt : '类型不能为空'}]
         }
-        /*picFile : {
-            rules: [{
-                type : 'regExp',
-                // 条件表达
-                value : '\w*(png|jpg)$',
-                prompt : '请用.png结尾的图片上传'
-            }]
-        }*/
+
     }
 }
-
 
 
 /*

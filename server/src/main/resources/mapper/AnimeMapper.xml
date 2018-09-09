@@ -7,7 +7,6 @@
 	<resultMap id="AnimeMap" type="Anime">
 		<id property="id" column="id"/>
 		<result property="name" column="name"/>
-		<result property="alias" column="alias"/>
 		<result property="pic" column="pic"/>
 		<result property="description" column="description"/>
 		<result property="publishMonth" column="publish_month"/>
@@ -137,12 +136,11 @@
 		</selectKey>
 
 		insert into anime (
-			name, alias, pic, description, publish_month, finished, episode_no, type
+			name, pic, description, publish_month, finished, episode_no, type
 		)
 		values(
 			#{anime.name}, 
-			#{anime.alias}, 
-			#{anime.pic}, 
+			#{anime.pic},
 			#{anime.description}, 
 			#{anime.publishMonth},
 			<choose>
@@ -162,7 +160,6 @@
 	<update id="update">
 		update anime set
 			name = #{anime.name},
-			alias = #{anime.alias},
 			<if test="anime.pic != null and anime.pic != '' ">
 				pic = #{anime.pic},
 			</if>

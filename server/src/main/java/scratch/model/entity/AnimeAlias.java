@@ -1,21 +1,20 @@
 package scratch.model.entity;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class AnimeAlias implements Serializable{
 
-	private Long animeId;
-	
 	private Long hostId;
-	
-	private String alias;
-	
-	public Long getAnimeId() {
-		return animeId;
-	}
 
-	public void setAnimeId(Long animeId) {
-		this.animeId = animeId;
+	private List<String> names;
+
+	public AnimeAlias() {}
+
+	public AnimeAlias(Long hostId, String... names) {
+		this.hostId = hostId;
+		this.names = Arrays.asList(names);
 	}
 
 	public Long getHostId() {
@@ -26,12 +25,12 @@ public class AnimeAlias implements Serializable{
 		this.hostId = hostId;
 	}
 
-	public String getAlias() {
-		return alias;
+	public List<String> getNames() {
+		return names;
 	}
 
-	public void setAlias(String alias) {
-		this.alias = alias;
+	public void setNames(List<String> names) {
+		this.names = names;
 	}
-	
+
 }

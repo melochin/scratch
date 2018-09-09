@@ -20,7 +20,7 @@ public class ApiAnimeFocusController {
 	 * @param userAdapter
 	 */
 	@GetMapping("/api/user/animes/{animeId}/focus")
-	public void add(@PathVariable("animeId") Long animeId,
+	public void focus(@PathVariable("animeId") Long animeId,
 					  @AuthenticationPrincipal UserAdapter userAdapter) {
 		if(userAdapter == null) throw new PrivilegeException(PrivilegeException.NOLOGIN);
 		service.save(animeId, userAdapter.getUserId());
@@ -33,7 +33,7 @@ public class ApiAnimeFocusController {
 	 * @param userAdapter
 	 */
 	@GetMapping("/api/user/animes/{animeId}/unfocus")
-	public void delete(@PathVariable("animeId") Long animeId,
+	public void unFocus(@PathVariable("animeId") Long animeId,
 						 @AuthenticationPrincipal UserAdapter userAdapter) {
 		if(userAdapter == null) throw new PrivilegeException(PrivilegeException.NOLOGIN);
 		service.delete(animeId, userAdapter.getUserId());

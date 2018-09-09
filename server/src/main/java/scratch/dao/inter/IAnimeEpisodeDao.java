@@ -3,9 +3,9 @@ package scratch.dao.inter;
 import java.util.Date;
 import java.util.List;
 
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
-import org.springframework.security.access.method.P;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
 
@@ -35,6 +35,8 @@ public interface IAnimeEpisodeDao {
 	List<AnimeEpisode> listOrderByTime(@Param("limit") int limit, @Param("animeType") String animeType);
 
 	List<AnimeEpisode> listByFocusUser(@Param("userId") long userId);
+
+	Page<AnimeEpisode> pageByFocusUser(@Param("userId") long userId);
 
 	AnimeEpisode getById(@Param("id") Long id);
 

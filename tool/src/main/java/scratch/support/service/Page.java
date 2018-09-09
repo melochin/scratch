@@ -2,68 +2,65 @@ package scratch.support.service;
 
 public class Page {
 
-	private Integer curPage;		//��ǰҳ��
-	
-	private Integer totalPage;		//��ҳ��
-	
-	private Integer perPageItem;	//ÿ��ҳԪ�ظ���
-	
-	private Long totalItem;			//�ܼ�¼��
-	
+	private Integer current;		// 当前页
+
+	private Integer total;			// 总页
+
+	private Integer size;			// 一页所含最大的记录数
+
+	private Long totalItems;		// 总记录数
+
 	public Page() {}
 	
-	public Page(Integer curPage) {
-		this(curPage, 20);
+	public Page(Integer current) {
+		this(current, 20);
 	}
 	
-	public Page(Integer curPage, Integer perPageItem) {
-		this.curPage = curPage;
-		this.perPageItem = perPageItem;
+	public Page(Integer current, Integer size) {
+		this.current = current;
+		this.size = size;
 	}
 
 
-	public Page(com.github.pagehelper.Page page) {
-		this.curPage = page.getPageNum();
-		this.totalPage = page.getPages();
-		this.perPageItem = page.getPageSize();
+	public Page(com.github.pagehelper.Page pagehelperPage) {
+		this.current = pagehelperPage.getPageNum();
+		this.total = pagehelperPage.getPages();
+		this.size = pagehelperPage.getPageSize();
+		this.totalItems = pagehelperPage.getTotal();
 	}
 
-	
-	public Integer getCurPage() {
-		return curPage;
+	public Integer getCurrent() {
+		return current;
 	}
 
-	public void setCurPage(Integer curPage) {
-		this.curPage = curPage;
+	public void setCurrent(Integer current) {
+		this.current = current;
 	}
 
-	public Integer getTotalPage() {
-		return totalPage;
+	public Integer getTotal() {
+		return total;
 	}
 
-	public void setTotalPage(Integer totalPage) {
-		this.totalPage = totalPage;
+	public void setTotal(Integer total) {
+		this.total = total;
 	}
 
-	public Integer getPerPageItem() {
-		return perPageItem;
+	public Integer getSize() {
+		return size;
 	}
 
-	public void setPerPageItem(Integer perPageItem) {
-		this.perPageItem = perPageItem;
+	public void setSize(Integer size) {
+		this.size = size;
 	}
 
-	public Long getTotalItem() {
-		return totalItem;
+	public Long getTotalItems() {
+		return totalItems;
 	}
 
-	public void setTotalItem(Long totalItem) {
-		this.totalPage = (int) Math.ceil(new Double(totalItem) / new Double(perPageItem));
-		this.totalItem = totalItem;
+	public void setTotalItems(Long totalItems) {
+		this.totalItems = totalItems;
 	}
 
-	public Integer getFirstIndex() {
-		return (curPage - 1) * perPageItem;
-	}
-	
+
+
 }

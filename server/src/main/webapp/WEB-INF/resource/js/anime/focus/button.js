@@ -1,24 +1,27 @@
-$(document).ready(function() {
-    $(".anime-focus").map((index) => {
-        var element = $(".anime-focus").get(index);
-        var focus = $(element).attr("focus");
-        if(focus == "true") {
-            focus = true;
-        } else {
-            focus = false;
-        }
-        var animeId = $(element).attr("anime");
-        ReactDOM.render(<Focus focus={focus} animeId={animeId} />, element);
-    })
-});
+var React =  require('react');
 
-var Focus = React.createClass({
+/**
+ * props:
+ * focus true/false 关注状态
+ * animeId
+ * onFocus callback
+ * onUnfocus callback
+ */
+var FocusButton = React.createClass({
+
+    getDefaultProps : function () {
+        return {
+            onFocus : function () {},
+            onUnfocus: function () {}
+        }
+    },
 
     getInitialState : function() {
         return {
             focus : this.props.focus
         }
     },
+
     focus : function() {
         var _this = this;
         if(_this.state.focus) {
@@ -26,6 +29,7 @@ var Focus = React.createClass({
             $.ajax("/api/user/animes/" + this.props.animeId + "/unfocus",{
                 success : function() {
                     _this.setState({focus : false});
+                    _this.props.onUnfocus();
                 }
             })
         } else {
@@ -33,26 +37,24 @@ var Focus = React.createClass({
             $.ajax("/api/user/animes/" + this.props.animeId + "/focus",{
                 success : function() {
                     _this.setState({focus : true});
+                    _this.props.onFocus();
                 }
             })
         }
     },
 
     render : function() {
-        var text = "关注";
-        var className = "empty heart icon";
-        console.log(this.state.focus);
-        if(this.state.focus) {
-            text = "取消关注";
-            className = "red heart icon";
-        }
+
+        var text =  this.state.focus ? "取消关注" : "关注";
+        var className = this.state.focus ? "ui basic mini button" : "ui red basic mini button";
 
         return(
-            <a onClick={this.focus}>
-                <i className={className}></i>
+            <button className={className} onClick={this.focus}>
                 {text}
-            </a>
+            </button>
         );
     }
 
 });
+
+module.exports.FocusButton = FocusButton;

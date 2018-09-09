@@ -22,9 +22,6 @@ public class ApiAnimeCommentController {
 	/**
 	 * 功能：显示特定anime的评论
 	 * method : get
-	 * 参数：animeId
-	 * 返回：List<Anime>
-	 * 权限：无限制
 	 *
 	 * @param animeId
 	 * @return
@@ -32,6 +29,21 @@ public class ApiAnimeCommentController {
 	@GetMapping("/anime/comments/{animeId}")
 	public @ResponseBody List<AnimeComment> list(@PathVariable("animeId") Long animeId) {
 		return animeCommentService.list(animeId);
+	}
+
+	/**
+	 * 功能：显示特定anime的特定episode的评论
+	 * method : get
+	 * 权限：无限制
+	 *
+	 * @param animeId
+	 * @param episodeId
+	 * @return
+	 */
+	@GetMapping("/anime/comments/{animeId}/{episodeId}")
+	public @ResponseBody List<AnimeComment> list(@PathVariable("animeId") Long animeId,
+												 @PathVariable("episodeId") Long episodeId) {
+		return animeCommentService.list(animeId, episodeId);
 	}
 
 	/**
@@ -76,8 +88,7 @@ public class ApiAnimeCommentController {
 		animeComment.setUserId(userAdapter.getUserId());
 		animeCommentService.delete(animeComment);
 		return new JsonResult().setSuccess(true);
-
-
 	}
+
 
 }

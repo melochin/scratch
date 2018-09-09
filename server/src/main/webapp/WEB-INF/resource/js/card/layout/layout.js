@@ -9,6 +9,7 @@ const Menu = React.createClass({
             <div className="ui container" style={menuStyle}>
                 <div className="ui text menu">
                     <Link className="active item" to={'/'}>首页</Link>
+
                 </div>
             </div>
         )
@@ -22,7 +23,7 @@ const Layout = React.createClass({
         return (
             <div>
                 <Menu/>
-                <div id={containerId}>
+                <div id={containerId} className="ui container">
                     {this.props.children}
                 </div>
             </div>

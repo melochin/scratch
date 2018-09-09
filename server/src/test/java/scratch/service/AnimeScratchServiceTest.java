@@ -19,12 +19,12 @@ public class AnimeScratchServiceTest extends ContextTest {
 	public void scratchTest() throws InterruptedException {
 		service.run();
 		TimeUnit.SECONDS.sleep(60);
-		
+
 	}
-	
+
 	//@Test
 	public void queryTest() {
 		System.out.println(service.getRecordMap());
 	}
-	
+
 }

@@ -23,4 +23,10 @@ public class RenrenImplTest {
 				renren.getEpisodeList(url).size() > 0);
 	}
 
+	@Test
+	public void isValidate() {
+		boolean validate = renren.isValidate("https://pan.baidu.com/s/1kW19hyf");
+		assertFalse(validate);
+	}
+
 }

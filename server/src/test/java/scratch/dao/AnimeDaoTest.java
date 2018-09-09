@@ -31,11 +31,6 @@ public class AnimeDaoTest extends ContextTest {
 	}
 
 	@Test
-	public void testFindByAlias() {
-		dao.getByAlias("进击的巨人第二季", false);
-	}
-
-	@Test
 	@Rollback(true)
 	@Transactional
 	public void testSave() {

@@ -40,10 +40,15 @@ public class SchedulerService {
 		}
 	}
 
-	private void removeAllTask() {
+	public void removeAllTask() {
+
+		System.out.println("b remove " + threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size());
+
 		threadPoolTaskScheduler.getScheduledThreadPoolExecutor()
 				.getQueue()
 				.removeIf((runnable -> true));
+
+		System.out.println("a remove " + threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size());
 	}
 
 

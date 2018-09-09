@@ -1,3 +1,5 @@
+var React =  require('react');
+var ReactDOM = require('react-dom');
 var moment = require('moment');
 
 const ORIGIN = "origin";
@@ -156,6 +158,7 @@ var Table = React.createClass({
             titles : new Array(),
             datas : new Array(),
             onSave : function(data) {return true;},
+            onAfterSave : function () {},
             modify : function(data) {return true;},
             delete : function(data) {return true;},
             onRenderButtons : function(data){return null},
@@ -243,6 +246,10 @@ var Table = React.createClass({
         this.setState({doubleDatas : this.initDoubleData(nextProps.datas)});
     },
 
+    componentDidUpdate(preProps, preState) {
+        this.props.onAfterSave();
+    },
+
     getKey : function(data) {
         if(!this.autoKey && data._status != NEW) {
             return data[this.props.primaryKey];
@@ -297,6 +304,7 @@ var Table = React.createClass({
         data._status = ORIGIN;
         this.state.doubleDatas.set(data._key, data);
         this.setState({doubleDatas : this.state.doubleDatas});
+        this.props.onAfterSave();
     },
 
     handleCancel : function(data, index) {
@@ -857,7 +865,7 @@ var TextArea = React.createClass({
 var Datetime = React.createClass({
 
     handleChange : function(event) {
-        var value = moment(event.target.value).format("x");
+        var value = moment(event.target.value).valueOf();
         this.props.onChange(event, value);
     },
 

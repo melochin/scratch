@@ -5,7 +5,7 @@
 	<th:block th:replace="base/lib :: common" />
 	<th:block th:replace="base/lib :: react" />
 	<th:block th:replace="base/lib :: semantic" />
-	<script th:src="@{/js/run.js}" type="text/babel"></script>
+	<script th:src="@{/js/bundle/run.js}"></script>
 </head>
 <body th:replace="base/layout/admin :: layout(~{::.container})">
 	<div class="ui aligned container" id="container">

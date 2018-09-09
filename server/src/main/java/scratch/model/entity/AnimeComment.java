@@ -7,6 +7,8 @@ public class AnimeComment implements Serializable {
 
 	private Long animeId;
 
+	private Long episodeId;
+
 	private Long userId;
 
 	private String username;
@@ -18,13 +20,13 @@ public class AnimeComment implements Serializable {
 	public AnimeComment() {
 	}
 
-	public AnimeComment(Long animeId, String comment) {
-		this.animeId = animeId;
-		this.comment = comment;
+	public AnimeComment(Long animeId, Long userId, String comment) {
+		this(animeId, null, userId, comment);
 	}
 
-	public AnimeComment(Long animeId, Long userId, String comment) {
+	public AnimeComment(Long animeId, Long episodeId, Long userId, String comment) {
 		this.animeId = animeId;
+		this.episodeId = episodeId;
 		this.userId = userId;
 		this.comment = comment;
 	}
@@ -35,6 +37,14 @@ public class AnimeComment implements Serializable {
 
 	public void setAnimeId(Long animeId) {
 		this.animeId = animeId;
+	}
+
+	public Long getEpisodeId() {
+		return episodeId;
+	}
+
+	public void setEpisodeId(Long episodeId) {
+		this.episodeId = episodeId;
 	}
 
 	public Long getUserId() {
@@ -72,20 +82,26 @@ public class AnimeComment implements Serializable {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof AnimeComment)) return false;
 
 		AnimeComment that = (AnimeComment) o;
 
 		if (animeId != null ? !animeId.equals(that.animeId) : that.animeId != null) return false;
+		if (episodeId != null ? !episodeId.equals(that.episodeId) : that.episodeId != null) return false;
 		if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
-		return comment != null ? comment.equals(that.comment) : that.comment == null;
+		if (username != null ? !username.equals(that.username) : that.username != null) return false;
+		if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+		return date != null ? date.equals(that.date) : that.date == null;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = animeId != null ? animeId.hashCode() : 0;
+		result = 31 * result + (episodeId != null ? episodeId.hashCode() : 0);
 		result = 31 * result + (userId != null ? userId.hashCode() : 0);
+		result = 31 * result + (username != null ? username.hashCode() : 0);
 		result = 31 * result + (comment != null ? comment.hashCode() : 0);
+		result = 31 * result + (date != null ? date.hashCode() : 0);
 		return result;
 	}
 }

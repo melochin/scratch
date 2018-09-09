@@ -29,10 +29,6 @@ public class AnimeDisplay {
 		return anime.getName();
 	}
 
-	public String getAlias() {
-		return anime.getAlias();
-	}
-
 	public String getPic() {
 		return anime.getPic();
 	}

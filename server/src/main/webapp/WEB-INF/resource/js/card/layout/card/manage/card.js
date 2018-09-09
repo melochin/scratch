@@ -30,6 +30,10 @@ const Card = React.createClass({
         const dragEnterStyle = {background : "bbeaf3"};
         const dragLeaveStyle = {background: ""};
         const iconStyle = {background : "white"};
+        const card = this.props.card;
+        const remberCount = card.remeber + card.forget;
+        const percent = remberCount == 0 ? 0 :
+            (card.remeber / remberCount).toFixed(2) * 100;
 
         return (
             <tr className="item" ref="card" key={this.props.card.id}
@@ -45,10 +49,13 @@ const Card = React.createClass({
                     {this.props.no}
                 </td>
                 <td>
-                    <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.key)}} ref="key"/>
+                    <span dangerouslySetInnerHTML={{__html:md.render(card.key)}} ref="key"/>
                 </td>
                 <td>
-                    <span dangerouslySetInnerHTML={{__html:md.render(this.props.card.value)}} ref="value"/>
+                    <span dangerouslySetInnerHTML={{__html:md.render(card.value)}} ref="value"/>
+                </td>
+                <td>
+                    <span>{percent}% ({remberCount}) </span>
                 </td>
                 <td>
                     <button className="ui right floated icon button"

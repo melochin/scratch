@@ -1,11 +1,12 @@
+
 body {
     overflow-y: scroll;
     font-family:Micrsoft Yahei, Arial;
-    font-size: 18px;
     background: rgba(233, 226, 226, 0.5);
+    width: 100%;
 }
 
-li,ul{
+li,u{
     list-style: none;
     padding: 0;
     margin: 0;
@@ -15,6 +16,17 @@ input[readonly=readonly] {
     border-style:none;
     margin:2px 2px;
 }
+
+.card a {
+    color: black;
+}
+
+/*
+.ui.cards > .card,
+.ui.card {
+    box-shadow: none;
+}
+*/
 
 .display{
     display:block;
@@ -54,22 +66,39 @@ input[readonly=readonly] {
 
 .anime-img {
     width: 100%;
-    max-height: 180px;
+    height: 5rem;
 }
 
 
 #nav-header {
+    padding: 0 1rem 0 1rem;
     border-radius:0px;
+    background-color: #0f1a30;
     height: 4rem;
-    font-size:1rem;
+    box-shadow: 0px 0px 0px 1px #555555;
+}
+
+#nav-header-menu {
+    border: 0px;
+    border-radius:0px;
+    background-color: #0f1a30;
+}
+
+#nav-header-menu .item {
+    padding: 0 16px;
+    font-size: 1rem;
+}
+
+#nav-header .item:before {
+    width: 0px;
 }
 
 #user-content {
-    padding: 35px 0 0 0;
+    padding: 5rem 0 0 0;
 }
 
 .grey {
-    background : #ccc;
+    background : #304d8a;
 }
 
 .max-datetime-width {
@@ -83,7 +112,16 @@ input[readonly=readonly] {
 
 .example-enter.example-enter-active {
     opacity: 1;
-    transition: opacity 500ms ease-in;
+    transition: opacity .4s ease-in;
+}
+
+.example-appear {
+    opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+    opacity: 1;
+    transition: opacity .5s ease-in;
 }
 
 .example-leave {
@@ -92,7 +130,7 @@ input[readonly=readonly] {
 
 .example-leave.example-leave-active {
     opacity: 0.01;
-    transition: opacity 300ms ease-in;
+    transition: opacity .5s ease-in;
 }
 
 #admin-content {
@@ -102,4 +140,44 @@ input[readonly=readonly] {
     height: 100%;
 }
 
+#home_background {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: bottom .3s ease-out 1.7s;
+    z-index: -1;
+}
 
+
+#post {
+    marginBottom : 2rem;
+}
+
+#posts .ui.card .head {
+    align-items: center; display: flex; padding:0.5rem 1rem 0.5rem 1rem
+}
+
+#posts .ui.card .content {
+    border-bottom: 1px solid ghostwhite
+}
+
+#posts .ui.card .head > .button {
+    margin-left: auto
+}
+
+#posts .ui.card .extra.content {
+    display: flex
+}
+
+#posts div.comment {
+    margin-left: auto;
+}
+
+#left-menu .active.item {
+    background: #4183c4;
+    color: white;
+}

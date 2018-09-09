@@ -1,9 +1,7 @@
 package scratch.service.reader.adpater;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import scratch.api.renren.Renren;
@@ -12,7 +10,7 @@ import scratch.api.renren.VideoEpisode;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
 
-public class RenrenAdapter implements Adapter{
+public class RenrenAdapter implements ScratchAdpater {
 
 	private Renren renren;
 	
@@ -21,18 +19,14 @@ public class RenrenAdapter implements Adapter{
 	}
 	
 	@Override
-	public List<AnimeEpisode> readAnimeEpidsode(Anime anime) {
+	public List<AnimeEpisode> readAnimeEpidsodes(Anime anime, String keyword) {
 		
-		String name = anime.getName();
-		List<Video> videos = renren.search(name);
-		List<VideoEpisode> episodes = new ArrayList<VideoEpisode>();
-		
-		if(videos.size() > 0) {
-			episodes = Optional.ofNullable(videos.get(0).getDownloadListUrl())
-					.map(url -> renren.getEpisodeList(url))
-					.orElse(episodes);
-		}
-		
+		List<Video> videos = renren.search(keyword);
+		if(videos.size() == 0) return null;
+
+		String downLoadListUrl = videos.get(0).getDownloadListUrl();
+		List<VideoEpisode> episodes = renren.getEpisodeList(downLoadListUrl);
+
 		return episodes.stream()
 			.map(episode -> convert(anime, episode))
 			.collect(Collectors.toList());

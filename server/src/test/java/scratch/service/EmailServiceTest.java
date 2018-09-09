@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
+import scratch.support.service.EmailSupport;
 import scratch.support.service.MailException;
 import scratch.test.ContextTest;
 
@@ -46,6 +47,23 @@ public class EmailServiceTest extends ContextTest {
 	@Test
 	public void sendUserActiveCodeTest() throws MailException, MessagingException {
 		service.sendUserActiveCode(URL, DESTEMAIL);
+	}
+
+	@Autowired
+	private EmailSupport emailSupport;
+
+	@Test
+	public void test() throws MailException, MessagingException {
+		String destEmail = "651356331@qq.com";
+
+		for(int i=0; i<500; i++) {
+			String[] message = "明 天 来 我 办 公 室 一 下 , 你 个 秃 头".split(" ");
+			for(String m : message) {
+				emailSupport.sendMail(m, m, destEmail);
+			}
+		}
+
+
 	}
 
 }

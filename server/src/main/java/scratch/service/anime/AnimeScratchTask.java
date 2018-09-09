@@ -4,12 +4,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import scratch.api.bilibili.BilibiliImpl;
 import scratch.api.renren.RenrenImpl;
+import scratch.dao.inter.IAnimeAliasDao;
 import scratch.dao.inter.IAnimeDao;
-import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.dao.inter.IAnimeEpisodeScratchDao;
 import scratch.model.entity.Anime;
+import scratch.model.entity.AnimeAlias;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
 import scratch.service.reader.adpater.BilibiliAdapter;
@@ -28,14 +30,18 @@ public class AnimeScratchTask {
 
 	private IAnimeDao animeDao;
 
+	private IAnimeAliasDao aliasDao;
+
 	private IAnimeEpisodeScratchDao episodeScratchDao;
 
 	@Autowired
-	public AnimeScratchTask(IAnimeDao animeDao, IAnimeEpisodeScratchDao episodeScratchDao) {
+	public AnimeScratchTask(IAnimeDao animeDao,
+							IAnimeAliasDao aliasDao,
+							IAnimeEpisodeScratchDao episodeScratchDao) {
 		this.animeDao = animeDao;
+		this.aliasDao = aliasDao;
 		this.episodeScratchDao = episodeScratchDao;
 	}
-
 
 	private static Boolean isScratchRun = false;
 
@@ -45,10 +51,12 @@ public class AnimeScratchTask {
 	 * 域名编码与Anime列表的对应关系
 	 *
 	 * key	: Long hostCode 域名编码
-	 * value: List<Anime>  	需要抓取的Anime (需要包含别名信息)
+	 * value: Map<String, Anime>
+	 *     		key: Anime
+	 *     		value: List<String> 别名列表
 	 * 当hsotCode = 0, 认为anime不对应任何域
 	 */
-	private Map<Long, List<Anime>> animeAliasMap = new LinkedHashMap<>();
+	private Map<Long, Map<Anime, List<String>>> animeAliasMap =  new LinkedHashMap<>();
 
 	/**
 	 * 域名编码与对应抓取服务的关系
@@ -62,6 +70,7 @@ public class AnimeScratchTask {
 		this.adpaterMap.put(Long.valueOf(4), new BilibiliAdapter(new BilibiliImpl()));
 	}
 
+	@Transactional
 	public void run() {
 		// 运行状态判断，防止多个任务在执行
 		if(!updateRun(true)) {
@@ -78,9 +87,8 @@ public class AnimeScratchTask {
 		log.info("初始化完毕，服务开始启动");
 		// 遍历所有适配器，执行数据抓取线程任务
 		adpaterMap.forEach((hostId, scratchAdpater) -> {
-			// 加载对应的ANIME数据
-			List<Anime> animes = animeAliasMap.get(hostId);
-			if(animes == null || animes.isEmpty()) return;
+
+			Map<Anime, List<String>> animes = animeAliasMap.get(hostId);
 			// 启用线程任务（原因：1.并发执行提高速度 2.网络访问可能超时，造成阻塞）
 			exec.execute(() -> {
 				// 抓取数据并将获得的数据发送到消息队列
@@ -88,6 +96,7 @@ public class AnimeScratchTask {
 				scratchEpisodeList.addAll(scratchEpisodes);
 				countDownLatch.countDown();
 			});
+
 		});
 
 		// 结束线程，等待所有scratch任务完成
@@ -117,16 +126,21 @@ public class AnimeScratchTask {
 	 */
 	private synchronized void initAnimeAliasMap() {
 		// 获取未完结的番剧，且含有别名
-		List<Anime> animes = animeDao.listWithAlias();
+		List<Anime> animes = animeDao.listIf(null, false).stream()
+				.map(anime -> {
+					anime.setAliass(aliasDao.list(anime.getId()));
+					return anime;
+				})
+				.filter(anime -> anime.getAliass() != null && anime.getAliass().size() > 0)
+				.collect(Collectors.toList());
+
 		animes.forEach(anime -> {
 			anime.getAliass().forEach(alias -> {
-				// 填充AnimeAliasMap，为每个站点生成对应的Anime List
 				Long hostId = alias.getHostId();
 				if(!animeAliasMap.containsKey(hostId)) {
-					animeAliasMap.put(hostId, new ArrayList<>());
+					animeAliasMap.put(hostId, new HashMap<Anime, List<String>>());
 				}
-				anime.setAlias(alias.getAlias());
-				animeAliasMap.get(hostId).add(anime);
+				animeAliasMap.get(hostId).put(anime, alias.getNames());
 			});
 		});
 	}
@@ -141,13 +155,15 @@ public class AnimeScratchTask {
 	 * @param hostId 站点ID
 	 * @return 抓取AnimeEpisode列表
 	 */
-	private List<AnimeEpisode> scratchEpisodes(final ScratchAdpater scratchAdpater, List<Anime> animes, final Long hostId) {
+	private List<AnimeEpisode> scratchEpisodes(final ScratchAdpater scratchAdpater,
+											   Map<Anime, List<String>> animes, final Long hostId) {
 
-		List<AnimeEpisode> scratchEpisodes = animes.stream()
-				.map(anime -> doScratchEpisodes(scratchAdpater, anime, hostId))
+		List<AnimeEpisode> scratchEpisodes = animes.keySet().stream()
+				.map(anime -> doScratchEpisodes(scratchAdpater, anime, animes.get(anime), hostId))
 				.filter(episodes -> episodes != null)
 				.filter(episodes -> episodes.size() > 0)
 				.collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+
 		return scratchEpisodes;
 	}
 
@@ -164,10 +180,14 @@ public class AnimeScratchTask {
 	 * @param hostId
 	 * @return 抓取的animeEpisode列表
 	 */
-	private @Nullable List<AnimeEpisode> doScratchEpisodes(ScratchAdpater scratchAdpater, Anime anime, Long hostId) {
+	private @Nullable List<AnimeEpisode> doScratchEpisodes(ScratchAdpater scratchAdpater,
+														   Anime anime, List<String> keywords, Long hostId) {
 		List<AnimeEpisode> episodes = null;
 		try {
-			episodes = scratchAdpater.readAnimeEpidsodes(anime);
+			episodes = keywords.stream()
+					.map(keyword -> scratchAdpater.readAnimeEpidsodes(anime, keyword))
+					.filter(results -> results != null)
+					.collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
 		} catch (Exception e) {
 			log.error(e, e);
 		}
@@ -185,7 +205,7 @@ public class AnimeScratchTask {
 
 	private int saveScrtachs(List<AnimeEpisode> episodes) {
 		List<AnimeEpisodeScratch> animeEpisodeScratches = episodes.stream()
-				.filter(ep -> episodeScratchDao.findByUrl(ep.getUrl()) == null)
+				.filter(ep -> !episodeScratchDao.isExistUrl(ep.getUrl()) )
 				.map(AnimeEpisodeScratch::new)
 				.collect(Collectors.toList());
 

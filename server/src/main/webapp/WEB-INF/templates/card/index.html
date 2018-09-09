@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" th:href="@{/css/card.css}" />
     <th:block th:replace="base/lib :: common" />
     <th:block th:replace="base/lib :: react" />
     <th:block th:replace="base/lib :: semantic" />
-    <link rel="stylesheet" th:href="@{/css/card.css}" />
     <script type="text/javascript" th:src="@{/js/bundle/vendors.js}"></script>
     <script type="text/javascript" th:src="@{/js/bundle/card.js}"></script>
 </head>
-<body>
+<body style="background-color:#f0f3f2">
     <div id="card"></div>
 </body>
 </html>

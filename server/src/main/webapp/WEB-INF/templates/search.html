@@ -1,0 +1,54 @@
+<html xmlns:th="www.thymeleaf.org">
+<title th:text="${'Scratch 检索 | ' + keyword }"></title>
+<th:block th:replace="base/lib :: common"/>
+<th:block th:replace="base/lib :: react"/>
+
+<script type="text/babel" th:src="@{/js/bundle/common.js}"></script>
+
+
+<body th:replace="base/layout/user :: layout(~{::#container})">
+<div id="container" style="padding-left: 4rem; padding-right: 4rem;">
+
+    <div style="margin:1rem 0">
+        <a th:each="type : ${types}" class="ui large label"
+           th:classappend="${type.code == searchType ? 'blue' : '' }"
+           th:href="${'/search?word=' + keyword + '&type=' + type.code}"
+           th:text="${type.value}"></a>
+    </div>
+
+    <div class="ui four stackable cards">
+
+        <th:block th:each="anime : ${animes}">
+            <div class="ui card" style="height: 20rem ">
+
+                <div style="padding: 0.5rem;display: flex">
+                    <!-- header -->
+                    <a class="header" th:href="@{'/anime/' + ${anime.id}}"
+                       th:text="${anime.name}"></a>
+
+                    <div class="anime-focus" th:anime="${anime.id}" th:focus="${anime.focus}" style="margin-left: auto" th:if="${session.user_g != null}">
+                        <button class="ui basic button" th:if="${anime.focus}">取消关注</button>
+                        <button class="ui red basic button" th:if="${anime.focus == false}"
+                                th:onclick="'focus('+ ${anime.id} + ')'">关注
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content" th:data-img="${'../upload/' + anime.pic}"
+                     style="background-size: 100%;background-repeat: no-repeat;overflow-y: hidden;overflow-scrolling:no;height: 15rem">
+                </div>
+
+                <div class="extra content">
+                    <div class="meta">
+                        <span class="date" th:text="${'更新' + anime.updateTime}"></span>
+                    </div>
+                </div>
+            </div>
+
+        </th:block>
+
+    </div>
+
+</div>
+</body>
+</html>

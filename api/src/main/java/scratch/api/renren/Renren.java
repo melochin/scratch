@@ -17,5 +17,6 @@ public interface Renren {
 	 * @return
 	 */
 	List<VideoEpisode> getEpisodeList(String downloadUrl);
-	
+
+	boolean isValidate(String url);
 }

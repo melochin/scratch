@@ -1,13 +1,11 @@
 package scratch.support;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,5 +105,43 @@ public class FileUtils {
 		}
 		return splits[1];
 	}
-	
+
+	public static File getRandomFile(String path) {
+		File file = new File(path);
+		if(!file.isDirectory()) return null;
+		File[] files = file.listFiles(pathname -> !pathname.isDirectory());
+		if(files == null || files.length == 0) return null;
+		Random random = new Random();
+		return files[random.nextInt(files.length)];
+	}
+
+	public static String current() {
+		return new File("").getAbsolutePath();
+	}
+
+	public static File save(String path, InputStream inputStream) throws IOException {
+
+		File file = new File(path);
+		if(!file.exists()) {
+			file.createNewFile();
+		}
+		FileOutputStream outputStream = new FileOutputStream(file);
+
+		byte[] data = new byte[255];
+		int result = -1;
+
+		while(true) {
+			result = inputStream.read(data, 0, 255);
+			if(result == -1) {
+				break;
+			}
+			outputStream.write(data, 0, result);
+		}
+		inputStream.close();
+		outputStream.flush();
+		outputStream.close();
+
+		return file;
+	}
+
 }

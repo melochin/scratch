@@ -7,6 +7,8 @@
 		
 	<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
 		<property name="poolConfig" ref="poolConfig" />
+		<property name="hostName" value="${redis.hostname}"/>
+		<property name="port" value="${redis.port}" />
 	</bean>
 	
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"> 
@@ -18,7 +20,7 @@
     		<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
     	</property>
     	<property name="hashKeySerializer">
-    		<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+    		<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
     	</property>
     	<property name="hashValueSerializer">
 	    	<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />

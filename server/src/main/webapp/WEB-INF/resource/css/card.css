@@ -7,10 +7,9 @@ body {
 }
 
 #card-box {
-  margin: 2rem 10rem 0rem 10rem;
-  padding : 10px;
+  margin: 0rem 3rem 0rem 3rem;
+  padding : 20px;
   height :  100%;
-  background: rgba(225, 218, 218, 0.87);
 }
 
 #card-box .form{
@@ -20,5 +19,59 @@ body {
 #card-list {
   background: white;
   height: 100%;
+  font-size: 1rem;
+}
+
+#card-list .content {
+  padding: 10px 10px 0px 10px;
+}
+
+#card-list .extra.content
+
+#card-box .ui.card > .content{
+  padding : 0px;
+}
+
+#card-box .meta {
+  padding : 5px;
+}
+
+#card-box .card .header {
+  padding : 15px 0 10px 0;
+  font-family: "Micrsoft Yahei";
+  font-weight: normal;
+}
+#card-box .card .description {
+  padding : 10px;
+}
+#card-box .card .extra.content{
+  padding : 15px;
+}
+
+#card-box .card .extra.content {
+  background-color: #f0f3f2;
+ }
+
+#brochure-form {
+  padding : 10px;
   border : 1px solid #ced6d5;
+}
+
+#brochure-form input {
+  background-color: rgb(255, 255, 249);
+}
+
+#card-content .card {
+  border: 0px;
+  box-shadow: none;
+  color: #209E85;
+  padding: 10px;
+}
+
+#card-box #card-content .card>.content {
+  padding : 30px;
+}
+
+#card-box #card-content .card>.extra.content {
+  /*margin : 0 5rem 0 5rem;*/
 }

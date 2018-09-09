@@ -18,11 +18,11 @@ function save(brochure) {
     });
 }
 
-function modify(brochure, callback) {
-    Ajax.put("/api/brochures", brochure, {
-        success : () => {
+function modify(sendBrochure) {
+    Ajax.put("/api/brochures", sendBrochure, {
+        success : (brochure) => {
             message("修改成功");
-            list();
+            dispatcher.dispatch({type: "modify", brochure})
         }
     });
 }
@@ -30,8 +30,13 @@ function modify(brochure, callback) {
 function remove(brochureId) {
     Ajax.delete("/api/brochures/" + brochureId, null, {
         success : (brochure) => {
-            message("删除成功")
-            dispatcher.dispatch({type : "delete", brochure});
+            console.log(brochure);
+            if(brochure == null || brochure == '') {
+                message("删除失败");
+            } else {
+                message("删除成功")
+                dispatcher.dispatch({type : "delete", brochure});
+            }
         }
     });
 }

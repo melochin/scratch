@@ -4,9 +4,9 @@
 <th:block th:replace="base/lib :: react" />
 
 <div class="ui container" th:fragment="cards(animes)"
-	style="padding: 10px 0 20px 0">
+	style="margin: 1.5rem 0 1rem 0">
 	
-	<div class="ui five doubling special cards">
+	<div class="ui five stackable cards">
 		<div th:each="anime : ${animes}" class="ui card">
 			<a class="imgae" th:href="@{'/anime/episodes/' + ${anime.id}}">
 				<img src="https://semantic-ui.com/images/avatar2/large/kristy.png"
@@ -14,16 +14,18 @@
 			</a>
 			<div class="content">
 				<!-- header -->
-				<div class="header">
-					<a th:href="@{'/anime/episodes/' + ${anime.id}}"
-					   th:text="${anime.name}"></a>
+				<a class="header" th:href="@{'/anime/episodes/' + ${anime.id}}"
+				   th:text="${anime.name}"></a>
+				<div class="meta">
+					<span class="date" th:text="${'上次更新' + anime.updateTime}"></span>
 				</div>
 			</div>
 			<div class="extra content">
-				<div th:if="${session.user_g != null}">
+
+				<th:block th:if="${session.user_g != null}">
 					<div class="anime-focus" th:focus="${anime.focus}" th:anime="${anime.id}">
 					</div>
-				</div>
+				</th:block>
 			</div>
 		</div>
 	</div>

@@ -6,17 +6,21 @@
 
 	<http use-expressions="false">
 		<intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="/user/logout" access="ROLE_USER,ROLE_ADMIN" />
+
+		<intercept-url pattern="/user/logout" access="ROLE_USER" />
+		<intercept-url pattern="/center" access="ROLE_USER" />
 		<intercept-url pattern="/user/info" access="ROLE_USER" />
+<!--
 		<intercept-url pattern="/api/user/**" access="ROLE_USER" />
+-->
 		<intercept-url pattern="/anime/focus" access="ROLE_USER" />
 		<intercept-url pattern="/anime/focus/**" access="ROLE_USER" />
 		
 		<intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
-		<intercept-url pattern="/api/admin/**" access="ROLE_ADMIN" />
+		<!--<intercept-url pattern="/api/admin/**" access="ROLE_ADMIN" />-->
 		<intercept-url pattern="/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<form-login login-page="/user/login" />
-		<logout logout-url="/user/logout" logout-success-url="/user/login" />
+		<logout logout-url="/user/logout" />
 	</http>
 
 	<authentication-manager>

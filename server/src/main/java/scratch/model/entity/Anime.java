@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,13 +15,12 @@ public class Anime implements Serializable{
 	@NotBlank(message="名称不能为空")
 	private String name;
 	
-	private String alias;
-	
 	private String pic;
 	
 	private String description;
 	
 	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date publishMonth;
 	
 	private Boolean finished;
@@ -55,14 +55,6 @@ public class Anime implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getAlias() {
-		return alias;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
 	}
 
 	public String getPic() {
@@ -123,9 +115,16 @@ public class Anime implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Anime [id=" + id + ", name=" + name + ", alias=" + alias + ", pic=" + pic + ", description="
-				+ description + ", publishMonth=" + publishMonth + ", finished=" + finished + ", episodeNo=" + episodeNo
-				+ "]";
+		return "Anime{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", pic='" + pic + '\'' +
+				", description='" + description + '\'' +
+				", publishMonth=" + publishMonth +
+				", finished=" + finished +
+				", episodeNo=" + episodeNo +
+				", type='" + type + '\'' +
+				", aliass=" + aliass +
+				'}';
 	}
-	
 }

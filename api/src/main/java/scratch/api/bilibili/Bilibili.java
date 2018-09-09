@@ -49,5 +49,11 @@ public interface Bilibili {
 	 * @return
 	 */
 	boolean isLogin();
+
+
+	List<Video> focus(long focusId);
+
+	boolean isValidate(String url);
+
 	
 }

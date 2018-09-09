@@ -6,6 +6,13 @@ function list(brochureId, callback) {
     });
 }
 
+function listByWord(word, callback) {
+    Ajax.get("/api/cards/" + word, null, {
+        success : (data) => callback(data)
+    });
+}
+
+
 /**
  * @param brochureId
  * @param callback function(data)
@@ -65,6 +72,7 @@ function memoryForget(brochureId, card, callback) {
 
 
 module.exports.list = list;
+module.exports.listByWord = listByWord;
 module.exports.listRemeber = listRemeber;
 module.exports.save = save;
 module.exports.saveList = saveList;

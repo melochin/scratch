@@ -1,32 +1,82 @@
-var getToken = function() {
-    var token = $("meta[name=X-CSRF-TOKEN]").get(0).content;
-    return {"X-CSRF-TOKEN" : token};
+$(document).ready(function () {
+    lazyLoadImage();
+})
+
+
+// 延迟加载图片
+var lazyLoadImage = function() {
+    var IMG_SRC = 'data-img';
+    var $elements = $('[' + IMG_SRC + ']');
+
+    [].forEach.call($elements, function(element) {
+        const imgSrc = element.getAttribute(IMG_SRC);
+        if(imgSrc == "") return;
+        // 隐藏图片
+        $(element).css('display', 'none');
+        // 加载图片
+        var image = new Image();
+        image.src = imgSrc;
+        // 加载完成赋值
+        image.onload = function () {
+            $(element).css('background-image', 'url(' + imgSrc + ')');
+            element.removeAttribute(IMG_SRC);
+            $(element).fadeIn("0.5s");
+        }
+    });
 }
 
+/**
+ *
+ * 1. $('.ui.error.message') 存在时，直接赋值
+ * 2. 不存在时，创建提示框提示
+ * @param mess
+ * @param type 'success' 'error'
+ */
 var message = function(mess, type) {
 
-    var color = 'black';
-    if(type != null && type == 'error') {
-        color = 'red';
-    };
-
-    var $alert = $('<div class="alert" style="display: none;">' +
-        '<div class="ui ' + color +' message">\n' +
-        '        <p>' +　mess  + '</p>\n' +
-        '    </div>' +
-        '</div>');
-    $('body').append($alert)
-    $alert.fadeIn(200);
-
-    var cancel = function () {
-        $alert
-            .find('.message')
-            .transition('fade');
-        $alert.remove();
-        $(document).unbind('click');
+    // 在存在<div class="ui error message"></div>标签的情况下，赋错误值
+    function error(mess, $ele) {
+        $ele.html('<ul class="list"><li>' + mess + '</li></ul>');
+        $ele.css('display', 'block');
     }
 
-    $(document).bind('click', cancel);
+    // 创建提示框告知信息（可能错误，可能一般信息）
+    function alert(mess, color) {
+        // 创建提示框
+        var $box = $('<div class="alert" style="display: none;">' +
+            '<div class="ui ' + color +' message">\n' +
+            '        <p>' +　mess  + '</p>\n' +
+            '    </div>' +
+            '</div>');
+        $('body').append($box);
+        $box.fadeIn(200);
+
+        // 设置取消事件
+        var cancel = function (event) {
+            // 隐藏
+            $box.transition('fade');
+            $box.unbind('click');
+            $box.remove();
+        }
+        $box.bind('click', cancel);
+    }
+
+
+    var color = 'black';
+    var ERROR_MESSAGE = '.ui.error.message';
+
+
+    if(type != null && type == 'error') {
+        if($(ERROR_MESSAGE).length > 0) {
+            error(mess, $(ERROR_MESSAGE));
+            return;
+        } else {
+            color = 'red';
+        }
+    }
+
+    alert(mess, color);
+
 }
 
 Date.prototype.format = function (fmt) {
@@ -59,6 +109,18 @@ Date.prototype.format = function (fmt) {
 }
 
 
+var getToken = function() {
+    var $token = $("meta[name=X-CSRF-TOKEN]");
+    var token = "";
+    if($token == null || $token.length == 0) {
+        console.warn("cant find meta[name=X-CSRF-TOKEN], ajax post will failed");
+        return null;
+    }
+        token = $token.get(0).content;
+
+    return {"X-CSRF-TOKEN" : token};
+}
+
 var Ajax = {
 
     getDefaultAjaxSetting : function () {
@@ -66,6 +128,10 @@ var Ajax = {
       setting.headers = getToken();
       setting.async = false;
       setting.contentType = "application/json; charset=utf-8";
+      setting.error = function (jqXHR, textStatus, errorThrown) {
+          console.error(jqXHR.responseJSON.error);
+          message(jqXHR.responseJSON.error, 'error');
+      }
       return setting;
     },
 
@@ -82,6 +148,10 @@ var Ajax = {
 
       if(!setting.hasOwnProperty("contentType")) {
           setting.contentType = defaultSetting.contentType;
+      }
+
+      if(!setting.hasOwnProperty("error")) {
+          setting.error = defaultSetting.error;
       }
 
       return setting;
@@ -149,7 +219,9 @@ var Ajax = {
         setting.success = function (result) {
             success = true;
         }
-        setting.error = function (result) {
+        setting.error = function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR.responseJSON.error);
+            message(jqXHR.responseJSON.error, 'error');
             success = false;
         }
         $.ajax(url, setting);

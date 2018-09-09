@@ -3,11 +3,14 @@ package scratch.support.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.zip.GZIPInputStream;
 
 import scratch.support.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,6 +39,10 @@ public class HttpConnection {
 		initProperties();
 	}
 
+	/**
+	 * 初始化配置信息
+	 * 读取文件名为{PROPERTIES_NAME}的配置信息
+	 */
 	private static void initProperties() {
 		InputStream in = ClassLoader.getSystemClassLoader()
 				.getResourceAsStream(PROPERTIES_NAME);
@@ -56,21 +63,42 @@ public class HttpConnection {
 		}
 	}
 
+	/**
+	 * 设置请求方法
+	 * @param method
+	 * @return
+	 */
 	public HttpConnection method(String method) {
 		this.method = method;
 		return this;
 	}
 
+	/**
+	 * 设置request传输的内容（一般指json）
+	 * @param content
+	 * @return
+	 */
 	public HttpConnection content(String content) {
 		this.requestParam.content(content);
 		return this;
 	}
 
+	/**
+	 * 设置request传输的参数（一般指表单的数据格式）
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	public HttpConnection param(String key, String value) {
 		this.requestParam.param(key, value);
 		return this;
 	}
 
+	/**
+	 * 设置request传输的参数（一般指表单的数据格式）
+	 * @param map
+	 * @return
+	 */
 	public HttpConnection param(Map<String, String> map) {
 		this.requestParam.param(map);
 		return this;
@@ -82,10 +110,7 @@ public class HttpConnection {
 	}
 
 	public String connect(String pathVariableUrl, Object... pathVariable) {
-		String url = UriComponentsBuilder.fromUriString(pathVariableUrl)
-				.buildAndExpand(pathVariable)
-				.encode()
-				.toUriString();
+		String url = StringUtils.buildEncodeUrl(pathVariableUrl, pathVariable);
 		return connect(url);
 	}
 
@@ -111,7 +136,11 @@ public class HttpConnection {
 			if (METHOD_POST.equalsIgnoreCase(method)) {
 				this.connection = post(url);
 			}
-			html = StringUtils.toString(this.connection.getInputStream(), "UTF-8");
+			InputStream inputStream = this.connection.getInputStream();
+			html = StringUtils.toString(inputStream, "utf-8");
+			inputStream.close();
+
+
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
@@ -184,9 +213,13 @@ public class HttpConnection {
 	}
 
 	private void setRequestHeader(HttpURLConnection connection) {
-		connection.setRequestProperty("User-agent", USER_AGENT);
+		/*connection.setRequestProperty("User-agent", USER_AGENT);
 		// Cookie默认采取配置文件，如果header配置了Cookie，则覆盖默认值
-		connection.setRequestProperty("Cookie", getDefaultCookie(connection.getURL().getHost()));
+		String cookie = getDefaultCookie(connection.getURL().getHost());
+		if(cookie != null && !cookie.isEmpty()) {
+			connection.setRequestProperty("Cookie", getDefaultCookie(connection.getURL().getHost()));
+		}*/
+
 		for (Entry<String, String> entry : headers.entrySet()) {
 			connection.setRequestProperty(entry.getKey(), entry.getValue());
 		}

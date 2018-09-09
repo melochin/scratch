@@ -32,7 +32,7 @@
 		// ajax
 		var data = $("#editAnimeForm").serialize();
 		console.debug(data);
-		$.ajax("/admin/anime/link", {
+		$.ajax(CONTEXT + "/admin/anime/link", {
 		    data : data,
 		    type : "post",
 		    success : function () {

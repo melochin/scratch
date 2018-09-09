@@ -1,60 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>用户信息</title>
-<th:block th:replace="~{base/lib :: common}"></th:block>
-<th:block th:replace="~{base/lib :: semantic}"></th:block>
+    <title>用户信息</title>
+    <th:block th:replace="~{base/lib :: common}"></th:block>
 
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::.container})">
-	<div class="ui text container">
-		<div class="ui grey segment">
-			<div class="title">用户信息</div>
-			<div class="ui list">
-				<div class="item">
-					<label>用户账号：</label> <span th:text="${user.username}"></span>
-				</div>
-			</div>
-		</div>
+<div class="ui text container">
+    <div class="ui grey segment">
+        <div class="ui horizontal divider">
+            <h3>用户信息</h3>
+        </div>
+        <div class="ui list">
+            <div class="item">
+                <label>用户账号：</label> <span th:text="${user.username}"></span>
+            </div>
+        </div>
 
-		<form class="ui form" th:action="@{/user/update/email}" method="post">
-			<div class="field">
-				<label>邮箱
-					<span th:if="${!'1'.equals(user.status)}">
+        <div class="ui horizontal divider">
+            <h3>邮箱信息</h3>
+        </div>
+        <form class="ui form" th:action="@{/user/update/email}" method="post">
+            <div class="field">
+                <label>邮箱
+                    <span th:if="${!'1'.equals(user.status)}">
 						（未认证，点击
 						<a th:href="@{/user/register/sendMail}">认证邮箱</a>
 						）
 					</span>
-				</label>
-				<input type="email" name="email" th:value="${user.email}"/>
-			</div>
-			<div class="actions">
-				<input type="submit"  class="ui grey button" value="确定"/>
-			</div>
-		</form>
+                </label>
+                <input type="email" name="email" th:value="${user.email}"/>
+            </div>
+            <div class="actions">
+                <input type="submit" class="ui primary basic button" value="更改"/>
+            </div>
+        </form>
 
-		<div class="ui grey segment">
-			<div class="ui accordion">
-				<div class="title">
-					<div class="dropdown icon"></div>
-					密码修改
-				</div>
-				<div class="content">
-					<form class="ui form">
-						<div class="field">
-							<label>旧密码</label> <input type="password" />
-						</div>
-						<div class="field">
-							<label>新密码</label> <input type="password" />
-						</div>
-						<div class="field">
-							<label>新密码再次确认</label> <input type="password" />
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="ui horizontal divider">
+            <h3>密码更改</h3>
+        </div>
+        <form class="ui form" action="/user/update/pwd" method="post">
+            <div class="field">
+                <label>旧密码</label> <input type="password" name="oldPass"/>
+            </div>
+            <div class="field">
+                <label>新密码</label> <input type="password" name="newPass"/>
+            </div>
+            <div class="field">
+                <label>新密码再次确认</label> <input type="password" name="secondNewPass"/>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button class="ui primary basic button" type="submit">更改</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

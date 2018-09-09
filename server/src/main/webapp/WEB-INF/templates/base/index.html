@@ -1,0 +1,12 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body class="grey" th:fragment="layout(content)">
+
+    <div id="home_background" th:data-img="${'../pic/home/' + backgroundPic}"></div>
+
+    <div th:replace="${content}"></div>
+
+    <th:block th:replace="~{base/alert}"></th:block>
+
+</body>
+</html>
