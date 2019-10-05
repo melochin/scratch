@@ -22,12 +22,17 @@ public interface IAnimeAliasDao {
 	 */
 	List<AnimeAlias> list(@Param("animeId") Long animeId);
 
+
+	// TODO 完成SQL
+	List<AnimeAlias> listByHost(@Param("hostId") Long hostId);
+
+	List<Long> listAnimeIdByHost(@Param("hostId") Long hostId);
+
 	/**
 	 * 保存别名
 	 * @param animeAlias
 	 */
-	void save(@Param("animeId") Long animeId,
-			  @Param("animeAliasList") List<AnimeAlias> animeAliasList);
+	void save(@Param("alias") AnimeAlias animeAlias);
 
 	/**
 	 * 删除anime关联的所有别名

@@ -29,7 +29,7 @@ public class Anime implements Serializable{
 	
 	private String type;
 
-	private List<AnimeAlias> aliass;
+	private List<AnimeAlias> aliases;
 	
 	public Anime() {}
 	
@@ -105,26 +105,12 @@ public class Anime implements Serializable{
 		this.type = type;
 	}
 	
-	public List<AnimeAlias> getAliass() {
-		return aliass;
+	public List<AnimeAlias> getAliases() {
+		return aliases;
 	}
 
-	public void setAliass(List<AnimeAlias> aliass) {
-		this.aliass = aliass;
+	public void setAliass(List<AnimeAlias> aliases) {
+		this.aliases = aliases;
 	}
 
-	@Override
-	public String toString() {
-		return "Anime{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", pic='" + pic + '\'' +
-				", description='" + description + '\'' +
-				", publishMonth=" + publishMonth +
-				", finished=" + finished +
-				", episodeNo=" + episodeNo +
-				", type='" + type + '\'' +
-				", aliass=" + aliass +
-				'}';
-	}
 }

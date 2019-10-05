@@ -1,31 +1,17 @@
 package scratch.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.convert.Jsr310Converters;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import scratch.model.RedisKey;
+import org.springframework.web.bind.annotation.*;
 import scratch.model.TaskTime;
-import scratch.model.entity.ScratchDateRecord;
+import scratch.model.entity.ScratchLog;
 import scratch.model.view.RunInfo;
-import scratch.service.RedisService;
-import scratch.service.SchedulerService;
 import scratch.service.anime.AnimeScratchService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 public class ApiScratchInfoController {
@@ -33,128 +19,72 @@ public class ApiScratchInfoController {
 	@Autowired
 	private AnimeScratchService scratchService;
 
-	@Autowired
-	private SchedulerService schedulerService;
-
-	@Autowired
-	private RedisService redisService;
-
-	private static Runnable timeTask;
-
-	private static ReentrantLock lock = new ReentrantLock();
-
-	@PostConstruct
-	public void init() {
-		TaskTime taskTime = redisService.get("runtime");
-		if (taskTime != null) {
-			lock.lock();
-			try {
-				timeTask = () -> scratchService.run();
-				Date date = convertToDate(taskTime.getStartTime());
-				schedulerService.setTask(timeTask, date, taskTime.getInterval() * 60 * 1000);
-			} finally {
-				lock.unlock();
-			}
-
-		}
-	}
-
-	@PreDestroy
-	public void destory() {
-		schedulerService.removeAllTask();
-	}
-
-
-	@GetMapping(value = "/api/admin/scratch/run", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void run() {
+	/**
+	 * 开启即时任务
+	 * @return
+	 */
+	@CrossOrigin
+	@PostMapping(value = "/api/admin/scratch/run", produces = MediaType.APPLICATION_JSON_VALUE)
+	public RunInfo run() {
 		scratchService.run();
-		return;
+		return scratchService.getRunMessage();
 	}
 
+	/**
+	 * 获取运行信息（包括即时和定时）
+	 * @return
+	 */
+	@CrossOrigin
 	@GetMapping(value = "/api/admin/scratch/run/message", produces = MediaType.APPLICATION_JSON_VALUE)
 	public RunInfo getRunMessage() {
-
-		RunInfo runInfo = new RunInfo();
-		runInfo.setRun(scratchService.isRun());
-		runInfo.setTimeRun(timeTask != null);
-		runInfo.setTaskTime(redisService.get(RedisKey.RUN_TIME));
-
-		return runInfo;
-		/*Map map = new HashMap();
-		map.put("status", scratchService.isRun());
-		map.put("messages", scratchService.getLogs());
-		return map;*/
+		return scratchService.getRunMessage();
 	}
 
-	@GetMapping(value = "/api/admin/scratch/run/time/{time}/interval/{interval}")
-	public void timeTask(@PathVariable("time") LocalTime time,
+	/**
+	 * 开启定时任务
+	 * @param time
+	 * @param interval
+	 */
+	@CrossOrigin
+	@PostMapping(value = "/api/admin/scratch/run/time/{time}/interval/{interval}")
+	public RunInfo timeTask(@PathVariable("time") LocalTime time,
 						 @PathVariable("interval") Integer interval) {
-
-		Date date = convertToDate(time);
-		redisService.set("runtime", new TaskTime(time, interval));
-		interval = interval * 60 * 1000;
-
-		lock.lock();
-		try {
-			timeTask = () -> scratchService.run();
-			schedulerService.setTask(timeTask, date, interval);
-		} finally {
-			lock.unlock();
-		}
-
-		return;
+		scratchService.runTiming(new TaskTime(time, interval));
+		return scratchService.getRunMessage();
 	}
 
-	@GetMapping(value = "/api/admin/scratch/run/time/shutdown")
-	public void timeTaskShutDown() {
-		redisService.delete(RedisKey.RUN_TIME);
-		schedulerService.removeAllTask();
-		timeTask = null;
+	/**
+	 * 关闭定时任务
+	 */
+	@CrossOrigin
+	@DeleteMapping(value = "/api/admin/scratch/run/time")
+	public RunInfo shutdownTiming() {
+		scratchService.shutdownTiming();
+		return scratchService.getRunMessage();
 	}
 
-
-	@GetMapping(value = "/api/admin/scratch/run/time")
-	public Map runTime() {
-		Map map = new HashMap();
-		TaskTime taskTime = redisService.get("runtime");
-		map.put("nextTime", taskTime.getNextTime().toString());
-		map.put("startTime", taskTime.getStartTime().toString());
-		map.put("interval", taskTime.getInterval());
-		return map;
+	/**
+	 * 列出近days天的任务成功失败数量统计
+	 * @param days
+	 * @return
+	 */
+	@CrossOrigin
+	@GetMapping(value = "/api/admin/scratch/run/logs/figure/{days}")
+	public List listLogsForFigure(@PathVariable("days") int days) {
+		days = days >= 31 ? 31 : days;
+		return scratchService.listLogsForFigure(days);
 	}
 
-
-	//TODO RUN Record
-	@GetMapping(value = "/api/admin/scratch/run/records/date")
-	public List<ScratchDateRecord> dateRecordList() {
-		return scratchService.listDateRecord();
+	/**
+	 * 读取指定一天的详细日志记录
+	 * @param date
+	 * @return
+	 */
+	@CrossOrigin
+	@GetMapping(value = "/api/admin/scratch/run/logs/{date}")
+	public List<ScratchLog> listgLogsByDate(@DateTimeFormat(pattern = "yyyy-MM-dd")
+											   @PathVariable("date") Date date) {
+		return scratchService.listLogsByDate(date);
 	}
 
-	//TODO 日志
-	@GetMapping(value = "/api/admin/scratch/run/logs")
-	public List<String> listLogs() {
-		return scratchService.listLogs();
-	}
-
-	@GetMapping(value = "/api/admin/scratch/run/logs/file")
-	public List<String> readLog(@RequestParam("name") String filename) throws IOException {
-		return scratchService.readLog(filename);
-	}
-
-
-	private Date convertToDate(LocalTime localTime) {
-		LocalDateTime dateTime;
-		if (shouldPlusOneDay(localTime)) {
-			dateTime = LocalDateTime.of(LocalDate.now().plusDays(1), localTime);
-		} else {
-			dateTime = LocalDateTime.of(LocalDate.now(), localTime);
-		}
-		return Jsr310Converters.LocalDateTimeToDateConverter.INSTANCE.convert(dateTime);
-	}
-
-	private boolean shouldPlusOneDay(LocalTime time) {
-		LocalTime localTimeNow = LocalTime.now();
-		return (time.getHour() < localTimeNow.getHour()) ||
-				(time.getHour() == localTimeNow.getHour() && time.getMinute() <= localTimeNow.getMinute());
-	}
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="scratch.dao.inter.IScratchLogDao">
+    <insert id="save">
+          insert into
+			anime_scratch_log(host_id, anime_id, name, type, message, time)
+			values(#{scratchLog.hostId}, #{scratchLog.animeId}, #{scratchLog.name},
+			#{scratchLog.type}, #{scratchLog.message}, #{scratchLog.time});
+    </insert>
+
+    <select id="groupByType" resultType="java.util.HashMap">
+        select count(*) as count, type from anime_scratch_log
+          where date(time) = date(#{date}) group by type;
+    </select>
+
+    <select id="listByDate" resultType="scratch.model.entity.ScratchLog">
+        select id, host_id as hostId, anime_id as animeId, name, type, message, time
+          from anime_scratch_log where date(time) = date(#{date})
+    </select>
+
+</mapper>

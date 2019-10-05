@@ -47,4 +47,5 @@ public interface IAnimeDao {
 	
 	void delete(@Param("id") Long id);
 
+	Anime find(Long animeId);
 }
