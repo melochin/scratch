@@ -10,27 +10,27 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 public class ApiAnimeController {
 
-	@Autowired
 	private AnimeService animeService;
 
+	@Autowired
+	public ApiAnimeController(AnimeService animeService) {
+		this.animeService = animeService;
+	}
+
 	@GetMapping("/api/admin/animes")
-	public Object list(@RequestParam(value="page", required = false) Integer page) {
-		if(page == null) {
-			List<Anime> animes = animeService.list();
-			return animes.stream()
-					.map(anime -> {
-						anime.setAliass(animeService.findAlias(anime.getId()));
-						return anime;
-					})
-					.collect(Collectors.toList());
-		} else {
-			return animeService.pageByType(null, page);
-		}
+	public Object list(@RequestParam(value = "page", required = false) Integer page) {
+
+		if (page != null) return animeService.pageByType(null, page);
+
+		List<Anime> animes = animeService.list();
+		animes.forEach(anime ->
+				anime.setAliass(animeService.findAlias(anime.getId()))
+		);
+		return animes;
 	}
 
 	@PostMapping("/api/admin/animes")
@@ -56,9 +56,9 @@ public class ApiAnimeController {
 	}
 
 	@PostMapping("/api/admin/animes/upload")
-	public Map upload(@RequestParam("animePic") MultipartFile file) throws IOException {
+	public Map<String, String> upload(@RequestParam("animePic") MultipartFile file) throws IOException {
 		String filename = animeService.upload(file);
-		Map map = new HashMap();
+		Map<String, String> map = new HashMap<>();
 		map.put("filename", filename);
 		return map;
 	}

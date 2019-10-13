@@ -1,11 +1,14 @@
 package scratch.controller.api;
 
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import scratch.exception.PrivilegeException;
+import scratch.model.SessionContext;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.anime.AnimeFocusService;
+import scratch.support.web.spring.SessionUtils;
 
 @RestController
 public class ApiAnimeFocusController {
@@ -15,11 +18,10 @@ public class ApiAnimeFocusController {
 
 	/**
 	 * 关注影视
-	 *
-	 * @param animeId
-	 * @param userAdapter
+	 * @param animeId anime id
+	 * @param userAdapter user info
 	 */
-	@GetMapping("/api/user/animes/{animeId}/focus")
+	@PostMapping("/api/user/animes/{animeId}/focus")
 	public void focus(@PathVariable("animeId") Long animeId,
 					  @AuthenticationPrincipal UserAdapter userAdapter) {
 		if(userAdapter == null) throw new PrivilegeException(PrivilegeException.NOLOGIN);
@@ -30,11 +32,10 @@ public class ApiAnimeFocusController {
 	 * 取消关注影视
 	 *
 	 * @param animeId
-	 * @param userAdapter
 	 */
-	@GetMapping("/api/user/animes/{animeId}/unfocus")
+	@DeleteMapping("/api/user/animes/{animeId}/focus")
 	public void unFocus(@PathVariable("animeId") Long animeId,
-						 @AuthenticationPrincipal UserAdapter userAdapter) {
+						@AuthenticationPrincipal UserAdapter userAdapter) {
 		if(userAdapter == null) throw new PrivilegeException(PrivilegeException.NOLOGIN);
 		service.delete(animeId, userAdapter.getUserId());
 	}

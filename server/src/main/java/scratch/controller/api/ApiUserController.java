@@ -88,7 +88,6 @@ public class ApiUserController {
 	@DeleteMapping("/api/admin/users/{userId}")
 	public void delete(@PathVariable(value = "userId") Long userId) {
 		userService.deleteById(userId);
-		return;
 	}
 
 	/**
@@ -96,14 +95,14 @@ public class ApiUserController {
 	 * @param username
 	 * @return validate true : 校验通过，不重名
 	 */
-	@RequestMapping(path="/api/validate/username", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	JsonResult existUser(@RequestParam("username") String username) {
-		JsonResult result = new JsonResult();
-		boolean validate = !userService.isExistByUsername(username);
-		result.setValidate(validate);
-		return result;
-	}
+//	@PostMapping(path = "/api/validate/username", produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	JsonResult existUser(@RequestParam("username") String username) {
+//		JsonResult result = new JsonResult();
+//		boolean validate = !userService.isExistByUsername(username);
+//		result.setValidate(validate);
+//		return result;
+//	}
 
 	@GetMapping("/api/islogin")
 	public @ResponseBody Map isLogin(
