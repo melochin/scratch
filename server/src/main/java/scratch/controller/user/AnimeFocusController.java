@@ -13,8 +13,8 @@ import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
 
-@RequestMapping("/anime")
-@Controller
+//@RequestMapping("/anime")
+//@Controller
 public class AnimeFocusController {
 
 	@Autowired
@@ -48,7 +48,7 @@ public class AnimeFocusController {
 	@GetMapping(value="/unfocus/{id}")
 	public String unFocus(@PathVariable("id") Long animeId, @AuthenticationPrincipal UserAdapter userAdapter,
 						@RequestHeader(name="referer", required=false, defaultValue="/") String referer) {
-		apiAnimeFocusController.unFocus(animeId, userAdapter);
+		//apiAnimeFocusController.unFocus(animeId, userAdapter);
 		return "redirect:" + referer;
 	}
 

@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class TokenService {
 
 	private static RSAPublicKey publicKey;
 
+	@Value("${token.secret}")
+	private String secret;
+
 
 	public void generateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 
@@ -43,7 +47,7 @@ public class TokenService {
 		outputStream.close();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	public void init() throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException {
 		InputStream privateIn = new ClassPathResource("private.key").getInputStream();
 		InputStream publicIn = new ClassPathResource("public.key").getInputStream();
@@ -73,7 +77,8 @@ public class TokenService {
 	}
 
 	public String sign(Long userId) {
-		Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
+		Algorithm algorithm = Algorithm.HMAC512(secret);
+		// Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
 		String token = JWT.create()
 				.withIssuer("admin")
 				.withClaim("id", userId)
@@ -86,8 +91,8 @@ public class TokenService {
 		if(token == null) {
 			throw new JWTVerificationException("无效token");
 		}
-
-		Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
+		Algorithm algorithm = Algorithm.HMAC512(secret);
+		//Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
 		JWTVerifier verifier = JWT.require(algorithm)
 				.withIssuer("admin")
 				.build();

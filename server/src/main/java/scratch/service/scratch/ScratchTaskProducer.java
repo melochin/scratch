@@ -1,63 +1,69 @@
-package scratch.service.anime;
+package scratch.service.scratch;
 
-import com.google.gson.Gson;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import org.apache.log4j.Logger;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import scratch.config.RabbitMQConfig;
 import scratch.dao.inter.IAnimeAliasDao;
 import scratch.dao.inter.IAnimeDao;
 import scratch.model.entity.Anime;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Service
-public class ScratchTaskProducer {
-
-	private ConnectionFactory connectionFactory;
+public class ScratchTaskProducer implements IScratchTaskProducer {
 
 	private IAnimeDao animeDao;
 
 	private IAnimeAliasDao animeAliasDao;
 
-	private final static String EXCHANGE_NAME = "scratch.web";
-
-	private final static String EXCHANGE_TYPE = "direct";
-
 	private final static Logger log = Logger.getLogger(ScratchTaskProducer.class);
 
 	private Map<Long, String> queueMap;
 
+	private RabbitTemplate rabbitTemplate;
+
 	@Autowired
-	public ScratchTaskProducer(ConnectionFactory connectionFactory) {
-		this.connectionFactory = connectionFactory;
+	public ScratchTaskProducer(IAnimeDao animeDao,
+							   IAnimeAliasDao animeAliasDao,
+							   RabbitTemplate rabbitTemplate) {
 		this.animeDao = animeDao;
 		this.animeAliasDao = animeAliasDao;
+		this.rabbitTemplate = rabbitTemplate;
 		this.queueMap = new HashMap<>();
-		this.queueMap.put(new Long(2), "scrach.web.renren");
+		this.queueMap.put(new Long(3), "scrach.web.renren");
 	}
 
-	public void send() throws IOException, TimeoutException {
-		System.out.println("produce task");
-		Connection connection = connectionFactory.newConnection();
-		Channel channel = connection.createChannel();
-		channel.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE);
-
+	public void produce() {
 		for (Map.Entry<Long, String> entry : queueMap.entrySet()) {
 			Long hostId = entry.getKey();
 			List<Anime> animes = list(hostId);
-			for(Anime anime : animes) {
-				channel.basicPublish(EXCHANGE_NAME, entry.getValue(), null,
-						new Gson().toJson(anime).getBytes());
+
+			for (Anime anime : animes) {
+				rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_SCRATCH, RabbitMQConfig.QUEUE_SCRATCH_TIMING, anime, message -> {
+					// 设置有效期让message失效？
+					message.getMessageProperties().setHeader("retry-count", 0);
+					return message;
+				});
 			}
 		}
+	}
+
+	@Override
+	public void produceAndWait() {
+		List<Anime> animes = new ArrayList<>();
+		for (Map.Entry<Long, String> entry : queueMap.entrySet()) {
+			Long hostId = entry.getKey();
+			animes.addAll(list(hostId));
+		}
+		System.out.println(animes);
+		rabbitTemplate.convertSendAndReceive(RabbitMQConfig.EXCHANGE_SCRATCH,
+				RabbitMQConfig.QUEUE_SCRATCH_INSTANT, animes);
 	}
 
 	public List<Anime> list(Long hostId) {

@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import scratch.model.RedisKey;
 import scratch.model.entity.AnimeComment;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,10 @@ public class AnimeCommentService {
 		Assert.notNull(episodeId, "episodeId is null");
 
 		return comments(animeId.toString(), episodeId.toString())
-				.stream().collect(Collectors.toList());
+				.stream()
+				.sorted(Comparator.comparing(AnimeComment::getDate).reversed())
+				.collect(Collectors.toList());
+
 	}
 
 }

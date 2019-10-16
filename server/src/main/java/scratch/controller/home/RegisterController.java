@@ -28,7 +28,7 @@ import scratch.support.web.spring.SessionUtils;
 @Controller
 @RequestMapping("/user")
 @SessionAttributes("user")
-public class RegisterController extends HomeController {
+public class RegisterController {
 
 	@Autowired
 	private UserService service;
@@ -46,7 +46,6 @@ public class RegisterController extends HomeController {
 	 */
 	@RequestMapping(path="/register", method=RequestMethod.GET)
 	public String registerForm(Model model){
-		addBackgroundPic(model);
 		return "/user/register";
 	}
 

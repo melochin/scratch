@@ -23,4 +23,6 @@ public interface IAnimeFocusDao {
 
 	int count(@Param("animeId") Long animeId);
 
+	List<Long> listMostFocused(@Param("limit") int limit);
+
 }

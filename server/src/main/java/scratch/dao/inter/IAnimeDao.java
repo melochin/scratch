@@ -29,7 +29,7 @@ public interface IAnimeDao {
 	List<Anime> listWithAlias();
 	
 	/**关联查询：查询的anime，按focus数量排序**/
-	List<Anime> listMostFocused();
+	List<Anime> listMostFocused(@Param("limit") int limit);
 
 	/** 注意：由于排序中使用到了focus表，因此会进行表关联查询  **/
 	List<Anime> listByTypeLeftJointFocus(@Param("type") String type);

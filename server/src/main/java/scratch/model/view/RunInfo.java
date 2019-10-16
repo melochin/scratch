@@ -6,9 +6,12 @@ public class RunInfo {
 
 	private boolean isRun;
 
-	private boolean isTimeRun;
-
 	private TaskTime taskTime;
+
+	public RunInfo(boolean isRun, TaskTime taskTime) {
+		this.isRun = isRun;
+		this.taskTime = taskTime;
+	}
 
 	public boolean isRun() {
 		return isRun;
@@ -23,11 +26,7 @@ public class RunInfo {
 	}
 
 	public boolean isTimeRun() {
-		return isTimeRun;
-	}
-
-	public void setTimeRun(boolean timeRun) {
-		isTimeRun = timeRun;
+		return taskTime != null;
 	}
 
 	public String getNextTime() {

@@ -42,13 +42,14 @@ public class SchedulerService {
 
 	public void removeAllTask() {
 
-		System.out.println("b remove " + threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size());
+		int beforeCount = threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size();
 
 		threadPoolTaskScheduler.getScheduledThreadPoolExecutor()
 				.getQueue()
 				.removeIf((runnable -> true));
 
-		System.out.println("a remove " + threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size());
+		int afterCount = threadPoolTaskScheduler.getScheduledThreadPoolExecutor().getQueue().size();
+		System.out.println("定时任务池清空 size " + beforeCount + "->" + afterCount);
 	}
 
 

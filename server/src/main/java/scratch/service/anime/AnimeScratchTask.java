@@ -11,7 +11,6 @@ import scratch.dao.inter.IAnimeAliasDao;
 import scratch.dao.inter.IAnimeDao;
 import scratch.dao.inter.IAnimeEpisodeScratchDao;
 import scratch.model.entity.Anime;
-import scratch.model.entity.AnimeAlias;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
 import scratch.service.reader.adpater.BilibiliAdapter;
@@ -43,7 +42,7 @@ public class AnimeScratchTask {
 		this.episodeScratchDao = episodeScratchDao;
 	}
 
-	private static Boolean isScratchRun = false;
+	private volatile Boolean isScratchRun = false;
 
 	private static ExecutorService exec = null;
 
@@ -73,10 +72,15 @@ public class AnimeScratchTask {
 	@Transactional
 	public void run() {
 		// 运行状态判断，防止多个任务在执行
-		if(!updateRun(true)) {
-			log.info("服务已经在运行，请稍后再试");
+		if (isScratchRun) {
+			log.info("服务已经在运行, 请稍后再试");
 			return;
 		}
+		synchronized (isScratchRun) {
+			if (isScratchRun) return;
+			isScratchRun = true;
+		}
+
 		log.info("服务参数初始化");
 		// 参数初始化
 		initAnimeAliasMap();
@@ -112,7 +116,7 @@ public class AnimeScratchTask {
 			} catch (InterruptedException e) {
 				log.error(e, e);
 			} finally {
-				updateRun(false);
+				isScratchRun = false;
 			}
 		});
 
@@ -126,23 +130,23 @@ public class AnimeScratchTask {
 	 */
 	private synchronized void initAnimeAliasMap() {
 		// 获取未完结的番剧，且含有别名
-		List<Anime> animes = animeDao.listIf(null, false).stream()
-				.map(anime -> {
-					anime.setAliass(aliasDao.list(anime.getId()));
-					return anime;
-				})
-				.filter(anime -> anime.getAliass() != null && anime.getAliass().size() > 0)
-				.collect(Collectors.toList());
-
-		animes.forEach(anime -> {
-			anime.getAliass().forEach(alias -> {
-				Long hostId = alias.getHostId();
-				if(!animeAliasMap.containsKey(hostId)) {
-					animeAliasMap.put(hostId, new HashMap<Anime, List<String>>());
-				}
-				animeAliasMap.get(hostId).put(anime, alias.getNames());
-			});
-		});
+//		List<Anime> animes = animeDao.listIf(null, false).stream()
+//				.map(anime -> {
+//					anime.setAliass(aliasDao.list(anime.getId()));
+//					return anime;
+//				})
+//				.filter(anime -> anime.getAliases() != null && anime.getAliases().size() > 0)
+//				.collect(Collectors.toList());
+//
+//		animes.forEach(anime -> {
+//			anime.getAliases().forEach(alias -> {
+//				Long hostId = alias.getHostId();
+//				if(!animeAliasMap.containsKey(hostId)) {
+//					animeAliasMap.put(hostId, new HashMap<Anime, List<String>>());
+//				}
+//				animeAliasMap.get(hostId).put(anime, alias.getNames());
+//			});
+//		});
 	}
 
 	/**
@@ -203,36 +207,29 @@ public class AnimeScratchTask {
 		return episodes;
 	}
 
+
+	/**
+	 * 保存抓取的数据
+	 * @param episodes
+	 * @return
+	 */
+	// TODO 事务分离
 	private int saveScrtachs(List<AnimeEpisode> episodes) {
+		// 过滤重复地址
 		List<AnimeEpisodeScratch> animeEpisodeScratches = episodes.stream()
 				.filter(ep -> !episodeScratchDao.isExistUrl(ep.getUrl()) )
 				.map(AnimeEpisodeScratch::new)
 				.collect(Collectors.toList());
-
+		// 保存数据
 		animeEpisodeScratches.forEach(ep -> episodeScratchDao.save(ep));
 		return animeEpisodeScratches.size();
 	}
 
 	/**
-	 * 更新运行状态
-	 * @param exceptedStatus 期望运行状态
-	 * @return 更新是否成功
-	 */
-	private boolean updateRun(boolean exceptedStatus) {
-		synchronized (isScratchRun) {
-			if(isScratchRun == exceptedStatus) return false;
-			isScratchRun = exceptedStatus;
-		}
-		return true;
-	}
-
-	/**
 	 * @return 服务运行状态
 	 */
-	public synchronized boolean isRun() {
-		// 状态位 == true
-		// 线程非空 且 在运行
-		return isScratchRun || (exec != null && !exec.isTerminated());
+	public boolean isRun() {
+		return isScratchRun;
 	}
 
 }

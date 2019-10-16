@@ -1,5 +1,6 @@
 package scratch.service.reader.adpater;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,12 @@ public class RenrenAdapter implements ScratchAdpater {
 			.collect(Collectors.toList());
 	}
 
-	
+	@Override
+	public Long getHostId() {
+		return new Long(2);
+	}
+
+
 	private AnimeEpisode convert(Anime anime, VideoEpisode episode) {
 		AnimeEpisode animeEpisode = new AnimeEpisode();
 		

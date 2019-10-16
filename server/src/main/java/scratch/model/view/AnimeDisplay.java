@@ -3,7 +3,6 @@ package scratch.model.view;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
@@ -54,7 +53,7 @@ public class AnimeDisplay {
 	}
 
 	public List<AnimeAlias> getAliass() {
-		return anime.getAliass();
+		return anime.getAliases();
 	}
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd")

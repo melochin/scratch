@@ -1,17 +1,21 @@
 package scratch.service.anime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import scratch.config.RabbitMQConfig;
 import scratch.dao.inter.IAnimeEpisodeDao;
 import scratch.dao.inter.IAnimeFocusDao;
 import scratch.dao.inter.IUserDao;
@@ -38,35 +42,38 @@ public class AnimePushService {
 	@Autowired
 	private EmailService emailService;
 
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 	private static ExecutorService exec = Executors.newCachedThreadPool();
 
-	@Scheduled(fixedRate = 30 * 60 * 1000)
+	@Scheduled(fixedRate = 1 * 60 * 1000)
 	public void push() {
 
 		if (log.isInfoEnabled()) {
-			log.info("start push service");
+			log.debug("start push service");
 		}
 
 		//获取所有用户
 		List<User> userList = userDao.findAll();
-		userList.forEach(user -> {
-			//获取用户关注的Anime列表
-			List<AnimeFocus> animeFocusList = focusDao.listByUserId(user.getUserId());
-			if (!hasFocusList(animeFocusList)) return;
-			List<AnimeEpisode> episodeList = findNeedPushEpisode(animeFocusList);
-
-			//发送推送邮件(如果没有Anime没有更新的话，不发送推送)
-			if (episodeList.size() == 0) return;
-			sendMail(user, episodeList, animeFocusList);
-		});
+		userList.forEach(user -> notifyUser(user));
 
 		if (log.isInfoEnabled()) {
-			log.info("end push service");
+			log.debug("end push service");
 		}
 	}
 
-	private boolean hasFocusList(List<AnimeFocus> animeFocusList) {
-		return animeFocusList != null && animeFocusList.size() > 0;
+	private void notifyUser(User user) {
+
+		List<AnimeFocus> animeFocusList = focusDao.listByUserId(user.getUserId());
+		if (animeFocusList == null || animeFocusList.size() == 0) return;
+
+		List<AnimeEpisode> episodeList = findNeedPushEpisode(animeFocusList);
+
+		//发送推送邮件(如果没有Anime没有更新的话，不发送推送)
+		if (episodeList.size() == 0) return;
+		produceMail(user, episodeList, animeFocusList);
+
 	}
 
 	private List<AnimeEpisode> findNeedPushEpisode(List<AnimeFocus> animeFocusList) {
@@ -84,6 +91,13 @@ public class AnimePushService {
 		return episodeList;
 	}
 
+	private void produceMail(final User user, final List<AnimeEpisode> episodeList, final List<AnimeFocus> focusList) {
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("email", user.getEmail());
+		message.put("episodeList", episodeList);
+		message.put("focusList", focusList);
+		rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_EMAIL, RabbitMQConfig.QUEUE_EMAIL_NOTIFY, message);
+	}
 
 	private void sendMail(final User user, final List<AnimeEpisode> episodeList, final List<AnimeFocus> focusList) {
 

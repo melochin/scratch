@@ -5,24 +5,14 @@ import java.util.Set;
 
 import com.github.pagehelper.Page;
 import scratch.support.service.PageBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
-import scratch.model.entity.User;
-import scratch.model.ohter.UserAdapter;
-import scratch.service.UserService;
 
 public class AppConfig {
-
-	@Autowired
-	private UserService userService;
 
 	/**
 	 * 类型转换
@@ -80,16 +70,4 @@ public class AppConfig {
 		return conversionServiceFactoryBean;
 	}
 	
-	@Bean
-	public UserDetailsService userDetailService() {
-		return new UserDetailsService() {
-
-			@Override
-			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-				User user = userService.getByName(username);
-				UserAdapter userInfo = new UserAdapter(user);
-				return userInfo;
-			}
-		};
-	}
 }

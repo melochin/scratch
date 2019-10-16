@@ -1,5 +1,6 @@
 package scratch.service.reader.adpater;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +35,12 @@ public class BilibiliAdapter implements ScratchAdpater {
 				.collect(Collectors.toList());
 		
 	}
-	
+
+	@Override
+	public Long getHostId() {
+		return new Long(3);
+	}
+
 	private AnimeEpisode convert(Anime anime, Video video) {
 		AnimeEpisode animeEpisode = new AnimeEpisode();
 		animeEpisode.setAnime(anime);

@@ -6,9 +6,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,8 +27,11 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.model.ohter.UserAdapter;
 import scratch.model.view.AnimeDisplay;
+import scratch.support.FileUtils;
 import scratch.support.PageFactory;
 import scratch.support.service.PageBean;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class AnimeService {
@@ -58,6 +63,9 @@ public class AnimeService {
 
 	@Autowired
 	private IAnimeEpisodeDao episodeDao;
+
+	@Value("${pic.url}")
+	private String url;
 
 	/*-----------------------查询---------------------------*/
 
@@ -107,15 +115,38 @@ public class AnimeService {
 	}
 
 	/**
-	 * 根据名词查询anime
-	 * 排序：按照关注数量　desc
+	 *
+	 * 按名称或者类型查询（名称和类型可空）
 	 * @param name
+	 * @param type
 	 * @return
 	 */
-	public List<Anime> listByName(String name) {
-		List<Anime> animes = animeDao.listByName(name);
+	public List<AnimeDisplay> list(@Nullable String name, @Nullable String type, UserAdapter userAdapter) {
+		List<Anime> animes = null;
+
+		if (name == null && type == null) {
+			animes = list();
+		}
+
+		else if (name == null && type != null) {
+			animes = listByType(type);
+		}
+
+		else if (name != null) {
+			animes = animeDao.listByName(name.trim());
+			if (type != null) {
+				animes = animes.stream()
+						.filter(anime -> type.equals(anime.getType()))
+						.collect(toList());
+			}
+		}
+
 		animes.sort(this::focusCompare);
-		return animes;
+		List<AnimeDisplay> animeDisplays = animes.stream()
+				.map(anime -> convertAnimeDisplay(anime, userAdapter))
+				.collect(toList());
+
+		return animeDisplays;
 	}
 
 	public List<Anime> listMostFocused() {
@@ -126,9 +157,10 @@ public class AnimeService {
 	 *	@param limit 限制显示个数
 	 */
 	public List<Anime> listMostFocused(Integer limit) {
-		List<Anime> animes = animeDao.listMostFocused();
-		if(limit == null) return animes;
-		return animes.stream().limit(limit).collect(Collectors.toList());
+		return focusDao.listMostFocused(limit)
+				.stream()
+				.map(id -> animeDao.getById(id))
+				.collect(toList());
 	}
 	
 	/**
@@ -144,7 +176,7 @@ public class AnimeService {
 		if(limit != null) {
 			animeMap.entrySet().forEach(entry -> {
 				List<Anime> limits = entry.getValue().stream()
-						.limit(limit).collect(Collectors.toList());
+						.limit(limit).collect(toList());
 				entry.setValue(limits);
 			});
 		}
@@ -173,7 +205,7 @@ public class AnimeService {
 		animeDao.save(anime);
 
 		// 保存Alias
-		saveAnimeAliases(anime.getId(), anime.getAliass());
+		saveAnimeAliases(anime.getId(), anime.getAliases());
 	}
 
 	/**
@@ -189,23 +221,33 @@ public class AnimeService {
 
 		// 更新Alias
 		aliasDao.delete(anime.getId());
-		saveAnimeAliases(anime.getId(), anime.getAliass());
+		saveAnimeAliases(anime.getId(), anime.getAliases());
 	}
 	
 	@Transactional
 	public void delete(Long id) {
+		Anime anime = animeDao.getById(id);
+		// 删除数据
 		animeDao.delete(id);
 		aliasDao.delete(id);
+		// 删除文件
+		String filename = anime.getPic();
+		new File(url + filename).delete();
 	}
 
+	@Transactional
 	public void saveAnimeAliases(Long animeId, List<AnimeAlias> animeAliases) {
 		if(animeAliases == null) return;
+
 		animeAliases = animeAliases.stream()
-				.filter(animeAlias -> animeAlias.getNames() != null && animeAlias.getNames().size() > 0)
+				.filter(animeAlias -> StringUtils.isEmpty(animeAlias.getAnimeId()) == false)
 				.filter(animeAlias -> animeAlias.getHostId() != null)
-				.collect(Collectors.toList());
+				.collect(toList());
 		if(animeAliases.size() == 0) return;
-		aliasDao.save(animeId, animeAliases);
+
+		for(AnimeAlias animeAlias : animeAliases) {
+			aliasDao.save(animeAlias);
+		}
 	}
 
 
@@ -254,7 +296,8 @@ public class AnimeService {
 	}
 
 	public String upload(MultipartFile multipartFile) throws IOException {
-		File file = fileService.save(UPLOAD_ANIME, multipartFile);
+		String suffix = FileUtils.getSuffix(multipartFile.getOriginalFilename());
+		File file = FileUtils.save(url + FileUtils.generateUUIDFilename(suffix), multipartFile);
 		return file.getName();
 	}
 
@@ -268,17 +311,17 @@ public class AnimeService {
 
 	/*-------------------------类型转换---------------------------------*/
 	public AnimeDisplay convertAnimeDisplay(Anime anime, UserAdapter userAdapter) {
-
+		// 类型转换
 		AnimeDisplay animeDisplay = new AnimeDisplay(anime);
-
 		// 设置 上次更新时间
 		animeDisplay.setUpdateTime(episodeDao.getLastUpdatedTime(anime.getId()));
-		// 设置 关注状态
-		if(userAdapter != null) {
-			if(focusDao.findByAnimeAndUser(anime.getId(), userAdapter.getUserId()) != null) {
-				animeDisplay.setFocus(true);
-			}
-		}
+
+		// 用户没有登录的时候，原样返回
+		if (userAdapter == null) return animeDisplay;
+
+		// 用户登录时，查找关注状态
+		boolean isFocus = focusDao.findByAnimeAndUser(anime.getId(), userAdapter.getUserId()) != null;
+		animeDisplay.setFocus(isFocus);
 
 		return animeDisplay;
 	}

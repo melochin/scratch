@@ -17,12 +17,9 @@ import scratch.service.UserService;
 import scratch.support.web.spring.ModelUtils;
 import scratch.support.web.spring.SessionUtils;
 
-import javax.servlet.http.HttpServletRequest;
-
 @SessionAttributes("referer")
 @Controller
-@RequestMapping("/user")
-public class LoginController extends HomeController{
+public class LoginController {
 
 	@Autowired
 	private UserService userService;
@@ -44,11 +41,10 @@ public class LoginController extends HomeController{
 							Model model) {
 
 		if(user != null) {
-			return "redirect:" + USER_CENTER_URL;
+			return "redirect:" + "/center";
 		}
 
 		model.addAttribute("referer", referer);
-		addBackgroundPic(model);
 
 		return "/user/login";
 	}
@@ -62,23 +58,20 @@ public class LoginController extends HomeController{
 	 * @param status
 	 * @return
 	 */
-	@PostMapping("/login")
+	@PostMapping("/doLogin")
 	public String login(User user,
 						Model model,
 						@ModelAttribute("host") String host,
 						@ModelAttribute("referer") String referer,
 						SessionStatus status) {
 
-		String redirectUrl = USER_CENTER_URL;
+		String redirectUrl = "/center";
 
 		// 账号校验
 		Authentication authentication = userService.authen(user.getUsername(), user.getPassword());
 		// 存入session
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
-
-		// 设置跳转地址
-		System.out.println("referer:" + referer);
+		
 
 		// 使用referer 作为 重定向地址的条件
 		// 1. referer 非空 且不等于 "/"
@@ -112,7 +105,7 @@ public class LoginController extends HomeController{
 		SessionUtils.removeAttribute(SessionContext.USER);
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ModelUtils.setSuccess(ra, "登出成功");
-		return "redirect:" + INDEX_URL;
+		return "redirect:" + "/";
 	}
 
 }

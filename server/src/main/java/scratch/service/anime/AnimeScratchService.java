@@ -1,42 +1,113 @@
 package scratch.service.anime;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.stereotype.Service;
 
-import scratch.dao.inter.IScratchRecord;
-import scratch.model.entity.ScratchDateRecord;
-import scratch.model.entity.ScratchRecord;
+import scratch.dao.inter.IScratchLogDao;
+import scratch.model.RedisKey;
+import scratch.model.TaskTime;
+import scratch.model.entity.ScratchLog;
+import scratch.model.view.RunInfo;
+import scratch.service.RedisService;
+import scratch.service.SchedulerService;
 import scratch.service.WebFileService;
+import scratch.service.scratch.IScratchTaskProducer;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @Service
 public class AnimeScratchService {
 
 	@Autowired
-	private IScratchRecord recordDao;
-	
+	private IScratchLogDao scratchLogDao;
+
 	@Autowired
 	private WebFileService fileService;
 
 	@Autowired
-	private AnimeScratchTask scratchTask;
+	private RedisService redisService;
 
+	@Autowired
+	private SchedulerService schedulerService;
 
-	public void run() {
-		scratchTask.run();
+	@Autowired
+	private IScratchTaskProducer scratchTaskProducer;
+
+	@Autowired
+	private RunInfoWebSocket runInfoWebSocket;
+
+	private volatile boolean isRun = false;
+
+	@PostConstruct
+	public void initTiming() {
+		TaskTime taskTime = redisService.get("runtime");
+		if (taskTime == null) return;
+		// 启动定时任务
+		runTiming(taskTime);
+	}
+
+	@PreDestroy
+	public void destory() {
+		schedulerService.removeAllTask();
+	}
+
+	public void runTiming(TaskTime taskTime) {
+		// 清除所有定时任务
+		schedulerService.removeAllTask();
+		// 重新设置定时时间
+		redisService.set("runtime", taskTime);
+		// 时间转换
+		Date date = convertToDate(taskTime.getNextTime());
+		long interval = taskTime.getInterval() * 60 * 1000;
+		doRunTiming(date, interval);
+	}
+
+	private void doRunTiming(Date date, long interval) {
+		System.out.println(date);
+		System.out.println(interval);
+		schedulerService.setTask(
+				() -> scratchTaskProducer.produce(),
+				date,
+				interval);
 	}
 
 	/**
-	 * 服务运行状态
-	 * @return
+	 * 运行服务
 	 */
-	public boolean isRun() {
-		return scratchTask.isRun();
+	public void run() {
+
+		if (isRun) return;
+		isRun = true;
+		new Thread(() -> {
+			scratchTaskProducer.produceAndWait();
+			isRun = false;
+			runInfoWebSocket.sendMessage(getRunMessage());
+		}).start();
+
 	}
+
+	public RunInfo getRunMessage() {
+		return new RunInfo(isRun, redisService.get(RedisKey.RUN_TIME));
+	}
+
+	public void shutdownTiming() {
+		redisService.delete(RedisKey.RUN_TIME);
+		schedulerService.removeAllTask();
+	}
+
+	// 日志相关
+
 
 
 	/**
@@ -78,22 +149,51 @@ public class AnimeScratchService {
 		return logRecords;
 	}
 
-
-	// 运行记录
-	public Map<String, Integer> getRecordMap() {
-		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
-		List<ScratchRecord> records = recordDao.list();
-		for(ScratchRecord record : records) {
-			long plus = (record.getEndTime().getTime() - record.getStartTime().getTime()) / 1000;
-			plus = plus == 0 ? 1 : plus;
-			long unit = record.getCount() / plus;
-			String endTime = DateFormatUtils.format(record.getEndTime(), DateFormatUtils.ISO_TIME_NO_T_FORMAT.getPattern());
-			map.put(endTime, new Integer((int) unit));
+	private Date convertToDate(LocalTime localTime) {
+		LocalDateTime dateTime;
+		if (shouldPlusOneDay(localTime)) {
+			dateTime = LocalDateTime.of(LocalDate.now().plusDays(1), localTime);
+		} else {
+			dateTime = LocalDateTime.of(LocalDate.now(), localTime);
 		}
-		return map;
+		return Jsr310Converters.LocalDateTimeToDateConverter.INSTANCE.convert(dateTime);
 	}
 
-	public List<ScratchDateRecord> listDateRecord() {
-		return recordDao.groupByDate();
+	private boolean shouldPlusOneDay(LocalTime time) {
+		LocalTime localTimeNow = LocalTime.now();
+		return (time.getHour() < localTimeNow.getHour()) ||
+				(time.getHour() == localTimeNow.getHour() && time.getMinute() <= localTimeNow.getMinute());
+	}
+
+	public List listLogsForFigure(int days) {
+		return IntStream.rangeClosed(0, days)
+				// 生成从现在开始到前days的日期
+				.mapToObj(day -> new Date(System.currentTimeMillis() - day * 24 * 60 * 60 * 1000))
+				.sorted()
+				// 使用日期去检索当天的成功数和失败数
+				.map(date -> convertToArray(date, scratchLogDao.groupByType(date)))
+				.collect(Collectors.toList());
+	}
+
+	private Object[] convertToArray(Date date, List<Map<String, Object>> listMap) {
+		Object[] array = new Object[3];
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		// set default value
+		array[0] = formatter.format(date);
+		array[1] = 0;
+		array[2] = 0;
+
+		for(Map<String, Object> map : listMap) {
+			if ((Integer)map.get("type") == 0) {
+				array[1] = map.get("count");
+			} else {
+				array[2] = map.get("count");
+			}
+		}
+		return array;
+	}
+
+	public List<ScratchLog> listLogsByDate(Date date) {
+		return scratchLogDao.listByDate(date);
 	}
 }

@@ -37,13 +37,13 @@ public class CenterController {
 	 * 显示推荐anime
 	 *
 	 * @param model
-	 * @param userAdapter
 	 * @return
 	 */
 	@GetMapping("/center")
-	public String center(Model model, @AuthenticationPrincipal UserAdapter userAdapter) {
+	public String center(Model model) {
 		List<Anime> animes = animeService.listMostFocused(5);
 		model.addAttribute("recommondedAnimes", animes);
+		model.addAttribute("types", dictService.findByType("02"));
 		return "/user/index";
 	}
 
@@ -57,7 +57,7 @@ public class CenterController {
 	 * @return
 	 */
 	@GetMapping("/search")
-	public String search(@RequestParam("word") String word,
+	public String search(@RequestParam(value="word", required = false) String word,
 						 @RequestParam(value = "type", required = false) String type,
 						 @AuthenticationPrincipal UserAdapter userAdapter,
 						 Model model) {
@@ -69,13 +69,7 @@ public class CenterController {
 
 		List<Dict> types = dictService.findByType("02");
 
-		//TODO 排序
-		List<AnimeDisplay> animeDisplayList = animeService.listByName(word.trim()).stream()
-				// convert to AnimeDisplay
-				.map(anime -> animeService.convertAnimeDisplay(anime, userAdapter))
-				.filter(anime -> type == null || anime.getType().equals(type))
-				.collect(Collectors.toList());
-
+		List<AnimeDisplay> animeDisplayList = animeService.list(word, type, userAdapter);
 
 		// 用于显示页面标题
 		model.addAttribute("keyword", word);

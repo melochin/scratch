@@ -68,4 +68,12 @@
 		select count(*) from anime_focus where anime_id = #{animeId};
 	</select>
 
+	<select id="listMostFocused" resultType="long">
+		select anime_id, count(*) count
+			from anime_focus
+			group by anime_id
+			order by count desc
+			limit #{limit}
+	</select>
+
 </mapper>  
