@@ -1,18 +1,13 @@
 package scratch.controller.home;
 
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import scratch.dao.inter.IAnimeEpisodeDao;
-import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.ohter.UserAdapter;
-import scratch.model.view.AnimeDisplay;
 import scratch.model.view.AnimeEpisodeDisplay;
-import scratch.service.AnimeEpisodeService;
-import scratch.service.AnimeService;
-import scratch.support.service.Page;
+import scratch.service.anime.AnimeEpisodeService;
+import scratch.service.anime.AnimeService;
 import scratch.support.service.PageBean;
 import scratch.support.web.JsonResult;
 

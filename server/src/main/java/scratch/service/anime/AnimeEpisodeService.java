@@ -1,20 +1,16 @@
-package scratch.service;
+package scratch.service.anime;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.collections.DefaultRedisMap;
-import org.springframework.data.redis.support.collections.DefaultRedisSet;
 import org.springframework.data.redis.support.collections.RedisMap;
-import org.springframework.data.redis.support.collections.RedisSet;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +39,10 @@ public class AnimeEpisodeService {
 
 	@Autowired
 	private IAnimeFocusDao focusDao;
-	
+
+	@Autowired
+	private LikeService voteService;
+
 	@Autowired
 	private ConversionService conversionService;
 
@@ -97,8 +96,12 @@ public class AnimeEpisodeService {
 	 * @return
 	 */
 	public AnimeEpisodeDisplay convertToDisplay(AnimeEpisode animeEpisode, UserAdapter userAdapter) {
+
+		Set<Long> episodes = voteService.listEpisode(userAdapter.getUserId());
+
 		AnimeEpisodeDisplay display = new AnimeEpisodeDisplay(animeEpisode);
-		display.setHot(getHot(animeEpisode.getId()));
+		display.setVotes(voteService.getVotes(animeEpisode.getId()));
+		display.setVote(episodes.contains(animeEpisode.getId()));
 		display.setAnime(animeDao.getById(animeEpisode.getAnime().getId()));
 		return display;
 	}

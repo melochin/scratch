@@ -1,4 +1,4 @@
-package scratch.service;
+package scratch.service.anime;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +27,7 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
 import scratch.model.ohter.UserAdapter;
 import scratch.model.view.AnimeDisplay;
+import scratch.service.WebFileService;
 import scratch.support.FileUtils;
 import scratch.support.PageFactory;
 import scratch.support.service.PageBean;

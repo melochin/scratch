@@ -1,8 +1,8 @@
 package scratch.service.anime;
 
 import scratch.api.renren.RenrenImpl;
-import scratch.service.reader.adpater.RenrenAdapter;
-import scratch.service.reader.adpater.ScratchAdpater;
+import scratch.service.adpater.RenrenAdapter;
+import scratch.service.adpater.ScratchAdpater;
 
 public class ScratchFactory {
 

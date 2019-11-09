@@ -13,9 +13,9 @@ import scratch.dao.inter.IAnimeEpisodeScratchDao;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
-import scratch.service.reader.adpater.BilibiliAdapter;
-import scratch.service.reader.adpater.RenrenAdapter;
-import scratch.service.reader.adpater.ScratchAdpater;
+import scratch.service.adpater.BilibiliAdapter;
+import scratch.service.adpater.RenrenAdapter;
+import scratch.service.adpater.ScratchAdpater;
 
 import java.util.*;
 import java.util.concurrent.*;

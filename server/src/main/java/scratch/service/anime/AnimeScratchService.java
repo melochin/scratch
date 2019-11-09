@@ -51,7 +51,7 @@ public class AnimeScratchService {
 
 	@PostConstruct
 	public void initTiming() {
-		TaskTime taskTime = redisService.get("runtime");
+		TaskTime taskTime = redisService.get("runtime", TaskTime.class);
 		if (taskTime == null) return;
 		// 启动定时任务
 		runTiming(taskTime);

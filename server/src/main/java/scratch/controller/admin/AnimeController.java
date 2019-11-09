@@ -1,26 +1,19 @@
 package scratch.controller.admin;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import scratch.model.DictType;
 import scratch.model.entity.Anime;
-import scratch.model.entity.AnimeAlias;
-import scratch.model.entity.Dict;
-import scratch.model.ohter.DictList;
-import scratch.service.AnimeService;
+import scratch.service.anime.AnimeService;
 import scratch.service.DictService;
 
 @RequestMapping("/admin")

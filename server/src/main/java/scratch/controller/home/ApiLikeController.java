@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import scratch.model.ohter.UserAdapter;
-import scratch.service.LikeService;
+import scratch.service.anime.LikeService;
 
 import java.util.HashMap;
 import java.util.Map;

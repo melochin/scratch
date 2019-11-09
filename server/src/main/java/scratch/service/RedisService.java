@@ -1,5 +1,6 @@
 package scratch.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -7,6 +8,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -72,6 +74,18 @@ public class RedisService {
 
 	public <T> T get(String key) {
 		return (T)redisTemplate.opsForValue().get(key);
+	}
+
+	public <T> T get(String key, Class<T> clazz) {
+
+		String json = (String) redisTemplate.opsForValue().get(key);
+		if (json == null) return null;
+		try {
+			return new ObjectMapper().readValue(json, clazz);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public <T> T get(String key1, String key2) {

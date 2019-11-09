@@ -52,5 +52,4 @@ public class SchedulerService {
 		System.out.println("定时任务池清空 size " + beforeCount + "->" + afterCount);
 	}
 
-
 }

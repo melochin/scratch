@@ -11,14 +11,12 @@ import scratch.model.entity.Anime;
 import scratch.model.entity.Dict;
 import scratch.model.ohter.UserAdapter;
 import scratch.model.view.AnimeDisplay;
-import scratch.model.view.AnimeEpisodeDisplay;
-import scratch.service.AnimeEpisodeService;
-import scratch.service.AnimeService;
+import scratch.service.anime.AnimeEpisodeService;
+import scratch.service.anime.AnimeService;
 import scratch.service.DictService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class CenterController {

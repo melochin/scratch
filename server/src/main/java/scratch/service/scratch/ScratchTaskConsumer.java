@@ -14,9 +14,8 @@ import scratch.dao.inter.IAnimeEpisodeScratchDao;
 import scratch.dao.inter.IScratchLogDao;
 import scratch.model.entity.*;
 import scratch.service.anime.ScratchFactory;
-import scratch.service.reader.adpater.ScratchAdpater;
+import scratch.service.adpater.ScratchAdpater;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;

@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.controller.home.RegisterController;
-import scratch.controller.user.UserController;
+import scratch.controller.home.UserController;
 import scratch.dao.UserDao;
 import scratch.exception.AuthenException;
 import scratch.model.entity.User;

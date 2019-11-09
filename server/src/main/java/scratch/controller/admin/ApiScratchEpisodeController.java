@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
-import scratch.service.AnimeEpisodeService;
+import scratch.service.anime.AnimeEpisodeService;
 import scratch.support.web.JsonResult;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 public class ApiScratchEpisodeController {
