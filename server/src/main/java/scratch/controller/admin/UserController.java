@@ -22,8 +22,9 @@ import scratch.support.service.MailException;
 import scratch.support.service.PageBean;
 import scratch.support.web.JsonResult;
 
-@Controller("AdminUserController")
+//@Controller("AdminUserController")
 @RequestMapping("/admin/user")
+@Deprecated
 public class UserController {
 	
 	private static final int PAGE_USER_SIZE = 10;

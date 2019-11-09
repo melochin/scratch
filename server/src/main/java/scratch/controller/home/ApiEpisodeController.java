@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.home;
 
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;

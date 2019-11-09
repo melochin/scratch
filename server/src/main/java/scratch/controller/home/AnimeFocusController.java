@@ -1,20 +1,17 @@
-package scratch.controller.user;
+package scratch.controller.home;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import scratch.controller.api.ApiAnimeFocusController;
 import scratch.model.DictType;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.DictService;
 import scratch.service.anime.AnimeFocusService;
 
-//@RequestMapping("/anime")
-//@Controller
+@Deprecated
 public class AnimeFocusController {
 
 	@Autowired

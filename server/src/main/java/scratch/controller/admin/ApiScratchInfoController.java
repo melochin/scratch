@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

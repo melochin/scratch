@@ -1,4 +1,4 @@
-package scratch.controller.admin.scratch;
+package scratch.controller.admin;
 
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import scratch.service.anime.AnimeScratchService;
 
-@Controller
+@Deprecated
 public class ScratchInfoController {
 
 	@Autowired

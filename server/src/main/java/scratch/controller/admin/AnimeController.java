@@ -24,7 +24,7 @@ import scratch.service.AnimeService;
 import scratch.service.DictService;
 
 @RequestMapping("/admin")
-@Controller
+@Deprecated
 public class AnimeController {
 
 	@Autowired

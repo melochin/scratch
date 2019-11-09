@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.card;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

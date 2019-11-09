@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -95,14 +95,11 @@ public class ApiUserController {
 	 * @param username
 	 * @return validate true : 校验通过，不重名
 	 */
-//	@PostMapping(path = "/api/validate/username", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	JsonResult existUser(@RequestParam("username") String username) {
-//		JsonResult result = new JsonResult();
-//		boolean validate = !userService.isExistByUsername(username);
-//		result.setValidate(validate);
-//		return result;
-//	}
+	@GetMapping(path = "/api/userid/{userid}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	JsonResult existUser(@PathVariable("userid") long userId) {
+		return new JsonResult().setAttribute("user", userService.getById(userId));
+	}
 
 	@GetMapping("/api/islogin")
 	public @ResponseBody Map isLogin(

@@ -14,7 +14,7 @@ import scratch.service.DictService;
 import scratch.support.web.JsonResult;
 
 @RequestMapping("/admin/dic")
-@Controller
+@Deprecated
 public class DictController {
 
 	@Autowired

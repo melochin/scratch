@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.home;
 
 import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;

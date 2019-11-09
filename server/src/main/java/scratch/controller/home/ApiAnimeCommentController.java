@@ -1,4 +1,4 @@
-package scratch.controller.api;
+package scratch.controller.home;
 
 import scratch.exception.PrivilegeException;
 import scratch.support.web.JsonResult;

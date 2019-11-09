@@ -1,4 +1,4 @@
-package scratch.controller.admin.scratch;
+package scratch.controller.admin;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import scratch.service.DictService;
 import scratch.service.anime.AnimePushService;
 
 @RequestMapping("/admin/scratch/episode")
-@Controller
+@Deprecated
 public class EpisodeController {
 	
 	@Autowired

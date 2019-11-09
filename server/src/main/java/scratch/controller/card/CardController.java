@@ -1,4 +1,4 @@
-package scratch.controller.user;
+package scratch.controller.card;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

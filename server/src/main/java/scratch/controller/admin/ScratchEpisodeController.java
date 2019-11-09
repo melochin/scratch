@@ -1,4 +1,4 @@
-package scratch.controller.admin.scratch;
+package scratch.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import scratch.support.web.spring.ModelUtils;
 
 @SessionAttributes({"waitCount", "passCount", "rejectCount"})
 @RequestMapping("/admin/scratch/temp")
-@Controller
+@Deprecated
 public class ScratchEpisodeController {
 	
 	@Autowired
