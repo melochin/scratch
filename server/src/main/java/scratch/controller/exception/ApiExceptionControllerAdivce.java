@@ -7,26 +7,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import scratch.service.ListenerService;
+import scratch.useless.ListenerService;
 import scratch.support.web.JsonResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class ApiExceptionControllerAdivce {
 
 	private final static Logger log = Logger.getLogger(ApiExceptionControllerAdivce.class);
 
-	@Autowired
-	private ListenerService service;
-
-	@ExceptionHandler
-	public void IOError(IOException e, HttpServletRequest request) {
-		String sessionId = request.getSession().getId();
-		service.remove(sessionId);
-	}
+//	@Autowired
+//	private ListenerService service;
+//
+//	@ExceptionHandler
+//	public void IOError(IOException e, HttpServletRequest request) {
+//		String sessionId = request.getSession().getId();
+//		service.remove(sessionId);
+//	}
 
 	/**
 	 * 处理api异常　

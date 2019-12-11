@@ -81,7 +81,7 @@
 		<property name="templateEngine" ref="templateEngine" />
 		<property name="order" value="1" />
 		<property name="characterEncoding" value="utf-8"></property>
-		<!-- <property name="cache" value="false"></property> -->
+		<property name="cache" value="false"></property>
 	</bean>
 
 	<!-- <bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver" 

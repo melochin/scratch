@@ -1,4 +1,4 @@
-package scratch.controller.admin;
+package scratch.useless;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;

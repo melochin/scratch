@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerErrorHandler;
 import org.springframework.amqp.rabbit.listener.exception.ListenerExecutionFailedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,9 +36,12 @@ public class RabbitMQConfig {
 
 	public static final String QUEUE_EMAIL_ACTIVE = "email.active";
 
+	@Value("${rabbitMQ.hostname}")
+	public String hostname;
+
 	@Bean
 	public ConnectionFactory rabbitConnectionFactory() {
-		return new CachingConnectionFactory("localhost");
+		return new CachingConnectionFactory(hostname);
 	}
 
 	@Bean
@@ -119,6 +123,11 @@ public class RabbitMQConfig {
 	@Bean
 	public Binding activeBinding() {
 		return BindingBuilder.bind(activeQueue()).to(emailExchange()).with(QUEUE_EMAIL_ACTIVE);
+	}
+
+	@Bean
+	public Binding notifyBinding() {
+		return BindingBuilder.bind(notifyQueue()).to(emailExchange()).with(QUEUE_EMAIL_NOTIFY);
 	}
 
 	@Bean

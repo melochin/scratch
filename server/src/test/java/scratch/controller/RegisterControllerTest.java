@@ -13,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.test.ContextTest;
 
@@ -45,8 +44,8 @@ public class RegisterControllerTest extends ContextTest {
 		// 发送激活邮箱
 		Long userId = new Long(43);
 		User user = new User(userId);
-		mvc.perform(get("/user/register/sendMail")
-				.sessionAttr(SessionContext.USER, user))
+		mvc.perform(get("/user/register/sendMail"))
+				//.sessionAttr(SessionContext.USER, user))
 		.andExpect(status().is(302))
 		.andExpect(view().name("redirect:/user/info"))
 		.andExpect(flash().attributeExists("success"));

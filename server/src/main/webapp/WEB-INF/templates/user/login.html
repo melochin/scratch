@@ -27,7 +27,7 @@
             <h1 style="text-align: center;color: white;">Scratch</h1>
         </div>
 
-        <form class="ui form" method="post" id="userLoginForm" style="font-size:15px">
+        <form class="ui form" action="/doLogin" method="post" id="userLoginForm" style="font-size:15px">
             <div class="ui field fluid input left icon">
                 <input class="form-control" type="text" name="username"
                        placeholder="用户名"/>
@@ -51,15 +51,15 @@
             如果账号还没有激活，请<a><span>重新验证邮件</span></a>
         </div>
 
-        <div class="ui horizontal divider">
-            使用其他账号登录
-        </div>
-        <form th:action="@{/connect/github}" method="POST">
-            <button class="ui blue button" type="submit">
-                <i class="github icon"></i>
-                Github
-            </button>
-        </form>
+        <!--<div class="ui horizontal divider">-->
+            <!--使用其他账号登录-->
+        <!--</div>-->
+        <!--<form th:action="@{/connect/github}" method="POST">-->
+            <!--<button class="ui blue button" type="submit">-->
+                <!--<i class="github icon"></i>-->
+                <!--Github-->
+            <!--</button>-->
+        <!--</form>-->
     </div>
 </div>
 

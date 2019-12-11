@@ -119,6 +119,22 @@ public class FileUtils {
 		return new File("").getAbsolutePath();
 	}
 
+	public static String generateUUIDFilename(String suffix) {
+		if (suffix.isEmpty()) return UUID.randomUUID().toString();
+		return UUID.randomUUID().toString() + "." + suffix;
+	}
+
+	public static File save(String path, MultipartFile multipartFile) throws IOException {
+
+		if(!new File(path).exists()) {
+			new File(path).createNewFile();
+		}
+
+		File file = new File(path);
+		multipartFile.transferTo(file);
+		return file;
+	}
+
 	public static File save(String path, InputStream inputStream) throws IOException {
 
 		File file = new File(path);

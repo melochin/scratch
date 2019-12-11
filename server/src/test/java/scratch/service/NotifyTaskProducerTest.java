@@ -5,13 +5,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import scratch.service.anime.AnimePushService;
+import scratch.service.scratch.NotifyTaskProducer;
 import scratch.test.ContextTest;
 
-public class AnimePushServiceTest extends ContextTest{
+public class NotifyTaskProducerTest extends ContextTest{
 
 	@Autowired
-	private AnimePushService service;
+	private NotifyTaskProducer service;
 	
 	@Test
 	public void test() throws InterruptedException {

@@ -22,9 +22,4 @@ public class AnimeScratchServiceTest extends ContextTest {
 
 	}
 
-	//@Test
-	public void queryTest() {
-		System.out.println(service.getRecordMap());
-	}
-
 }

@@ -16,12 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import scratch.support.service.Page;
 
-@Transactional
+//@Transactional
 public class BasicDao<E> {
 
 	protected Logger log = Logger.getLogger(BasicDao.class);
 	
-	@Autowired
+	//@Autowired
 	protected SessionFactory sessionFactory;
 	
 	protected Session getCurrentSession() {

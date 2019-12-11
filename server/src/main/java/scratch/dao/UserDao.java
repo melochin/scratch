@@ -9,7 +9,7 @@ import scratch.model.entity.User;
 import scratch.support.service.Page;
 import scratch.support.service.PageBean;
 
-@Repository
+//@Repository
 public class UserDao extends BasicDao<User> {
 
 	private static final String GET_USER_BY_NAME = "from User where username = ?";

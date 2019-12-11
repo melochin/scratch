@@ -18,18 +18,16 @@ public class EmailSupport {
 	private JavaMailSender mailSender;
 	
 	private TemplateEngine templateEngine;
-	
-	public void sendMail(MailContent mailContent, String toMail, Map<String, Object> map) throws MailException, MessagingException {
+
+	public void sendMail(MailContent mailContent) throws MailException, MessagingException {
 		String subject = mailContent.getSubject();
 		String templateName = mailContent.getTemplateName();
 		//读取模板
-		String content = templateEngine.getContent(templateName, map); 
+		String content = templateEngine.getContent(templateName, mailContent.getData());
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper messHelper = new MimeMessageHelper(message);
 		
-		System.out.println(content);
-		messHelper.setFrom("398299262@qq.com");
-		messHelper.setTo(toMail);
+		messHelper.setTo(mailContent.getReceiverEmail());
 		messHelper.setSubject(subject);
 		messHelper.setText(content, true);
 		
@@ -40,8 +38,6 @@ public class EmailSupport {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper messHelper = new MimeMessageHelper(message);
 
-		System.out.println(content);
-		messHelper.setFrom("398299262@qq.com");
 		messHelper.setTo(toMail);
 		messHelper.setSubject(subject);
 		messHelper.setText(content, true);

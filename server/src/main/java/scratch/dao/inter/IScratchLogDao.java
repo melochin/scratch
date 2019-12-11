@@ -12,6 +12,6 @@ public interface IScratchLogDao {
 	void save(@Param("scratchLog") ScratchLog scratchLog);
 
 	List<Map<String, Object>> groupByType(Date date);
-
+	// TODO 输出的结果有误
 	List<ScratchLog> listByDate(Date date);
 }

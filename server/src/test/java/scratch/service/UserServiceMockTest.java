@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import scratch.dao.UserDao;
+import scratch.dao.inter.IUserDao;
 import scratch.exception.AuthenException;
 import scratch.model.entity.User;
 
@@ -25,13 +25,13 @@ public class UserServiceMockTest {
 	private RedisService redisService;
 
 	@Mock
-	private DaoAuthenticationProvider authenticationProvider;
+	private AuthenticationProvider authenticationProvider;
 
 	@Mock
-	private EmailService emailService;
+	private EmailProducer emailProducer;
 
 	@Mock
-	private UserDao userDao;
+	private IUserDao userDao;
 
 	private static final String TEST_USERNAME = "test";
 
@@ -42,8 +42,7 @@ public class UserServiceMockTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		userService = new UserService(redisService,
-				authenticationProvider, emailService, userDao);
+		userService = new UserService(redisService, emailProducer, userDao);
 
 		user = new User(TEST_USERID);
 		user.setUsername(TEST_USERNAME);

@@ -2,7 +2,7 @@
 
 <body class="grey" th:fragment="layout(content)">
 
-    <div id="home_background" th:data-img="${'../pic/home/' + backgroundPic}"></div>
+    <div id="home_background" th:data-img="@{'/background'}"></div>
 
     <div th:replace="${content}"></div>
 

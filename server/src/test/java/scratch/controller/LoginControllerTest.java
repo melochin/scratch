@@ -2,9 +2,11 @@ package scratch.controller;
 
 import org.junit.Test;
 
-import scratch.model.SessionContext;
+import scratch.model.ohter.UserAdapter;
 import scratch.model.entity.User;
 import scratch.test.ContextTest;
+
+import java.security.Principal;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -42,7 +44,7 @@ public class LoginControllerTest extends ContextTest {
 		// 存在用户的情况下登出
 		User user = new User(new Long(35));
 		mvc.perform(get("/user/logout")
-				.sessionAttr(SessionContext.USER, user))
+				.principal((Principal)new UserAdapter(user)))
 		.andExpect(status().is(302))
 		.andExpect(view().name("redirect:/"));
 		

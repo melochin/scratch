@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd">
+
 
 	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig" />
-		
+
 	<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
 		<property name="poolConfig" ref="poolConfig" />
 		<property name="hostName" value="${redis.hostname}"/>
@@ -12,9 +14,9 @@
 	</bean>
 	
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"> 
-    	<property name="connectionFactory"   ref="connectionFactory" />
+    	<property name="connectionFactory" ref="connectionFactory" />
     	<property name="keySerializer">
-    		<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+    		<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
     	</property>
     	<property name="valueSerializer">
     		<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />

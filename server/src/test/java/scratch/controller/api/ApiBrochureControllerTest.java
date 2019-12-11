@@ -3,6 +3,7 @@ package scratch.controller.api;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import scratch.useless.ApiBrochureController;
 import scratch.dao.redis.BrochureRepository;
 import scratch.model.entity.Brochure;
 import scratch.test.ContextTest;

@@ -10,7 +10,6 @@ import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -22,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import scratch.controller.home.RegisterController;
 import scratch.controller.home.UserController;
-import scratch.dao.UserDao;
+import scratch.dao.inter.IUserDao;
 import scratch.exception.AuthenException;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
@@ -36,11 +35,9 @@ public class UserService {
 
 	private RedisService redisService;
 
-	private AuthenticationProvider provider;
+	private EmailProducer emailProducer;
 
-	private EmailService emailService;
-
-	private UserDao dao;
+	private IUserDao dao;
 
 	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(UserService.class);
@@ -49,10 +46,10 @@ public class UserService {
 
 	@Autowired
 	public UserService(RedisService redisService,
-					   EmailService emailService,
-					   UserDao userDao) {
+					   EmailProducer emailProducer,
+					   IUserDao userDao) {
 		this.redisService = redisService;
-		this.emailService = emailService;
+		this.emailProducer = emailProducer;
 		this.dao = userDao;
 	}
 
@@ -89,14 +86,7 @@ public class UserService {
 	 * 查询所有User
 	 */
 	public List<User> list() {
-		return dao.list(User.class);
-	}
-
-	/**
-	 * 分页查询User
-	 */
-	public PageBean<User> list(int page, int pageSize) {
-		return dao.findAll(page, pageSize);
+		return dao.findAll();
 	}
 
 	/**
@@ -188,12 +178,13 @@ public class UserService {
 		if (!StringUtils.isEmpty(u.getPassword())) {
 			encodePassword(u);
 		}
-		dao.update(u, u.getUserId());
+		// TODO update password
+		//dao.update(u, u.getUserId());
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
-		dao.remove(User.class, id);
+		dao.delete(id);
 	}
 
 	/**-------用户邮箱认证 ------------*/
@@ -203,7 +194,7 @@ public class UserService {
 	 */
 	public void sendActiveMail(User user) throws MailException, MessagingException {
 		String activeUrl = getActiUrl(user.getUserId());
-		emailService.sendUserActiveCode(activeUrl, user.getEmail());
+		emailProducer.sendUserActiveCode(activeUrl, user.getEmail());
 	}
 
 	/**
@@ -280,7 +271,7 @@ public class UserService {
 	 */
 	public void sendRestMail(User user) throws MailException, MessagingException {
 		String resetUrl = getRestUrl(user.getUserId());
-		emailService.sendUserResetPassword(resetUrl, user.getEmail());
+		emailProducer.sendUserResetPassword(resetUrl, user.getEmail());
 		return;
 	}
 
@@ -305,7 +296,9 @@ public class UserService {
 	public boolean resetPassword(Long userId, String newPassword) {
 		User user = dao.getById(userId);
 		user.setPassword(newPassword);
-		modify(user);
+
+		encodePassword(user);
+		dao.updatePassword(userId, user.getHashedPassword(), user.getSalt());
 		// 需要判断是否更新成功
 		String redisKey = redisService.get(USER_RESET_PSWD, String.valueOf(userId));
 		redisService.delete(redisKey);

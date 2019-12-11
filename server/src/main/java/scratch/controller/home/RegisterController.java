@@ -17,13 +17,11 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
 import scratch.support.service.MailException;
 import scratch.support.web.spring.ModelUtils;
-import scratch.support.web.spring.SessionUtils;
 
 @Controller
 @RequestMapping("/user")
@@ -75,7 +73,7 @@ public class RegisterController {
 			ModelUtils.setError(ra, e.getMessage());
 			return "redirect:/user/register";
 		}
-		return "redirect:/user/login";
+		return "redirect:/login";
 	}
 
 	/**
@@ -124,14 +122,13 @@ public class RegisterController {
 			case 1 :
 				ModelUtils.setSuccess(ra, "账号激活成功");
 				User user = service.getById(userId);
-				SessionUtils.setAttribute(SessionContext.USER, user);
 				break;
 			default:
 				ModelUtils.setError(ra, "账号激活失败");
 				break;
 		}
 
-		return "redirect:/user/info";
+		return "redirect:/center";
 	}
 
 }

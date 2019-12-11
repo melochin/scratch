@@ -137,7 +137,7 @@ var USER_RULE = {
                 rules: [
                     RULE.USERNAME_NOT_EMPTY,
                     RULE.USERNAME_FORM,
-                    RULE.USERNAME_REPEAT
+                    //RULE.USERNAME_REPEAT
                 ]
             },
 

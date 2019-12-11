@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -23,6 +25,7 @@ import scratch.model.ohter.UserAdapter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -69,6 +72,12 @@ public class ContextTest {
 		user.setUserId(new Long(35));
 		return user;
 	}
+
+	public Authentication getAuthentication() {
+		User user = new User(new Long(1));
+		UserAdapter adapter = new UserAdapter(user);
+		return new UsernamePasswordAuthenticationToken(adapter, "test", adapter.getAuthorities());
+	};
 
 	public RequestPostProcessor getUser() {
 		User user = generateUser();

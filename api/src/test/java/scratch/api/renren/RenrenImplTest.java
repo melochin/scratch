@@ -17,8 +17,10 @@ public class RenrenImplTest {
 
 	@Test
 	public void getEpisodeList() throws Exception {
-		String url = renren.search("致命之吻")
+		String url = renren.search("泰坦")
 				.get(0).getDownloadListUrl();
+
+		System.out.println(renren.getEpisodeList(url));
 		Assert.assertTrue(
 				renren.getEpisodeList(url).size() > 0);
 	}

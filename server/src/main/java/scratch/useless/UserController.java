@@ -1,4 +1,4 @@
-package scratch.controller.admin;
+package scratch.useless;
 
 import javax.validation.Valid;
 
@@ -45,8 +45,8 @@ public class UserController {
 	 */
 	@RequestMapping("")
 	public String list(@RequestParam(value="p", defaultValue="1") int page, Model model) {
-		PageBean<User> userList = userService.list(page, PAGE_USER_SIZE);
-		model.addAttribute("userList", userList);
+//		PageBean<User> userList = userService.list(page, PAGE_USER_SIZE);
+//		model.addAttribute("userList", userList);
 		return "/admin/user/index";
 	}
 	

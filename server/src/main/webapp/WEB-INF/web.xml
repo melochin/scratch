@@ -50,40 +50,40 @@
 	</filter-mapping>
 	
 	<!-- 该过滤器是为了让Transaction在JSP页面仍存在，这样使用了LAZY加载方式的MODEL，在展现层仍可以读取数据 -->
-	<filter>
-		<filter-name>OpenSessionInViewFilter</filter-name>
-		<filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
-		<init-param>
-			<param-name>sessionFactoryBeanName</param-name>
-			<param-value>hibernateSessionFactory</param-value>
-		</init-param>
-		<init-param>
-			<param-name>singleSession</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>flushMode</param-name>
-			<param-value>AUTO</param-value>
-		</init-param>
-		<async-supported>true</async-supported>
-	</filter>
-	
-	<filter-mapping>
-		<filter-name>OpenSessionInViewFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-	<!-- security filter -->
 	<!--<filter>-->
-		<!--<filter-name>springSecurityFilterChain</filter-name>-->
-		<!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+		<!--<filter-name>OpenSessionInViewFilter</filter-name>-->
+		<!--<filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>-->
+		<!--&lt;!&ndash;<init-param>&ndash;&gt;-->
+			<!--&lt;!&ndash;<param-name>sessionFactoryBeanName</param-name>&ndash;&gt;-->
+			<!--&lt;!&ndash;<param-value>hibernateSessionFactory</param-value>&ndash;&gt;-->
+		<!--&lt;!&ndash;</init-param>&ndash;&gt;-->
+		<!--<init-param>-->
+			<!--<param-name>singleSession</param-name>-->
+			<!--<param-value>true</param-value>-->
+		<!--</init-param>-->
+		<!--<init-param>-->
+			<!--<param-name>flushMode</param-name>-->
+			<!--<param-value>AUTO</param-value>-->
+		<!--</init-param>-->
 		<!--<async-supported>true</async-supported>-->
 	<!--</filter>-->
-	<!---->
+	
 	<!--<filter-mapping>-->
-		<!--<filter-name>springSecurityFilterChain</filter-name>-->
+		<!--<filter-name>OpenSessionInViewFilter</filter-name>-->
 		<!--<url-pattern>/*</url-pattern>-->
 	<!--</filter-mapping>-->
+	
+	<!-- security filter -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	
 	<error-page>
 		<error-code>404</error-code>

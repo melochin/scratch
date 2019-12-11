@@ -1,8 +1,9 @@
 package scratch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class AnimeFocus {
+public class AnimeFocus implements Serializable {
 
 	private Long id;
 	

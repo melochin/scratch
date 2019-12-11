@@ -54,9 +54,9 @@ public class UserServiceTest extends ContextTest{
 		// 用户信息分页查询
 		int pageSize = 5;
 		int page = 1;
-		PageBean<User> pageUser = userService.list(page, pageSize);
-		assertTrue("list page fial", pageUser.getData().size() == pageSize);
-		
+//		PageBean<User> pageUser = userService.list(page, pageSize);
+//		assertTrue("list page fial", pageUser.getData().size() == pageSize);
+//
 		// 用户名重复性查询
 		boolean isExist = userService.isExistByUsername("consequent");
 		assertTrue("isExistByUsername fail", isExist == true);

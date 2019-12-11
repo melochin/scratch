@@ -43,11 +43,15 @@ var message = function(mess, type) {
     // 创建提示框告知信息（可能错误，可能一般信息）
     function alert(mess, color) {
         // 创建提示框
-        var $box = $('<div class="alert" style="display: none;">' +
-            '<div class="ui ' + color +' message">\n' +
-            '        <p>' +　mess  + '</p>\n' +
-            '    </div>' +
-            '</div>');
+        var $box = $(
+            `
+                <div class="alert" style="display: none;">
+                    <div class="ui ${color} message">
+                        <p>${mess}</p>    
+                    </div>
+                </div>
+            `
+        )
         $('body').append($box);
         $box.fadeIn(200);
 

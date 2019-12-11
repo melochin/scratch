@@ -2,6 +2,7 @@ package scratch.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +11,17 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import scratch.model.SessionContext;
-import scratch.model.entity.User;
 import scratch.test.ContextTest;
 
 public class UserControllerTest extends ContextTest{
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
-	
+
 	@Test
 	public void infoFormTest() throws Exception {
 		mvc.perform(get("/user/info")
-				.sessionAttr(SessionContext.USER, new User()))
+				.with(authentication(getAuthentication())))
 		.andExpect(status().isOk())
 		.andExpect(view().name("/user/info"));
 	}

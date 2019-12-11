@@ -1,4 +1,4 @@
-package scratch.service.reader.adpater;
+package scratch.service.adpater;
 
 import java.util.List;
 

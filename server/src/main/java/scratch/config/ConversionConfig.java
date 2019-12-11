@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.pagehelper.Page;
+import org.springframework.context.annotation.Configuration;
 import scratch.support.service.PageBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -12,7 +13,12 @@ import org.springframework.core.convert.converter.Converter;
 import scratch.model.entity.AnimeEpisode;
 import scratch.model.entity.AnimeEpisodeScratch;
 
-public class AppConfig {
+
+/**
+ * 配置了类型转换器
+ */
+@Configuration
+public class ConversionConfig {
 
 	/**
 	 * 类型转换

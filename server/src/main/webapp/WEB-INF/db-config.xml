@@ -11,7 +11,7 @@
 			<value>com.mysql.jdbc.Driver</value>
 		</property> 
 		<property name="url">
-			<value>jdbc:mysql://${jdbc.ip}/${jdbc.dbname}?serverTimezone=UTC&amp;userUnicode=true&amp;useSSL=false&amp;characterEncoding=UTF-8</value>
+			<value>jdbc:mysql://${jdbc.ip}/${jdbc.dbname}?serverTimezone=UTC&amp;userUnicode=true&amp;useSSL=false&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true</value>
 		</property> 
 		<property name="username">
 			<value>${jdbc.username}</value>
@@ -22,22 +22,22 @@
 	</bean> 
 
 	<!-- Hibernate SessionFactory -->
-	<bean id="hibernateSessionFactory"
-		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"></property>
-		<property name="packagesToScan">
-			<list>
-				<value>scratch.model</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
-				<!-- <prop key="hibernate.use_sql_comments">true</prop> -->
-			</props>		
-		</property>
-	</bean>
+	<!--<bean id="hibernateSessionFactory"-->
+		<!--class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">-->
+		<!--<property name="dataSource" ref="dataSource"></property>-->
+		<!--<property name="packagesToScan">-->
+			<!--<list>-->
+				<!--<value>scratch.model</value>-->
+			<!--</list>-->
+		<!--</property>-->
+		<!--<property name="hibernateProperties">-->
+			<!--<props>-->
+				<!--<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>-->
+				<!--<prop key="hibernate.show_sql">true</prop>-->
+				<!--&lt;!&ndash; <prop key="hibernate.use_sql_comments">true</prop> &ndash;&gt;-->
+			<!--</props>		-->
+		<!--</property>-->
+	<!--</bean>-->
 	
 	<!-- mybatis配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -71,10 +71,10 @@
 	
 	
 	<!-- 事务管理 -->
-	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
-		<property name="sessionFactory" ref="hibernateSessionFactory"></property>
-	</bean>
-	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<!--<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">-->
+		<!--<property name="sessionFactory" ref="hibernateSessionFactory"></property>-->
+	<!--</bean>-->
+
+	<!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
 	
 </beans>

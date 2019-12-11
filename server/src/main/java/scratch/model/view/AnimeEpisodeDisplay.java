@@ -9,7 +9,9 @@ public class AnimeEpisodeDisplay {
 
 	private AnimeEpisode animeEpisode;
 
-	private Long hot;
+	private Long votes;
+
+	private boolean vote;
 
 	public AnimeEpisodeDisplay() {}
 
@@ -81,11 +83,19 @@ public class AnimeEpisodeDisplay {
 		animeEpisode.setPushTime(pushTime);
 	}
 
-	public Long getHot() {
-		return hot;
+	public Long getVotes() {
+		return votes;
 	}
 
-	public void setHot(Long hot) {
-		this.hot = hot;
+	public void setVotes(Long votes) {
+		this.votes = votes;
+	}
+
+	public boolean isVote() {
+		return vote;
+	}
+
+	public void setVote(boolean vote) {
+		this.vote = vote;
 	}
 }

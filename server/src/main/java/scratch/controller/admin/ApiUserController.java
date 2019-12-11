@@ -29,16 +29,17 @@ public class ApiUserController {
 	@PostMapping("/api/authen/admin")
 	public JsonResult authen(@RequestParam("username") String username,
 							 @RequestParam("password") String password) {
-		JsonResult result = new JsonResult();
 		try {
+
 			Authentication authentication = userService.authen(username, password);
 			UserAdapter userAdapter = (UserAdapter)authentication.getPrincipal();
 			if(userAdapter.getRole() != 1) {
-				return result.setError("无效账号");
-			} else {
-				result.put("token", tokenService.sign(userAdapter.getUserId()));
-				return result;
+				return new JsonResult().setError("无效账号");
 			}
+
+			return new JsonResult().setAttribute("token",
+					tokenService.sign(userAdapter.getUserId()));
+
 		} catch (Exception e) {
 			return new JsonResult().setError("无效账号");
 		}
@@ -51,9 +52,9 @@ public class ApiUserController {
 
 	@GetMapping(value = "/api/admin/users", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Object list(@RequestParam(value="page", required = false) Integer page) {
-		if(page != null) {
-			return userService.list(page, 10);
-		}
+//		if(page != null) {
+//			return userService.list(page, 10);
+//		}
 		return userService.list();
 	}
 

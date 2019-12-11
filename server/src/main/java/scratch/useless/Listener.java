@@ -1,5 +1,6 @@
-package scratch.service;
+package scratch.useless;
 
+@Deprecated
 public class Listener<T> {
 
 	private String name;

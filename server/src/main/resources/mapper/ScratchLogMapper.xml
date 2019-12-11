@@ -17,7 +17,7 @@
 
     <select id="listByDate" resultType="scratch.model.entity.ScratchLog">
         select id, host_id as hostId, anime_id as animeId, name, type, message, time
-          from anime_scratch_log where date(time) = date(#{date})
+          from anime_scratch_log where date(time) = date(#{date, jdbcType=DATE})
     </select>
 
 </mapper>

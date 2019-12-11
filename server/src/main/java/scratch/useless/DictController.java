@@ -1,5 +1,5 @@
 
-package scratch.controller.admin;
+package scratch.useless;
 
 import java.util.Map;
 

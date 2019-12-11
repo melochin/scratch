@@ -3,6 +3,7 @@ package scratch.service;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import scratch.service.anime.AnimeEpisodeService;
 import scratch.test.ContextTest;
 
 public class AnimeEpisodeServiceTest extends ContextTest{

@@ -1,12 +1,13 @@
 package scratch.api.renren;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.gson.*;
+import scratch.api.exception.ParseException;
 import scratch.support.web.HttpConnection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,13 +17,15 @@ import org.jsoup.select.Elements;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scratch.support.web.net.Flow;
 
-public class RenrenImpl implements Renren {
+public class RenrenImpl implements Renren, Serializable {
 
-	private final static String HOST = "http://www.zimuzu.tv";
+	private final static String HOST = "http://www.zmz2019.com";
 
 	private final static String SEARCH_URL = HOST + "/search/index?keyword={1}";
 
 	private final static String RESOURCE_URL = HOST + "/resource/index_json/rid/{1}/channel/tv";
+
+	private final static String RESOURCE_LIST_URL = "http://got001.com/api/v1/static/resource/detail?code={1}";
 
 	/**
 	 * 发起搜索请求
@@ -35,7 +38,8 @@ public class RenrenImpl implements Renren {
 		
 		Document document = Jsoup.parse(html);
 		Elements searchItems = document.select(".search-item");
-		
+		if (searchItems.size() == 0) throw new ParseException();
+
 		List<Video> videos = searchItems.stream()
 				.map(item -> doSearchItem(item))
 				.collect(Collectors.toList());
@@ -111,13 +115,34 @@ public class RenrenImpl implements Renren {
 	 */
 	@Override
 	public List<VideoEpisode> getEpisodeList(String downloadListUrl) {
-		String html = new HttpConnection().connect(downloadListUrl);
-		Document document = Jsoup.parse(html);
-		Elements lis = document.select("#APP").select("li.mui-col-xs-4");
+		// get code
+		int startIndex = downloadListUrl.indexOf("code=") + "code=".length();
+		String code = downloadListUrl.substring(startIndex);
 
-		List<VideoEpisode> videoEpisodes = lis.stream()
-				.map(ele -> doEpisodeUrl(ele))
-				.collect(Collectors.toList());
+		String json = new HttpConnection().connect(RESOURCE_LIST_URL, code);
+
+		JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+
+		List<VideoEpisode> videoEpisodes = new ArrayList<>();
+
+		JsonArray elements = jsonObject.getAsJsonObject("data").getAsJsonArray("list");
+		for(int i=0; i<elements.size(); i++) {
+
+			String season = elements.get(i).getAsJsonObject().get("season_cn").getAsString();
+			JsonArray urls = elements.get(i).getAsJsonObject().getAsJsonObject("items").getAsJsonArray("APP");
+			for(int j=0; j<urls.size(); j++) {
+				JsonObject url = urls.get(j).getAsJsonObject();
+				VideoEpisode videoEpisode = new VideoEpisode();
+				videoEpisode.setSeason(season);
+				videoEpisode.setNum(url.get("episode").getAsString());
+				JsonArray files = url.getAsJsonArray("files");
+				for(int k=0; k<files.size(); k++) {
+					videoEpisode.addDownloadUrl(files.get(k).getAsJsonObject().get("address").toString());
+				}
+				videoEpisodes.add(videoEpisode);
+			}
+		}
+
 		videoEpisodes = videoEpisodes.stream()
 				.filter((v) -> v != null)
 				.collect(Collectors.toList());
@@ -136,27 +161,5 @@ public class RenrenImpl implements Renren {
 		return validate;
 	}
 
-	/**
-	 * 解析资源分享页面的DOM元素，提取百度云的下载链接
-	 * @param ele
-	 * @return
-	 */
-	private VideoEpisode doEpisodeUrl(Element ele) {
-		VideoEpisode videoEpisode = new VideoEpisode();
-
-		Elements els = ele.select("div.desc");
-		if(els.size() == 0) return null;
-		String number = els.text();
-
-		videoEpisode.setNum(number);
-		ele.select("a").forEach((a) -> {
-			String href = a.attr("href");
-			if(href.indexOf("baidu") > 0) {
-				videoEpisode.setDownloadUrl(a.attr("href"));
-			}
-		});
-
-		return videoEpisode;
-	}
 	
 }

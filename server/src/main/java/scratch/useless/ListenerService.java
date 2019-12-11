@@ -1,12 +1,12 @@
-package scratch.service;
+package scratch.useless;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Deprecated
 @Service
 public class ListenerService {
 

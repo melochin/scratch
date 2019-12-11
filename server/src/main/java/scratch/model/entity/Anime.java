@@ -5,14 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class Anime implements Serializable{
 
 	private Long id;
 
-	@NotBlank(message="名称不能为空")
+//	@NotBlank(message="名称不能为空")
 	private String name;
 	
 	private String pic;

@@ -52,8 +52,17 @@ public class RedisKey {
 		return EPISODES + ":hot";
 	}
 
-	public static final String episodeIp() {
+	public static final String episodeIp()
+	{
 		return EPISODES + ":ip";
+	}
+
+	public static final String like(long episodeId) {
+		return "episode_like_count:" + episodeId;
+	}
+
+	public static final String likeSet(long userId) {
+		return "user_like_episodes:" + userId;
 	}
 
 }

@@ -4,6 +4,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
@@ -143,6 +144,7 @@ public class UserController {
 		if (!userService.canReset(userId, resetCode)) {
 			throw new RuntimeException();
 		}
+		userService.getById(userId);
 
 		//添加到Session中
 		model.addAttribute("reset_userId", userId);
@@ -175,7 +177,7 @@ public class UserController {
 
 		ModelUtils.setSuccess(ra, "密码重置成功");
 
-		return "redirect:/user/login";
+		return "redirect:/login";
 	}
 
 }

@@ -1,46 +1,128 @@
 <html xmlns:th="www.thymeleaf.org">
 <head>
     <title th:text="${anime.name}"></title>
-
     <th:block th:replace="base/lib :: common"/>
     <th:block th:replace="base/lib :: react"/>
     <script type="text/javascript" th:src="@{/js/bundle/vendors.js}"></script>
     <script type="text/javascript" th:src="@{/js/bundle/common.js}"></script>
+    <script type="text/javascript" th:src="@{/js/markdown.js}"></script>
 </head>
 
 <body th:replace="base/layout/user :: layout(~{::#container})">
-<div id="container" class="ui container">
+<div id="container">
 
-    <div class="ui segment" style="height: 260px;padding:1rem">
-        <h1 th:text="${anime.name}"></h1>
-        <img class="ui  left floated image" style="min-height: 90px; max-height: 180px"
-             th:src="@{'/upload/' + ${anime.pic}}">
-        <p id="desc" th:text="${anime.description}"></p>
+    <div class="ui segment">
+        <div class="ui container grid">
+            <div class="four wide column" style="height: 260px">
+                <img class="ui  centered bordered image" style="overflow: hidden; height: 220px;"
+                     th:src="@{'/pic/' + ${anime.pic}}">
+            </div>
+            <div id="description" class="twelve wide column" style="padding-left: 25px">
+                <h1 th:text="${anime.name}"></h1>
+                <div class="row">
 
-    </div>
-    <div class="ui segment anime-focus" th:focus="${anime.focus}" th:anime="${anime.id}">
-        <button class="ui primary button">关注</button>
-    </div>
-
-    <div class="ui segment" style="margin: 1rem 0rem 1rem 0rem">
-
-        <div class="ui grid">
-            <div class="ui two wide column" th:each="episode : ${episodes}">
-                <div class="ui left labeled button" tabindex="0">
-                    <a class="ui basic label" th:text="${episode.number}"
-                       th:href="@{'/episode/' + ${episode.id} + '/redirect?url=' + ${episode.url} }">
-                    </a>
-                    <div class="ui icon button" th:data-anime="${episode.anime.id}" th:data-episode="${episode.id}">
-                        <i class="comment outline icon"></i>
+                    <div class="ui three column grid">
+                        <div class="column">
+                            <label>连载状态：</label>
+                            <th:block th:text="${anime.finished == true ? '完结' : '连载中'}"></th:block>
+                        </div>
+                        <div class="column">
+                            <label>连载时间：</label>
+                            <th:block th:text="${#dates.format(anime.publishMonth, 'yyyy-MM-dd')}"></th:block>
+                        </div>
                     </div>
+                </div>
+                <div class="row" style="margin-top: 0.5rem">
+                    <label>上次更新时间：</label>
+                    <th:block th:text="${#dates.format(anime.updateTime, 'yyyy-MM-dd')}"></th:block>
+                </div>
+
+                <div class="row" style="margin-top: 1rem">
+                    <label>简介：</label>
+                    <p id="desc" th:text="${anime.description}"></p>
+                </div>
+
+                <!--<div class="anime-focus" th:focus="${anime.focus}" th:anime="${anime.id}">-->
+                <!--<button class="ui primary button">关注</button>-->
+                <!--</div>-->
+
+                <div style="margin-top: 1rem">
+                    <button class="ui labeled icon red button" id="focus"
+                            th:data-id="${anime.id}" th:data-focus="${anime.focus}">
+                        <i class="heart icon"></i>
+                        <th:block th:text="${anime.focus ? '取消关注' : '关注'}"></th:block>
+                    </button>
                 </div>
             </div>
         </div>
 
     </div>
 
+    <div class="ui container">
+        <div class="ui segment" style="margin: 1rem 0rem 1rem 0rem">
+
+            <div class="ui grid">
+                <div class="ui four wide column" th:each="episode : ${episodes}">
+                    <div class="ui fluid right labeled icon basic button" tabindex="0">
+                        <a th:text="${#strings.abbreviate(episode.number, 20)}"
+                           th:href="@{'/episode/' + ${episode.id} + '/redirect?url=' + ${episode.url} }">
+                        </a>
+                        <i class="comment outline icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            const md = markdown.toHTML($("#desc").text());
+            $("#desc").html(md);
+        </script>
+    </div>
+    <script>
+
+        $("#focus").on("click",
+            () => {
+                var id = $("#focus").attr("data-id");
+                var focus = eval($("#focus").attr("data-focus"));
+                if (focus == false) {
+                    $.ajax({
+                        type: "post",
+                        url: `/api/user/animes/${id}/focus`,
+                        success: res => {
+                            $("#focus").html(
+                                `
+                                <i class="heart icon"></i>
+                                取消关注
+                                `
+                            )
+                            $("#focus").attr("data-focus", "true");
+                        },
+                        error: res => {
+                            alert(res.responseJSON.error);
+                        }
+
+                    })
+                } else {
+                    $.ajax({
+                        type: "delete",
+                        url: `/api/user/animes/${id}/focus`,
+                        success: res => {
+                            $("#focus").html(
+                                `
+                                <i class="heart icon"></i>
+                                关注
+                                `
+                            )
+                            $("#focus").attr("data-focus", "false");
+                        }
+                    })
+                }
+            }
+        );
+    </script>
 </div>
 
+
+</div>
 
 </body>
 </html>

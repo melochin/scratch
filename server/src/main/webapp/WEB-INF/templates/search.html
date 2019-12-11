@@ -1,5 +1,5 @@
 <html xmlns:th="www.thymeleaf.org">
-<title th:text="${'Scratch 检索 | ' + keyword }"></title>
+<title th:text="${'Scratch 检索'}"></title>
 <th:block th:replace="base/lib :: common"/>
 <th:block th:replace="base/lib :: react"/>
 
@@ -12,7 +12,9 @@
     <div style="margin:1rem 0">
         <a th:each="type : ${types}" class="ui large label"
            th:classappend="${type.code == searchType ? 'blue' : '' }"
-           th:href="${'/search?word=' + keyword + '&type=' + type.code}"
+           th:href="${ keyword == null ?
+                '/search?type=' + type.code :
+                '/search?word=' + keyword + '&type=' + type.code}"
            th:text="${type.value}"></a>
     </div>
 

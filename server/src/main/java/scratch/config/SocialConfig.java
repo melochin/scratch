@@ -1,4 +1,4 @@
-package scratch;
+package scratch.config;
 
 import javax.sql.DataSource;
 
@@ -19,8 +19,8 @@ import org.springframework.social.connect.web.ConnectController;
 import org.springframework.social.connect.web.SessionUserIdSource;
 import org.springframework.social.github.connect.GitHubConnectionFactory;
 
-@Configuration
-@EnableSocial 
+//@EnableSocial
+//@Configuration
 public class SocialConfig implements SocialConfigurer{
 
 	@Autowired

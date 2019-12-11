@@ -22,16 +22,48 @@ import java.util.Arrays;
 @Service
 public class TokenService {
 
-	private static RSAPrivateKey privateKey;
-
-	private static RSAPublicKey publicKey;
-
 	@Value("${token.secret}")
 	private String secret;
 
+	/**
+	 * 签发token
+	 * @param userId
+	 * @return
+	 */
+	public String sign(Long userId) {
+		Algorithm algorithm = Algorithm.HMAC512(secret);
+		return JWT.create()
+				.withIssuer("admin")
+				.withClaim("id", userId)
+				.sign(algorithm);
+	}
 
+	/**
+	 * 解析token
+	 * @param token
+	 * @return
+	 */
+	public DecodedJWT verify(String token) {
+
+		if(token == null) {
+			throw new JWTVerificationException("无效token");
+		}
+		Algorithm algorithm = Algorithm.HMAC512(secret);
+		JWTVerifier verifier = JWT.require(algorithm)
+				.withIssuer("admin")
+				.build();
+		DecodedJWT jwt = verifier.verify(token);
+		return jwt;
+	}
+
+	@Deprecated
+	private static RSAPrivateKey privateKey;
+
+	@Deprecated
+	private static RSAPublicKey publicKey;
+
+	@Deprecated
 	public void generateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(512, new SecureRandom(new String("chicnkaze").getBytes()));
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -39,6 +71,7 @@ public class TokenService {
 		save(keyPair.getPublic().getEncoded(), "public.key");
 	}
 
+	@Deprecated
 	private void save(byte[] bytes, String fileName) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(fileName);
 		ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
@@ -47,15 +80,13 @@ public class TokenService {
 		outputStream.close();
 	}
 
-	//@PostConstruct
+	@Deprecated
 	public void init() throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException {
 		InputStream privateIn = new ClassPathResource("private.key").getInputStream();
 		InputStream publicIn = new ClassPathResource("public.key").getInputStream();
 
 		byte[] privateBytes = getBytes(privateIn);
 		byte[] publicBytes = getBytes(publicIn);
-
-
 
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateBytes);
@@ -68,6 +99,7 @@ public class TokenService {
 		this.publicKey = (RSAPublicKey) publicKey;
 	}
 
+	@Deprecated
 	private byte[] getBytes(InputStream in) throws IOException {
 		InputStream inputStream = new ObjectInputStream(in);
 		byte[] buffer = new byte[1024];
@@ -75,30 +107,5 @@ public class TokenService {
 		inputStream.close();
 		return Arrays.copyOfRange(buffer,0, length);
 	}
-
-	public String sign(Long userId) {
-		Algorithm algorithm = Algorithm.HMAC512(secret);
-		// Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
-		String token = JWT.create()
-				.withIssuer("admin")
-				.withClaim("id", userId)
-				.sign(algorithm);
-		return token;
-	}
-
-	public DecodedJWT verify(String token) {
-
-		if(token == null) {
-			throw new JWTVerificationException("无效token");
-		}
-		Algorithm algorithm = Algorithm.HMAC512(secret);
-		//Algorithm algorithm = Algorithm.RSA256(this.publicKey, this.privateKey);
-		JWTVerifier verifier = JWT.require(algorithm)
-				.withIssuer("admin")
-				.build();
-		DecodedJWT jwt = verifier.verify(token);
-		return jwt;
-	}
-
 
 }

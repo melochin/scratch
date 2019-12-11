@@ -9,11 +9,9 @@
 <!--1.去掉 margin?-->
 <!--2.更改inverted颜色-->
 <div class="ui inverted fixed stackable menu" id="nav-header">
-    <canvas style="position: absolute;left: auto"></canvas>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
     <div class="item">
-        <a th:href="@{/}">Scratch</a>
+        <a th:href="@{/}" class="logo">Scratch</a>
     </div>
     <div class="item">
         <form style="margin: 0" action="/search">
@@ -25,20 +23,22 @@
     </div>
 
     <!--没有用户时-->
-    <div class="right item" th:if="${session.user_g == null}">
+    <div class="right item" th:if="${session.SPRING_SECURITY_CONTEXT == null}">
         <div class="black ui buttons">
             <a class="ui button" th:href="@{/user/login}">Login</a>
         </div>
     </div>
     <!--存在用户时-->
-    <th:block th:unless="${session.user_g == null}">
-        <div class="right item" th:object="${session.user_g}" style="padding:0px">
+    <th:block th:if="${session.SPRING_SECURITY_CONTEXT != null}">
+        <div class="right item" th:object="${session.SPRING_SECURITY_CONTEXT.authentication.principal}"
+             style="padding:0px">
             <div class="ui menu" id="nav-header-menu">
                 <a class="item" th:href="@{/}">
                     <i class="home large icon"></i>
                 </a>
                 <div class="ui pointing dropdown icon item">
-                    <i class="user large icon"></i>
+                    <img class="computer only ui mini circular image portrait"
+                         src="https://semantic-ui.com/images/avatar2/small/elyse.png">
                     <div class="menu">
                         <a class="item" th:href="@{/user/info}">个人资料</a>
                     </div>
@@ -48,31 +48,17 @@
                    th:if="*{role == 1}" th:href="@{/admin}">
                     Admin
                 </a>
-                <a class="item" th:href="@{/user/logout}">
+                <a class="item" th:href="@{/logout}">
                     <i class="sign out alternate large icon"></i>
                 </a>
             </div>
 
-
-            <!--				<img class="computer only ui mini circular image portrait"
-                                 src="https://semantic-ui.com/images/avatar2/small/elyse.png">
-                            <span class="computer only" th:text="${session.user_g.username}"></span>-->
-
+            <script>
+                $('.ui.dropdown')
+                    .dropdown();
+            </script>
         </div>
     </th:block>
-    <script>
-        window.onload = function () {
-            Particles.init({
-                selector:
-                    'canvas',
-                color:
-                    '#fff',
-                minDistance:
-                    '1000',
-                sizeVariations:
-                    '3'
-            });
-        };
-    </script>
+
 </div>
 </html>

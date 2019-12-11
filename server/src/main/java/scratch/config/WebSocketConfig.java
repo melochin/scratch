@@ -8,6 +8,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 import scratch.service.anime.RunInfoWebSocket;
 
+/**
+ * 配置WebSocket处理
+ */
 @EnableWebSocket
 @Configuration
 public class WebSocketConfig implements WebSocketConfigurer {
@@ -17,7 +20,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-		webSocketHandlerRegistry.addHandler(runInfoWebSocket, "/api/admin/scratch/runInfo")
+		webSocketHandlerRegistry
+				.addHandler(runInfoWebSocket, "/api/admin/scratch/runInfo")
 				.setAllowedOrigins("*")
 				.addInterceptors(new HttpSessionHandshakeInterceptor());
 	}

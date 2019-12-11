@@ -17,10 +17,7 @@ import scratch.support.service.MailContent;
 import scratch.support.service.MailException;
 
 @Service
-public class EmailService {
-
-	@Autowired
-	private EmailSupport emailSupport;
+public class EmailProducer {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
@@ -28,7 +25,11 @@ public class EmailService {
 	public void sendUserResetPassword(String resetUrl, String destEmail) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("url", resetUrl);
-		emailSupport.sendMail(new MailContent("密码重置", "/mail/resetpwd", destEmail , map));
+		rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_EMAIL,
+				RabbitMQConfig.QUEUE_EMAIL_ACTIVE,
+				new MailContent("密码重置", "/mail/resetpwd", destEmail, map));
+
+		//emailSupport.sendMail(new MailContent("密码重置", "/mail/resetpwd", destEmail , map));
 	}
 	
 	public void sendUserActiveCode(String activeUrl, String destEmail) throws MailException, MessagingException {
@@ -45,7 +46,12 @@ public class EmailService {
 	public void sendAnimeInfo(List<AnimeEpisode> episodes, String destEmail) throws MailException, MessagingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("episodes", episodes);
-		emailSupport.sendMail(new MailContent("番剧推送", "/mail/animepsuh", destEmail, map));
+
+		rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_EMAIL,
+				RabbitMQConfig.QUEUE_EMAIL_ACTIVE,
+				new MailContent("番剧推送", "/mail/resetpwd", destEmail, map));
+
+		//emailSupport.sendMail(new MailContent("番剧推送", "/mail/animepsuh", destEmail, map));
 	}
 	
 }

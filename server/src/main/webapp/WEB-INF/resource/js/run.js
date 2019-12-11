@@ -20,7 +20,7 @@ var RunAction = {
         })
     },
 
-    : : function (callback) {
+    info : function (callback) {
         Ajax.get("/api/admin/scratch/run/message", null, {
             success : (data) => callback(data)
         })

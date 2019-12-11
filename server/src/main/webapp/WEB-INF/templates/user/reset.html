@@ -3,26 +3,31 @@
 <meta http-equiv="Content-Type" content="text/html; UTF-8">
 
 <head>
-	<title>密码重置</title>
-	<th:block th:replace="base/lib :: common" />
-	<script type="text/javascript" th:src="@{/js/validate.js}"></script>
+    <title>密码重置</title>
+    <th:block th:replace="base/lib :: common"/>
+    <script type="text/javascript" th:src="@{/js/validate.js}"></script>
 </head>
 
-<body th:replace="base/layout/user :: layout(~{::#container})">
-	<div id="container" class="ui text container justified ">
-		<h4>密码重置申请</h4>
-		<form id="reset-apply" class="form-valid ui form" th:action="@{/user/reset/pwd/mail}"
-			method="post">
-			<div class="ui field">
-				<label>用户名</label> <input name="username" placeholder="用户名" />
-			</div>
-			<div class="ui field">
-				<label>邮箱</label> <input name="email" placeholder="邮箱"/>
-			</div>
-			<div class="ui field">
-				<input class="ui green button" type="submit" />
-			</div>
-		</form>
-	</div>
+<body th:replace="base/index :: layout(~{::#container})">
+<div id="container" class="ui text container justified ">
+    <div class="ui centered grid" style="height:100%;display: flex;">
+        <div class="ui container sixteen wide tablet ten wide computer column"
+             style="align-self: center;background-color: white">
+            <h4>密码重置申请</h4>
+            <form id="reset-apply" class="form-valid ui form" th:action="@{/user/reset/pwd/mail}"
+                  method="post">
+                <div class="ui field">
+                    <label>用户名</label> <input name="username" placeholder="用户名"/>
+                </div>
+                <div class="ui field">
+                    <label>邮箱</label> <input name="email" placeholder="邮箱"/>
+                </div>
+                <div class="ui field">
+                    <input class="ui green button" type="submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

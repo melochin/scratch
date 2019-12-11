@@ -9,6 +9,10 @@ import scratch.service.TokenService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Token拦截器，进行身份认证
+ * TODO Token包含的用户信息，要传给Controller
+ */
 public class TokenInterceptor implements HandlerInterceptor {
 
 	@Autowired
@@ -17,7 +21,6 @@ public class TokenInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		//
 		// 预检请求
 		if(request.getMethod().equals("OPTIONS")) {
 

@@ -10,12 +10,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import scratch.model.SessionContext;
 import scratch.model.entity.User;
 import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
 import scratch.support.web.spring.ModelUtils;
-import scratch.support.web.spring.SessionUtils;
 
 @SessionAttributes("referer")
 @Controller
@@ -71,7 +69,7 @@ public class LoginController {
 		Authentication authentication = userService.authen(user.getUsername(), user.getPassword());
 		// 存入session
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
+
 
 		// 使用referer 作为 重定向地址的条件
 		// 1. referer 非空 且不等于 "/"
@@ -89,7 +87,6 @@ public class LoginController {
 
 		status.setComplete();
 		model.asMap().clear();
-
 		return "redirect:" + redirectUrl;
 	}
 
@@ -102,7 +99,6 @@ public class LoginController {
 	 */
 	@GetMapping("/logout")
 	public String logout(RedirectAttributes ra) {
-		SessionUtils.removeAttribute(SessionContext.USER);
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ModelUtils.setSuccess(ra, "登出成功");
 		return "redirect:" + "/";

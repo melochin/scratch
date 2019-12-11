@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 @Service
 public class ScratchTaskProducer implements IScratchTaskProducer {
 
+	private final static Logger log = Logger.getLogger(ScratchTaskProducer.class);
+
 	private IAnimeDao animeDao;
 
 	private IAnimeAliasDao animeAliasDao;
 
-	private final static Logger log = Logger.getLogger(ScratchTaskProducer.class);
-
-	private Map<Long, String> queueMap;
+	private Map<Long, String> scratchMap;
 
 	private RabbitTemplate rabbitTemplate;
 
@@ -35,12 +35,16 @@ public class ScratchTaskProducer implements IScratchTaskProducer {
 		this.animeDao = animeDao;
 		this.animeAliasDao = animeAliasDao;
 		this.rabbitTemplate = rabbitTemplate;
-		this.queueMap = new HashMap<>();
-		this.queueMap.put(new Long(3), "scrach.web.renren");
+
+		// 初始化 - 抓取的站点
+		this.scratchMap = new HashMap<>();
+		this.scratchMap.put(new Long(3), "scrach.web.renren");
 	}
 
+	@Override
 	public void produce() {
-		for (Map.Entry<Long, String> entry : queueMap.entrySet()) {
+		for (Map.Entry<Long, String> entry : scratchMap.entrySet()) {
+
 			Long hostId = entry.getKey();
 			List<Anime> animes = list(hostId);
 
@@ -57,7 +61,7 @@ public class ScratchTaskProducer implements IScratchTaskProducer {
 	@Override
 	public void produceAndWait() {
 		List<Anime> animes = new ArrayList<>();
-		for (Map.Entry<Long, String> entry : queueMap.entrySet()) {
+		for (Map.Entry<Long, String> entry : scratchMap.entrySet()) {
 			Long hostId = entry.getKey();
 			animes.addAll(list(hostId));
 		}
@@ -66,20 +70,20 @@ public class ScratchTaskProducer implements IScratchTaskProducer {
 				RabbitMQConfig.QUEUE_SCRATCH_INSTANT, animes);
 	}
 
-	public List<Anime> list(Long hostId) {
-		// TODO TEST - SQL
+	private List<Anime> list(Long hostId) {
 		List<Long> animeIds = animeAliasDao.listAnimeIdByHost(hostId);
 		return animeIds.stream()
-				.map(animeId -> {
-					// TODO 级联删除 Anime对应的别名
-					Anime anime = animeDao.getById(animeId);
-					if (anime == null) return null;
-
-					anime.setAliass(animeAliasDao.list(animeId));
-					return anime;
-				})
+				.map(this::getAnimeWithAliass)
 				.filter(anime -> anime != null)
 				.collect(Collectors.toList());
+	}
+
+	private Anime getAnimeWithAliass(Long animeId) {
+		Anime anime = animeDao.getById(animeId);
+		if (anime == null) return null;
+
+		anime.setAliass(animeAliasDao.list(animeId));
+		return anime;
 	}
 
 }

@@ -1,9 +1,9 @@
 package scratch.api.bilibili;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,19 +14,13 @@ import java.util.Optional;
 
 import scratch.support.web.HttpConnection;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import scratch.support.web.net.Flow;
 
-import javax.swing.text.html.Option;
-
-
-public class BilibiliImpl implements Bilibili{
+public class BilibiliImpl implements Bilibili, Serializable {
 
 	private final static Logger log = Logger.getLogger(BilibiliImpl.class);
 	

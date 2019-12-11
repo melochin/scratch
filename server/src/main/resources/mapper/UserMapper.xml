@@ -5,7 +5,51 @@
 <mapper namespace="scratch.dao.inter.IUserDao">
 
 	<select id="findAll" resultType="User">
-		select user_id as userId, username, status, email, role from user;
+		select user_id as userId, username, status, email, role, salt from user;
 	</select>
+
+	<select id="getByName" resultType="User">
+		select user_id as userId, username, password as hashedPassword, status, email, role, salt from user
+			where username = #{username};
+	</select>
+
+	<select id="getById" resultType="User">
+		select user_id as userId, username, status, email, role, salt from user
+		where user_id = #{userId};
+	</select>
+
+	<select id="getByNameAndPwd" resultType="User">
+		select user_id as userId, username, status, email, role, salt from user
+		where username = #{username} and
+		password = #{password};
+	</select>
+
+	<select id="getByNameAndEmail" resultType="User">
+		select user_id as userId, username, status, email, role, salt from user
+		where username = #{username} and
+		email = #{email};
+	</select>
+
+	<select id="countByName" resultType="Integer">
+		select count(*) from user
+		where username = #{username}
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id" >
+		INSERT INTO user (username, password, status, email, role, salt)
+			VALUES (#{username}, #{hashedPassword}, #{status}, #{email}, #{role}, #{salt});
+	</insert>
+
+	<update id="updateStatus">
+		update user set status = #{status} where user_id = #{userId}
+	</update>
+
+	<update id="updatePassword">
+		update user set password = #{password}, salt = #{salt} where user_id = #{userId}
+	</update>
+
+	<delete id="delete">
+		delete from user where user_id = #{userId}
+	</delete>
 
 </mapper>  

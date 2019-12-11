@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	   xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+		   https://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+		   http://www.springframework.org/schema/task
+			http://www.springframework.org/schema/task/spring-task-4.3.xsd
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-4.3.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
 
 	<!-- 数据库 -->
 	<import resource="db-config.xml"/>
-	
+
 	<!-- redis -->
 	<import resource="redis-config.xml"/>
-	
+
+	<context:component-scan base-package="scratch.config" />
 	<context:component-scan base-package="scratch.dao" />
 	<context:component-scan base-package="scratch.service" />
 	<context:component-scan base-package="scratch.support" />
 	<context:component-scan base-package="scratch.api" />
-	
+
 	<!-- 开启邮箱服务 -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="${mail.host}" />
@@ -43,16 +49,16 @@
 			</props>
 		</property>
 	</bean>
-	
+
 	<bean id="templateResolver"
-		class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+		  class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
 		<property name="prefix" value="/WEB-INF/templates/" />
 		<property name="suffix" value=".html" />
 		<property name="templateMode" value="HTML" />
 		<property name="characterEncoding" value="utf-8" />
 		<property name="cacheable" value="false"></property>
 	</bean>
-	
+
 	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
 		<property name="templateResolver" ref="templateResolver" />
 	</bean>
@@ -60,44 +66,43 @@
 	<bean id="mailTemplate" class="scratch.support.service.ThymeleafTempalte">
 		<property name="springTemplateEngine" ref="templateEngine"></property>
 	</bean>
-	
+
 	<bean class="scratch.support.service.EmailSupport">
 		<property name="mailSender" ref="mailSender"></property>
 		<property name="templateEngine" ref="mailTemplate"></property>
 	</bean>
-	
+
 	<!-- RAMQ -->
 	<bean class="com.rabbitmq.client.ConnectionFactory">
-   		<property name="host" value="localhost"></property>
-   	</bean>	
+		<property name="host" value="localhost"></property>
+	</bean>
 
 	<bean id="page" class="scratch.support.service.Page">
 		<property name="size" value="20" />
 	</bean>
-   
-   <bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
-   
-   	<bean class="scratch.support.cipher.DE5Cipher"></bean>
-   	
-   		<bean class="scratch.config.AppConfig"></bean>
-	
-	<import resource="security-config.xml"/>
-   
-   <!-- 开启AOP功能 -->
+
+	<bean id="logQueue" class="java.util.concurrent.LinkedBlockingQueue" />
+
+	<bean class="scratch.support.cipher.DE5Cipher"></bean>
+
+	<!-- 开启AOP功能 -->
 	<aop:aspectj-autoproxy />
-   
+
 	<beans profile="default">
 		<context:property-placeholder location="classpath:config-dev.properties"/>
+		<!-- 定时推送任务 -->
+		<task:scheduler id="myScheduler" pool-size="5"/>
+		<task:annotation-driven scheduler="myScheduler"/>
 	</beans>
 
 	<beans profile="test">
 		<context:property-placeholder location="classpath:config-test.properties"/>
 	</beans>
-	
+
 	<beans profile="product">
 		<context:property-placeholder location="classpath:config-pro.properties"/>
 		<task:scheduler id="myScheduler" pool-size="5"/>
- 		<task:annotation-driven scheduler="myScheduler"/>
+		<task:annotation-driven scheduler="myScheduler"/>
 	</beans>
 
 </beans>

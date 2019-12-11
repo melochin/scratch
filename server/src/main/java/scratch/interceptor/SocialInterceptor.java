@@ -12,7 +12,6 @@ import org.springframework.social.connect.ConnectionData;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.model.SessionContext;
 import scratch.model.entity.User;
 
 public class SocialInterceptor implements HandlerInterceptor{
@@ -51,7 +50,6 @@ public class SocialInterceptor implements HandlerInterceptor{
 		ConnectionData data = connections.get(0).createData();
 		User user = new User(data.getDisplayName());
 		user.setStatus("1");
-		SessionUtils.setAttribute(SessionContext.USER, user);
 		
 		modelAndView.setViewName("redirect:/");
 	}

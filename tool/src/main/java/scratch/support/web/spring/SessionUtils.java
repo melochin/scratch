@@ -29,5 +29,5 @@ public class SessionUtils {
 	public static boolean containAttribute(String name) {
 		return getSession().getAttribute(name) != null;
 	}
-	
+
 }

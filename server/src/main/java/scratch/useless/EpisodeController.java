@@ -1,4 +1,4 @@
-package scratch.controller.admin;
+package scratch.useless;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import scratch.model.entity.AnimeEpisode;
 import scratch.service.anime.AnimeEpisodeService;
 import scratch.service.anime.AnimeService;
 import scratch.service.DictService;
-import scratch.service.anime.AnimePushService;
+import scratch.service.scratch.NotifyTaskProducer;
 
 @RequestMapping("/admin/scratch/episode")
 @Deprecated
@@ -28,7 +28,7 @@ public class EpisodeController {
 	private DictService dictService;
 
 	@Autowired
-	private AnimePushService animePushService;
+	private NotifyTaskProducer notifyTaskProducer;
 	
 	@ModelAttribute
 	private void setModel(Model model) {
@@ -49,7 +49,7 @@ public class EpisodeController {
 
 	@GetMapping("/push")
 	public String push() {
-		animePushService.push();
+		notifyTaskProducer.push();
 		return "redirect:/admin/scratch/episode";
 	}
 	

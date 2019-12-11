@@ -44,8 +44,8 @@ public class HttpConnection {
 	 * 读取文件名为{PROPERTIES_NAME}的配置信息
 	 */
 	private static void initProperties() {
-		InputStream in = ClassLoader.getSystemClassLoader()
-				.getResourceAsStream(PROPERTIES_NAME);
+		InputStream in = HttpConnection.class.getClassLoader()
+				.getResourceAsStream("./" +PROPERTIES_NAME);
 		if (in == null) {
 			System.out.println("cant find " + PROPERTIES_NAME);
 			return;

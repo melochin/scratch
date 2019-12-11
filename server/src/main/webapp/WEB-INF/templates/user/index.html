@@ -6,20 +6,29 @@
     <th:block th:replace="base/lib :: semantic"></th:block>
     <th:block th:replace="base/lib :: react"></th:block> -->
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-	<script type="text/javascript" th:src="@{/js/conf.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/conf.js"></script>
-	<script type="text/javascript" th:src="@{/js/tools/jquery.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/tools/jquery.js"></script>
-	<script type="text/javascript" th:src="@{/semantic/semantic.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/semantic/semantic.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <script type="text/javascript" th:src="@{/js/conf.js}"
+            src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/conf.js"></script>
+    <script type="text/javascript" th:src="@{/js/tools/jquery.js}"
+            src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/tools/jquery.js"></script>
+    <script type="text/javascript" th:src="@{/semantic/semantic.js}"
+            src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/semantic/semantic.js"></script>
 
-	<link rel="stylesheet" th:href="@{/semantic/semantic.css}" href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/semantic/semantic.css"/>
-	<link rel="stylesheet" th:href="@{/css/common.css}" href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/css/common.css"/>
-	<link rel="stylesheet" th:href="@{/css/mycss.css}" href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource//css/mycss.css"/>
-	<script type="text/javascript" th:src="@{/js/tool.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/tool.js"></script>
+    <link rel="stylesheet" th:href="@{/semantic/semantic.css}"
+          href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/semantic/semantic.css"/>
+    <link rel="stylesheet" th:href="@{/css/common.css}"
+          href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/css/common.css"/>
+    <link rel="stylesheet" th:href="@{/css/mycss.css}"
+          href="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource//css/mycss.css"/>
+    <script type="text/javascript" th:src="@{/js/tool.js}"
+            src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/tool.js"></script>
 
 
-    <script type="text/javascript" th:src="@{/js/bundle/vendors.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/bundle/vendors.js"></script>
-    <script type="text/javascript" th:src="@{/js/bundle/comments.js}"></script>
-    <script type="text/javascript" th:src="@{/js/bundle/post.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/bundle/post.js"></script>
+    <script type="text/javascript" th:src="@{/js/bundle/vendors.js}"
+            src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/bundle/vendors.js"></script>
+    <!--<script type="text/javascript" th:src="@{/js/bundle/comments.js}"></script>-->
+    <!--<script type="text/javascript" th:src="@{/js/bundle/post.js}" src="/home/kazechin/workspcae/scratch/server/src/main/webapp/WEB-INF/resource/js/bundle/post.js"></script>-->
+    <script type="text/javascript" th:src="@{js/center/normal.js}"></script>
 
 </head>
 
@@ -30,21 +39,25 @@
 
         <div class="ui one wide column"></div>
 
-        <div class="ui two wide column">
+        <div class="ui two wide column computer only">
             <div id="left-menu" class="ui vertical fluid  menu">
                 <a class="ui active item">
                     更新
                 </a>
-                <a class="ui item">
-                    影视
-                </a>
+                <th:block th:each="t : ${types}">
+                    <a class="ui item" th:text="${t.value}" th:href="${'/search?type=' + t.code}">
+                    </a>
+                </th:block>
             </div>
         </div>
 
         <div class="ui computer only two wide column"></div>
 
         <div class="ui five wide computer fourteen wide tablet column">
-            <div id="posts"></div>
+            <div class="ui one stackable cards" id="posts">
+            </div>
+
+            <div class="ui message" style="text-align: center">已拉倒底部</div>
         </div>
 
         <div class="ui computer only two wide column"></div>
@@ -66,5 +79,24 @@
         </div>
         <div class="ui one wide column"></div>
     </div>
+
+    <div class="ui modal">
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <label>评论</label>
+                    <textarea rows="2" id="input-comment"></textarea>
+                </div>
+                <button class="ui primary button" onclick="Comment.postComment()">提交</button>
+            </div>
+
+            <div id="comments" class="ui feed" style="height: 300px; overflow-y: auto">
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">关闭</div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

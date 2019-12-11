@@ -11,7 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import scratch.model.entity.Anime;
 import scratch.model.entity.AnimeAlias;
-import scratch.service.AnimeService;
+import scratch.service.anime.AnimeService;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -67,7 +67,7 @@ public class ApiAnimeControllerTest extends DocumentContextTest {
 		anime.setDescription("desc");
 		anime.setFinished(false);
 		anime.setPublishMonth(new Date());
-		anime.setAliass(Arrays.asList(new AnimeAlias(new Long(1), "alias")));
+		anime.setAliass(Arrays.asList(new AnimeAlias(new Long(1), new Long(1), "alias")));
 
 		String json = new ObjectMapper().writeValueAsString(anime);
 

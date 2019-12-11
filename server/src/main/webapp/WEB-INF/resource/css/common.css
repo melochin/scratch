@@ -73,20 +73,26 @@ input[readonly=readonly] {
 #nav-header {
     padding: 0 1rem 0 1rem;
     border-radius:0px;
-    background-color: #0f1a30;
+    background-color: #2d426c;
     height: 4rem;
-    box-shadow: 0px 0px 0px 1px #555555;
+    box-shadow: 0px 0px 0px 1px #c3c3c3;
+}
+
+#nav-header .logo {
+    font-size: 22px;
+    font-weight: bold;
 }
 
 #nav-header-menu {
     border: 0px;
     border-radius:0px;
-    background-color: #0f1a30;
+    background-color: #0f1a3000;
 }
 
 #nav-header-menu .item {
     padding: 0 16px;
     font-size: 1rem;
+    font-weight: bold;
 }
 
 #nav-header .item:before {
@@ -180,4 +186,8 @@ input[readonly=readonly] {
 #left-menu .active.item {
     background: #4183c4;
     color: white;
+}
+
+#description .row label{
+    font-weight: bold;
 }

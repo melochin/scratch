@@ -1,4 +1,4 @@
-package scratch.controller.card;
+package scratch.useless;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,8 +8,8 @@ import scratch.dao.redis.ICardRepository;
 import scratch.model.entity.Card;
 import scratch.model.entity.MemoryCardInfo;
 import scratch.model.view.CardDisplay;
-import scratch.service.Listener;
-import scratch.service.ListenerService;
+import scratch.useless.Listener;
+import scratch.useless.ListenerService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;

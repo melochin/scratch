@@ -9,11 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import scratch.model.SessionContext;
-import scratch.model.ohter.UserAdapter;
 import scratch.service.UserService;
 import scratch.support.StringUtils;
-import scratch.support.web.spring.SessionUtils;
 
 public class AutoLoginInterceptor implements  HandlerInterceptor {
 
@@ -35,7 +32,7 @@ public class AutoLoginInterceptor implements  HandlerInterceptor {
 
 		if(!auto) return true;
 		// ???运行了三次session里才有值？
-		if(SessionUtils.containAttribute(SessionContext.USER)) return true;
+		//if(SessionUtils.containAttribute(SessionContext.USER)) return true;
 
 		if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) return true;
 
@@ -46,7 +43,6 @@ public class AutoLoginInterceptor implements  HandlerInterceptor {
 		Authentication authentication = userService.authen(username, password);
 		// 存入session
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		SessionUtils.setAttribute(SessionContext.USER, ((UserAdapter)authentication.getPrincipal()));
 		return true;
 	}
 

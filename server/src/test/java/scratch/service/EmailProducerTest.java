@@ -19,10 +19,10 @@ import scratch.test.ContextTest;
  * @author melochin
  * @since 2017.08.18
  */
-public class EmailServiceTest extends ContextTest {
+public class EmailProducerTest extends ContextTest {
 
 	@Autowired
-	private EmailService service;
+	private EmailProducer service;
 	
 	private static final String DESTEMAIL = "398299262@qq.com";
 	
@@ -49,21 +49,21 @@ public class EmailServiceTest extends ContextTest {
 		service.sendUserActiveCode(URL, DESTEMAIL);
 	}
 
-	@Autowired
-	private EmailSupport emailSupport;
-
-	@Test
-	public void test() throws MailException, MessagingException {
-		String destEmail = "651356331@qq.com";
-
-		for(int i=0; i<500; i++) {
-			String[] message = "明 天 来 我 办 公 室 一 下 , 你 个 秃 头".split(" ");
-			for(String m : message) {
-				emailSupport.sendMail(m, m, destEmail);
-			}
-		}
-
-
-	}
+//	@Autowired
+//	private EmailSupport emailSupport;
+//
+//	@Test
+//	public void test() throws MailException, MessagingException {
+//		String destEmail = "651356331@qq.com";
+//
+//		for(int i=0; i<500; i++) {
+//			String[] message = "明 天 来 我 办 公 室 一 下 , 你 个 秃 头".split(" ");
+//			for(String m : message) {
+//				emailSupport.sendMail(m, m, destEmail);
+//			}
+//		}
+//
+//
+//	}
 
 }

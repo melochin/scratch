@@ -4,27 +4,30 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<http use-expressions="false">
-		<intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+	<!--<http use-expressions="false">-->
 
-		<intercept-url pattern="/user/logout" access="ROLE_USER" />
-		<intercept-url pattern="/center" access="ROLE_USER" />
-		<intercept-url pattern="/user/info" access="ROLE_USER" />
-<!--
-		<intercept-url pattern="/api/user/**" access="ROLE_USER" />
--->
-		<intercept-url pattern="/anime/focus" access="ROLE_USER" />
-		<intercept-url pattern="/anime/focus/**" access="ROLE_USER" />
-		
-		<intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
-		<!--<intercept-url pattern="/api/admin/**" access="ROLE_ADMIN" />-->
-		<intercept-url pattern="/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<form-login login-page="/user/login" />
-		<logout logout-url="/user/logout" />
-	</http>
+		<!--<intercept-url pattern="/" access="permitAll"/>-->
 
-	<authentication-manager>
-		<authentication-provider user-service-ref="userDetailService" />
-	</authentication-manager>
+		<!--<intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />-->
+		<!--<intercept-url pattern="/user/register" access="IS_AUTHENTICATED_ANONYMOUSLY"/>-->
+		<!--<intercept-url pattern="/user/logout" access="ROLE_USER" />-->
+		<!--<intercept-url pattern="/center" access="ROLE_USER" />-->
+		<!--<intercept-url pattern="/user/info" access="ROLE_USER" />-->
+<!--&lt;!&ndash;-->
+		<!--<intercept-url pattern="/api/user/**" access="ROLE_USER" />-->
+<!--&ndash;&gt;-->
+		<!--<intercept-url pattern="/anime/focus" access="ROLE_USER" />-->
+		<!--<intercept-url pattern="/anime/focus/**" access="ROLE_USER" />-->
+		<!---->
+		<!--<intercept-url pattern="/admin/**" access="ROLE_ADMIN" />-->
+		<!--&lt;!&ndash;<intercept-url pattern="/api/admin/**" access="ROLE_ADMIN" />&ndash;&gt;-->
+		<!--<intercept-url pattern="/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />-->
+		<!--<form-login login-page="/user/login" />-->
+		<!--<logout logout-url="/user/logout" />-->
+	<!--</http>-->
+
+	<!--<authentication-manager>-->
+		<!--<authentication-provider user-service-ref="userDetailService" />-->
+	<!--</authentication-manager>-->
 
 </beans:beans>
